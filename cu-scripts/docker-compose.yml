@@ -1,0 +1,97 @@
+version: "3"
+
+services:
+  api-gateway:
+    init: true
+    image: api-gateway
+    container_name: api-gateway
+    volumes:
+      - ../cu-api-gateway:/usr/src/app
+    build:
+      context: ../cu-api-gateway
+      dockerfile: ./docker/development/Dockerfile
+    networks:
+      - cu
+    depends_on:
+      - users-svc
+    ports:
+      - "5000:5000"
+    env_file:
+      - ../cu-api-gateway/.env
+
+  users-svc:
+    init: true
+    image: users-svc
+    container_name: users-svc
+    volumes:
+      - ../cu-users-svc:/usr/src/app
+    build:
+      context: ../cu-users-svc
+      dockerfile: ./docker/development/Dockerfile
+    networks:
+      - cu
+    ports:
+      - "5001:5001"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-users-svc/.env
+
+  scheduler-svc:
+    init: true
+    image: scheduler-svc
+    container_name: scheduler-svc
+    volumes:
+      - ../cu-scheduler:/usr/src/app
+    build:
+      context: ../cu-scheduler
+      dockerfile: ./docker/development/Dockerfile
+    networks:
+      - cu
+    ports:
+      - "5002:5002"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-scheduler/.env
+
+  migrations:
+    init: true
+    image: migrations
+    container_name: migrations
+    volumes:
+      - ../cu-migrations:/usr/src/app
+    build:
+      context: ../cu-migrations
+      dockerfile: ./docker/development/Dockerfile
+    networks:
+      - cu
+    ports:
+      - "5003:5003"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-migrations/.env
+
+  rabbitmq:
+    init: true
+    image: rabbitmq:3-management
+    container_name: cu-rabbitmq
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    ports:
+      - 5672:5672
+      - 5673:5673
+      - 15672:15672
+    networks:
+      - "cu"
+
+
+networks:
+  cu:
+    name: cu
+    external: true
