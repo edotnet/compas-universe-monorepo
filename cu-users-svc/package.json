@@ -21,6 +21,7 @@
     "@nestjs/microservices": "^10.2.7",
     "@nestjs/platform-express": "^10.2.7",
     "@nestjs/swagger": "^7.1.13",
+    "@nestjs/typeorm": "^10.0.0",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.3",
     "body-parser": "^1.20.2",
@@ -29,8 +30,10 @@
     "express": "^4.18.2",
     "jwt-decode": "^3.1.2",
     "nestjs-pino": "2.2.0",
+    "pg": "^8.11.3",
     "pino-pretty": "^10.2.3",
     "request-ip": "^3.3.0",
+    "typeorm": "^0.3.17",
     "util": "^0.12.5",
     "uuid": "^9.0.1"
   },
