@@ -7,15 +7,23 @@ import * as requestIp from 'request-ip';
 import * as express from 'express';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { Logger } from 'nestjs-pino';
+import { HttpsOptions } from '@nestjs/common/interfaces/external/https-options.interface';
+import * as fs from 'fs';
 
 async function bootstrap() {
   const expressApp = express();
 
   expressApp.get('/health', (req, res) => res.json({ success: 'ok' }));
 
+  const httpsOptions: HttpsOptions = {
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+  };
+
   const app = await NestFactory.create(
     AppModule,
     new ExpressAdapter(expressApp),
+    {httpsOptions}
   );
   app.useLogger(app.get(Logger));
 
@@ -51,7 +59,7 @@ async function bootstrap() {
       .setVersion('1.0')
       .addBearerAuth()
       .build();
-  
+
     const document = SwaggerModule.createDocument(app, options);
     SwaggerModule.setup('api', app, document);
   }
