@@ -37,6 +37,26 @@ export class AuthController {
     return res.redirect(redirectUrl);
   }
 
+  @Get('/facebook')
+  @UseGuards(AuthGuard('FACEBOOK'))
+  @AllowUnauthorized()
+  facebookAuth() {}
+
+  @Get('/facebook/callback')
+  @UseGuards(AuthGuard('FACEBOOK'))
+  @AllowUnauthorized()
+  async facebookAuthRedirect(@UserGuard() user, @Res() res) {
+    const [userUpsertResult, unauthorizedUrl] = await this.loginUser(user);
+
+    if (unauthorizedUrl) {
+      return res.redirect(this.buildUnauthorizedUrl(unauthorizedUrl));
+    }
+
+    const redirectUrl = this.createSignInRedirectUrl(userUpsertResult);
+
+    return res.redirect(redirectUrl);
+  }
+
   private createSignInRedirectUrl(user): string {
     const payload = {
       id: user.id,

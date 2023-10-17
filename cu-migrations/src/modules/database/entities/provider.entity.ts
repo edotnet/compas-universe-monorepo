@@ -3,6 +3,7 @@ import { BasePostgresModel } from "./base.entity";
 
 export enum OAuthProviders {
   GOOGLE = "GOOGLE",
+  FACEBOOK = "FACEBOOK"
 }
 
 @Entity("providers")
