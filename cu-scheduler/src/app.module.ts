@@ -1,9 +1,5 @@
 import { Module } from '@nestjs/common';
-import {
-  TypeOrmModule,
-  TypeOrmModuleOptions,
-} from '@nestjs/typeorm';
-import { BullModule } from '@nestjs/bull';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import { ScheduleModule } from './modules/schedules/schedule.module';
 import { LoggerModule } from 'nestjs-pino';
@@ -36,21 +32,6 @@ const logger = [
 
 @Module({
   imports: [
-    BullModule.forRootAsync({
-      useFactory: () => ({
-        redis: {
-          host: process.env.REDIS_HOST,
-          port: parseInt(process.env.REDIS_PORT),
-          db: parseInt(process.env.REDIS_DB),
-          password: process.env.REDIS_PASSWORD,
-          keyPrefix: process.env.REDIS_PREFIX,
-        },
-        limiter: {
-          max: 5,
-          duration: 500,
-        },
-      }),
-    }),
     AsyncHooksModule,
     TypeOrmModule.forRootAsync({
       useFactory: (logger): TypeOrmModuleOptions => ({
@@ -79,7 +60,7 @@ const logger = [
         },
         entities: [
           'dist/**/*.model{.ts,.js}',
-          'node_modules/@bonditx/shared-lib/dist/entities/postgres/**/*.entity{.ts,.js}',
+          'src/modules/entities/**/*.entity{.ts,.js}',
         ],
         synchronize: false,
         retryAttempts: 100,
@@ -87,7 +68,6 @@ const logger = [
         autoLoadEntities: true,
       }),
     }),
-    TypeOrmModule.forFeature([]),
     ScheduleModule,
     ...logger,
   ],

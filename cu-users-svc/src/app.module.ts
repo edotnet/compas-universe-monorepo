@@ -3,6 +3,7 @@ import { UserModule } from './modules/users/user.module';
 import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerModule } from 'nestjs-pino';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 const logger = [
   LoggerModule.forRoot({
@@ -30,7 +31,46 @@ const logger = [
 ];
 
 @Module({
-  imports: [AsyncHooksModule, UserModule, ...logger],
+  imports: [
+    TypeOrmModule.forRootAsync({
+      useFactory: (logger): TypeOrmModuleOptions => ({
+        logging:
+          false && logger && ((sql: string): void => logger.log(sql, 'SQL')),
+        type: 'postgres',
+        replication: {
+          master: {
+            host: process.env.POSTGRES_HOST,
+            port: +process.env.POSTGRES_PORT,
+            username: process.env.POSTGRES_USER,
+            password: process.env.POSTGRES_PASSWORD,
+            database: process.env.POSTGRES_DATABASE,
+          },
+          slaves: [
+            {
+              host: process.env.POSTGRES_HOST_REPLICA
+                ? process.env.POSTGRES_HOST_REPLICA
+                : process.env.POSTGRES_HOST,
+              port: +process.env.POSTGRES_PORT,
+              username: process.env.POSTGRES_USER,
+              password: process.env.POSTGRES_PASSWORD,
+              database: process.env.POSTGRES_DATABASE,
+            },
+          ],
+        },
+        entities: [
+          'dist/**/*.model{.ts,.js}',
+          'src/modules/entities/**/*.entity{.ts,.js}',
+        ],
+        synchronize: false,
+        retryAttempts: 100,
+        retryDelay: 10000,
+        autoLoadEntities: true,
+      }),
+    }),
+    AsyncHooksModule,
+    UserModule,
+    ...logger,
+  ],
   exports: [UserModule],
 })
 export class AppModule {}

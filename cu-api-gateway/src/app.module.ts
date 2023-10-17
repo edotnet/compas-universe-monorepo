@@ -10,6 +10,7 @@ import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import * as util from 'util';
 import { controllers } from './api/controllers';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AuthModule } from './api/auth/auth.module';
 
 export function sanitizeRequest(o) {
   const obj = { ...o };
@@ -122,6 +123,7 @@ export const getUserIdFromAuthHeader = (headers) => {
       forRoutes: controllers,
       exclude: [],
     }),
+    AuthModule,
     UsersModule,
     AsyncHooksModule,
     ConfigModule.forRoot({
