@@ -15,6 +15,11 @@ export class UserProfile extends BasePostgresModel {
   })
   middleName: string;
 
+  @Column({
+    nullable: true,
+  })
+  userName: string;
+
   @OneToOne(() => User, (destination) => destination.provider)
   @JoinColumn()
   user: User;

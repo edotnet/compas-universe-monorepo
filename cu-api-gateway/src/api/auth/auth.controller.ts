@@ -1,11 +1,20 @@
 import { AuthGuard } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
-import { Controller, Get, UseGuards, Res, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Res,
+  Inject,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtService } from '@nestjs/jwt';
 import { AllowUnauthorized } from './guards/allow-unauthorized.guard';
 import { UserGuard } from './guards/user.guard';
+import { LOCAL_STRATEGY_NAME } from 'src/common/constants';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -37,6 +46,27 @@ export class AuthController {
     return res.redirect(redirectUrl);
   }
 
+  @Post('/register')
+  @AllowUnauthorized()
+  async register(@Body() dto) {
+    return this.client.send('USER_REGISTER', dto).toPromise();
+  }
+
+  @Post('/login')
+  @UseGuards(AuthGuard(LOCAL_STRATEGY_NAME))
+  @AllowUnauthorized()
+  async login(@UserGuard() user, @Res() res) {
+    const unauthorizedUrl = this.unauthorizedUrl();
+
+    if (!user) {
+      return res.redirect(this.buildUnauthorizedUrl(unauthorizedUrl));
+    }
+
+    const redirectUrl = this.createSignInRedirectUrl(user);
+
+    return res.redirect(redirectUrl);
+  }
+
   private createSignInRedirectUrl(user): string {
     const payload = {
       id: user.id,
@@ -60,12 +90,18 @@ export class AuthController {
         '',
       ];
     } catch (error) {
-      const appUrl = this.config.get<string>('APP_URL');
-
-      const url = this.buildWebUrl(appUrl, 'unauthorized');
+      const url = this.unauthorizedUrl();
 
       return [, url];
     }
+  }
+
+  private unauthorizedUrl() {
+    const appUrl = this.config.get<string>('APP_URL');
+
+    const url = this.buildWebUrl(appUrl, 'unauthorized');
+
+    return url;
   }
 
   private buildWebUrl(

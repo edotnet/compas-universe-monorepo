@@ -33,6 +33,7 @@
     "nestjs-pino": "2.2.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "pino-pretty": "^10.2.3",
     "request-ip": "^3.3.0",
     "typeorm": "^0.3.17",
@@ -42,6 +43,7 @@
     "@nestjs/cli": "^8.0.0",
     "@types/node": "^20.8.4",
     "@types/passport-google-oauth20": "^2.0.12",
+    "@types/passport-local": "^1.0.37",
     "typescript": "^4.8"
   }
 }

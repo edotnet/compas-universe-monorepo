@@ -1,0 +1,4 @@
+export const USER_VALIDATE = "USER_VALIDATE";
+export const USER_REGISTER = "USER_REGISTER";
+export const USER_GET_BY_EMAIL = "USER_GET_BY_EMAIL";
+export const OAUTH_UPSERT_USER = "OAUTH_UPSERT_USER";

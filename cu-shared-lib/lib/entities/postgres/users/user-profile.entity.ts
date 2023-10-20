@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
-import { User } from './user.entity';
-import { BasePostgresModel } from './base.entity';
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { User } from "./user.entity";
+import { BasePostgresModel } from "../base-postgres.entity";
 
-@Entity('user-profiles')
+@Entity("user-profiles")
 export class UserProfile extends BasePostgresModel {
   @Column()
   firstName: string;
