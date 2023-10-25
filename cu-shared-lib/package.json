@@ -1,6 +1,6 @@
 {
   "name": "@cu/shared-lib",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Shared lib",
   "author": "",
   "private": false,
@@ -29,7 +29,9 @@
     "@nestjs/microservices": "^10.2.7",
     "@nestjs/mongoose": "^10.0.1",
     "@nestjs/typeorm": "^10.0.0",
+    "@types/aws-sdk": "^2.7.0",
     "amqplib": "^0.10.3",
+    "aws-sdk": "^2.1480.0",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
