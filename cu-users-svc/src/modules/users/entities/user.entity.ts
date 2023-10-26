@@ -5,14 +5,12 @@ import {
   OneToOne,
   BeforeInsert,
   BeforeUpdate,
-  AfterLoad,
 } from 'typeorm';
 import { IsEmail } from 'class-validator';
-import { BasePostgresModel } from './base.entity';
 import { UserProvider } from './user-provider.entity';
 import { UserProfile } from './user-profile.entity';
-import { InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { BasePostgresModel } from './base.entity';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
@@ -66,6 +64,15 @@ export class User extends BasePostgresModel {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword() {
-    this.password = await bcrypt.hash(this.password, await bcrypt.genSalt(10));
+    if (this.password) {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+    }
+  }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async prepareEmail() {
+    this.email = this.email.toLowerCase();
   }
 }

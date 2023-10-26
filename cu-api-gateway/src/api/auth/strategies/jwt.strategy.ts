@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { USER_GET_BY_EMAIL, User } from '@edotnet/shared-lib';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,8 +19,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(req, payload) {
-    const user = await this.usersService
-      .send('USER_GET_BY_EMAIL', { email: payload.email })
+    const user: User = await this.usersService
+      .send(USER_GET_BY_EMAIL, { email: payload.email })
       .toPromise();
 
     if (!user) {

@@ -4,10 +4,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import * as express from 'express';
 import { Logger } from 'nestjs-pino';
-import { Transport } from '@nestjs/microservices';
+import { UsersMicroservice, UsersServiceName } from '@edotnet/shared-lib';
 
 async function bootstrap() {
-  process.env['SERVICE_NAME'] = 'users';
+  process.env['SERVICE_NAME'] = UsersServiceName;
 
   const expressApp = express();
   expressApp.get('/health', (req, res) => res.json({ success: 'ok' }));
@@ -16,26 +16,7 @@ async function bootstrap() {
     new ExpressAdapter(expressApp),
   );
   app.useLogger(app.get(Logger));
-  const microservice = app.connectMicroservice(
-    {
-      logger: process.env.DEBUG
-        ? ['error', 'warn', 'log', 'debug']
-        : ['error', 'warn'],
-      transport: Transport.RMQ,
-      options: {
-        urls: [
-          `${process.env.RMQ_PREFIX}${process.env.RMQ_USER}:${process.env.RMQ_PASSWORD}@${process.env.RMQ_HOST}:${process.env.RMQ_PORT}`,
-        ],
-        queue: 'users',
-        queueOptions: {
-          durable: true,
-        },
-      },
-    },
-    {
-      inheritAppConfig: true,
-    },
-  );
+  const microservice = app.connectMicroservice(UsersMicroservice);
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

@@ -4,6 +4,7 @@ import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerModule } from 'nestjs-pino';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bull';
 
 const logger = [
   LoggerModule.forRoot({
@@ -32,6 +33,21 @@ const logger = [
 
 @Module({
   imports: [
+    BullModule.forRootAsync({
+      useFactory: () => ({
+        redis: {
+          host: process.env.REDIS_HOST,
+          port: parseInt(process.env.REDIS_PORT),
+          db: parseInt(process.env.REDIS_DB),
+          keyPrefix: process.env.REDIS_PREFIX,
+          password: process.env.REDIS_PASSWORD,
+        },
+        limiter: {
+          max: 5,
+          duration: 500,
+        },
+      }),
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: (logger): TypeOrmModuleOptions => ({
         logging:

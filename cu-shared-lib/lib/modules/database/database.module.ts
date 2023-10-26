@@ -33,8 +33,7 @@ const getPostgresOrmConfig = () => ({
     },
     entities: [
       "dist/**/*.model{.ts,.js}",
-      "src/modules/entities/**/*.entity{.ts,.js}",
-      // "node_modules/@cu/shared-lib/dist/entities/postgres/**/*.entity{.ts,.js}",
+      "node_modules/@edotnet/shared-lib/dist/entities/postgres/**/*.entity{.ts,.js}",
     ],
     synchronize: false,
     retryAttempts: 100,

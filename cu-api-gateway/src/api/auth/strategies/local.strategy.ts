@@ -1,3 +1,4 @@
+import { USER_VALIDATE, User } from '@edotnet/shared-lib';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
@@ -18,13 +19,9 @@ export class LocalStrategy extends PassportStrategy(
   }
 
   async validate(email: string, password: string) {
-    const user = await this.usersService
-      .send('USER_VALIDATE', { email, password })
+    const user: User = await this.usersService
+      .send(USER_VALIDATE, { email, password })
       .toPromise();
-
-    if (!user) {
-      return null;
-    }
 
     return user;
   }

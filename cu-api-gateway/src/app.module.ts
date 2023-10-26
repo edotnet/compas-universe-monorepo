@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpErrorFilter } from './common/filters/http-error.filter';
 import { UsersModule } from './api/users/users.module';
@@ -9,8 +10,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import * as util from 'util';
 import { controllers } from './api/controllers';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthModule } from './api/auth/auth.module';
+import { ServicesModule } from '@edotnet/shared-lib';
 
 export function sanitizeRequest(o) {
   const obj = { ...o };
@@ -126,6 +127,16 @@ export const getUserIdFromAuthHeader = (headers) => {
     AuthModule,
     UsersModule,
     AsyncHooksModule,
+    // ServicesModule,
+    RedisModule.forRoot({
+      config: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT),
+        db: parseInt(process.env.REDIS_DB),
+        password: process.env.REDIS_PASSWORD,
+        keyPrefix: process.env.REDIS_PREFIX,
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

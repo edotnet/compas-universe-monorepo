@@ -1,13 +1,11 @@
+import { OAuthProviders, OauthUserRequest } from '@edotnet/shared-lib';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback, Profile } from 'passport-google-oauth20';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(
-  Strategy,
-  'GOOGLE',
-) {
+export class GoogleStrategy extends PassportStrategy(Strategy, OAuthProviders.GOOGLE) {
   constructor(private configService: ConfigService) {
     super({
       clientID: configService.get<string>('GOOGLE_CLIENT_ID'),
@@ -27,8 +25,8 @@ export class GoogleStrategy extends PassportStrategy(
   ): Promise<void> {
     const { id, name, emails, _raw } = profile;
 
-    const user = {
-      provider: 'GOOGLE',
+    const user: OauthUserRequest = {
+      provider: OAuthProviders.GOOGLE,
       providerId: id,
       email: emails[0].value,
       firstName: name.givenName,

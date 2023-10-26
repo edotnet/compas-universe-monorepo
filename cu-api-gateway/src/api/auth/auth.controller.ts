@@ -15,6 +15,20 @@ import { JwtService } from '@nestjs/jwt';
 import { AllowUnauthorized } from './guards/allow-unauthorized.guard';
 import { UserGuard } from './guards/user.guard';
 import { LOCAL_STRATEGY_NAME } from 'src/common/constants';
+import {
+  ForgotPasswordRequest,
+  OAUTH_UPSERT_USER,
+  OAuthProviders,
+  OauthUserRequest,
+  USER_FORGOT_PASSWORD,
+  USER_REGISTER,
+  USER_RESET_PASSWORD,
+  USER_VERIFY_EMAIL,
+  User,
+  VerifyEmailRequest,
+  buildUnauthorizedUrl,
+  buildWebUrl,
+} from '@edotnet/shared-lib';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -27,18 +41,18 @@ export class AuthController {
   ) {}
 
   @Get('/google')
-  @UseGuards(AuthGuard('GOOGLE'))
+  @UseGuards(AuthGuard(OAuthProviders.GOOGLE))
   @AllowUnauthorized()
   googleAuth() {}
 
   @Get('/google/callback')
-  @UseGuards(AuthGuard('GOOGLE'))
+  @UseGuards(AuthGuard(OAuthProviders.GOOGLE))
   @AllowUnauthorized()
-  async googleAuthRedirect(@UserGuard() user, @Res() res) {
+  async googleAuthRedirect(@UserGuard() user: OauthUserRequest, @Res() res) {
     const [userUpsertResult, unauthorizedUrl] = await this.loginUser(user);
 
     if (unauthorizedUrl) {
-      return res.redirect(this.buildUnauthorizedUrl(unauthorizedUrl));
+      return res.redirect(buildUnauthorizedUrl(unauthorizedUrl));
     }
 
     const redirectUrl = this.createSignInRedirectUrl(userUpsertResult);
@@ -49,25 +63,37 @@ export class AuthController {
   @Post('/register')
   @AllowUnauthorized()
   async register(@Body() dto) {
-    return this.client.send('USER_REGISTER', dto).toPromise();
+    return this.client.send(USER_REGISTER, dto).toPromise();
   }
 
   @Post('/login')
   @UseGuards(AuthGuard(LOCAL_STRATEGY_NAME))
   @AllowUnauthorized()
-  async login(@UserGuard() user, @Res() res) {
-    const unauthorizedUrl = this.unauthorizedUrl();
-
-    if (!user) {
-      return res.redirect(this.buildUnauthorizedUrl(unauthorizedUrl));
-    }
-
+  async login(@UserGuard() user: User, @Res() res) {
     const redirectUrl = this.createSignInRedirectUrl(user);
 
-    return res.redirect(redirectUrl);
+    return res.send(redirectUrl);
   }
 
-  private createSignInRedirectUrl(user): string {
+  @Post('/forgot-password')
+  @AllowUnauthorized()
+  async forgotPassword(@Body() dto: ForgotPasswordRequest) {
+    return this.client.send(USER_FORGOT_PASSWORD, dto).toPromise();
+  }
+
+  @Post('/verify-email')
+  @AllowUnauthorized()
+  async verifyEmail(@Body() dto: VerifyEmailRequest) {
+    return this.client.send(USER_VERIFY_EMAIL, dto).toPromise();
+  }
+
+  @Post('/reset-password')
+  @AllowUnauthorized()
+  async resetPassword(@Body() dto) {
+    return this.client.send(USER_RESET_PASSWORD, dto).toPromise();
+  }
+
+  private createSignInRedirectUrl(user: User): string {
     const payload = {
       id: user.id,
       email: user.email,
@@ -78,7 +104,7 @@ export class AuthController {
 
     const appUrl = this.config.get<string>('APP_URL');
 
-    return this.buildWebUrl(appUrl, '', {
+    return buildWebUrl(appUrl, '', {
       accessToken,
     });
   }
@@ -86,7 +112,7 @@ export class AuthController {
   private async loginUser(user): Promise<[any, string]> {
     try {
       return [
-        await this.client.send('OAUTH_UPSERT_USER', user).toPromise(),
+        await this.client.send(OAUTH_UPSERT_USER, user).toPromise(),
         '',
       ];
     } catch (error) {
@@ -99,26 +125,8 @@ export class AuthController {
   private unauthorizedUrl() {
     const appUrl = this.config.get<string>('APP_URL');
 
-    const url = this.buildWebUrl(appUrl, 'unauthorized');
+    const url = buildWebUrl(appUrl, 'unauthorized');
 
     return url;
-  }
-
-  private buildWebUrl(
-    baseUrl: string,
-    path: string,
-    queryParams?: Record<string, string>,
-  ): string {
-    let url = [baseUrl, path].join('/');
-
-    if (queryParams) {
-      url = [url, new URLSearchParams(queryParams).toString()].join('?');
-    }
-
-    return url;
-  }
-
-  private buildUnauthorizedUrl(path: string): string {
-    return path.replace('%SUBDOMAIN%.', '');
   }
 }
