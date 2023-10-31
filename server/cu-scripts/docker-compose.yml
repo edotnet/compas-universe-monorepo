@@ -1,0 +1,159 @@
+version: "3"
+
+services:
+  api-gateway:
+    init: true
+    image: api-gateway
+    container_name: api-gateway
+    volumes:
+      - ../cu-api-gateway:/usr/src/app
+    build:
+      context: ../cu-api-gateway
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    depends_on:
+      - users-svc
+    ports:
+      - "5000:5000"
+    env_file:
+      - ../cu-api-gateway/.env
+
+  users-svc:
+    init: true
+    image: users-svc
+    container_name: users-svc
+    volumes:
+      - ../cu-users-svc:/usr/src/app
+    build:
+      context: ../cu-users-svc
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5001:5001"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-users-svc/.env
+
+  scheduler-svc:
+    init: true
+    image: scheduler-svc
+    container_name: scheduler-svc
+    volumes:
+      - ../cu-scheduler:/usr/src/app
+    build:
+      context: ../cu-scheduler
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5002:5002"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-scheduler/.env
+
+  migrations:
+    init: true
+    image: migrations
+    container_name: migrations
+    volumes:
+      - ../cu-migrations:/usr/src/app
+    build:
+      context: ../cu-migrations
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5003:5003"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-migrations/.env
+
+  transactions-svc:
+    init: true
+    image: transactions
+    container_name: transactions-svc
+    volumes:
+      - ../cu-transactions-svc:/usr/src/app
+    build:
+      context: ../cu-transactions-svc
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5004:5004"
+    depends_on:
+      - postgres-db
+      - rabbitmq
+    env_file:
+      - ../cu-transactions-svc/.env
+
+  rabbitmq:
+    init: true
+    image: rabbitmq:3-management
+    container_name: cu-rabbitmq
+    volumes:
+      - ./.docker/rabbitmq/etc/:/etc/rabbitmq/
+      - ./.docker/rabbitmq/data/:/var/lib/rabbitmq/mnesia
+    environment:
+      RABBITMQ_DEFAULT_USER: rabbitmq
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+    ports:
+      - 5672:5672
+      - 5673:5673
+      - 15672:15672
+    networks:
+      - "cu"
+
+  postgres-db:
+    init: true
+    image: postgres:latest
+    container_name: cu-postgres
+    networks:
+      - "cu"
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: testpassword
+      POSTGRES_USER: testuser
+      POSTGRES_DB: testdb
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  redis:
+    init: true
+    image: "redis:alpine"
+    container_name: cu-redis
+    command: redis-server
+    networks:
+      - "cu"
+    ports:
+      - "6380:6379"
+    volumes:
+      - $PWD/redis-data:/var/lib/redis
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_DB=10
+      - REDIS_PASSWORD=password
+      - REDIS_PRIFIX=guard
+
+
+networks:
+  cu:
+    name: cu
+    external: true

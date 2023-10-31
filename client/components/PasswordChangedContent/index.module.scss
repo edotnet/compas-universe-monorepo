@@ -1,0 +1,25 @@
+.passwordChangedContainer {
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    .passwordChanged {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 24px;
+    
+        button {
+            background-color: #882AFF;
+            padding: 9px 17px;
+            border-radius: 6px;
+            color: #FFFFFF;
+            border: none;
+            cursor: pointer;
+        }
+
+    }
+
+}
