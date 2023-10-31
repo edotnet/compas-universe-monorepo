@@ -1,12 +1,16 @@
 import LogoContent from "@/components/LogoContent";
-import styles from "./index.module.scss"
+import styles from "./index.module.scss";
+import MainLayout from "@/layouts/MainLayout";
+import withAuth from "@/HOC/withAuth";
 
 const Feed = () => {
   return (
-    <div className={styles.feed}>
-      <LogoContent heading="Feed" />
-    </div>
+    <MainLayout>
+      <div className={styles.feed}>
+        <LogoContent heading="Feed" />
+      </div>
+    </MainLayout>
   );
 };
 
-export default Feed;
+export default withAuth(Feed);

@@ -1,0 +1,12 @@
+.profileContent {
+    width: 100%;
+    background: linear-gradient(#7D43A417, #2D34DA00, #D5CCFF8C);
+    
+    .profileContainer {
+        max-width: 1680px;
+        margin: 31px 78px 31px 46px;
+        display: flex;
+        flex-direction: column;
+        gap: 38px;
+    }
+}

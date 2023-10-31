@@ -1,0 +1,61 @@
+.profilePlaylist {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+
+    .searchBox {
+        padding:  5px;
+        display: flex;
+        align-items: center;
+        border: 1px solid #E4E5E4;
+        justify-content: space-between;
+        border-radius: 5px;
+        background-color: #FFFFFF;
+
+        .searchIcon {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            
+            input {
+                color: #49504D;
+                border: none;
+                width: 100%;
+            }
+            
+            input::placeholder {
+                color: #49504D;
+            }
+            
+            input:focus {
+                outline: none;
+            }
+        }
+
+        > picture { 
+            padding: 7px;
+            img {
+                border-left: 1px solid #E4E5E4;
+                padding-left: 4px;
+            }
+        }
+
+    }
+
+    .cardContainer {
+        max-width: 1600px;
+        display: flex;
+        align-items: center;
+        overflow-x: scroll;
+        gap: 23.82px;
+    }
+
+    .cardContainer::-webkit-scrollbar {
+        background: transparent;
+    }
+
+    .cardContainer::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+}

@@ -3,6 +3,7 @@ import LogoContent from "../LogoContent";
 import { api } from "@/utils/axios";
 import styles from "./index.module.scss";
 import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
+import { errorHelper } from "@/utils/helpers/error.helper";
 
 interface IProps {
   setResetPassword: (value: boolean) => void;
@@ -41,15 +42,7 @@ const ChangePasswordContent = ({
       setResetPassword(true);
       setVerifyEmail(false);
     } catch (error: any) {
-      setError("Something went wrong");
-      if (error?.response?.data.message) {
-        setError(
-          error.response.data.message
-            .split("_")
-            .map((str: string) => str.toLowerCase())
-            .join(" ")
-        );
-      }
+      setError(errorHelper(error?.response?.data.message));
     }
   }, []);
 

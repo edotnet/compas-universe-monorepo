@@ -1,0 +1,44 @@
+.profileConnections {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+
+    .buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        a {
+            text-decoration: none;
+            color: #7414EE;
+            font-size: 15.26px;
+            font-weight: 500;
+        }
+
+        ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 17px;
+
+            li {
+                font-size: 20px;
+                color: #858585;
+                font-weight: 400;
+                cursor: pointer;
+            }
+
+            .active {
+                font-size: 22.89px;
+                font-weight: 600;
+                color: #272727;
+                border-bottom: 2px solid #272727;
+            }
+        }
+    }
+
+    .itemContainer {
+        display: flex;
+        gap: 50px;
+    }
+}

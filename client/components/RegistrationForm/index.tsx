@@ -6,6 +6,7 @@ import { useCallback, useState } from "react";
 import { api } from "@/utils/axios";
 import validator from "validator";
 import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
+import { errorHelper } from "@/utils/helpers/error.helper";
 
 const RegistrationForm = () => {
   const [errors, setErrors] = useState({
@@ -48,7 +49,7 @@ const RegistrationForm = () => {
             ...errors,
             password: "Password is not valid",
           });
-          return
+          return;
         } else {
           setErrors({
             ...errors,
@@ -85,10 +86,10 @@ const RegistrationForm = () => {
           router.push("/login");
         }
       } catch (error: any) {
-        setErrors({ ...errors, other: "Something went wrong" });
-        if (error?.response?.data?.message) {
-          setErrors({ ...errors, email: "Email already exists" });
-        }
+        setErrors({
+          ...errors,
+          email: errorHelper(error?.response?.data?.message),
+        });
       }
     },
     [errors]
