@@ -2,12 +2,16 @@ import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { User } from "./user.entity";
 import { BasePostgresModel } from "./base.entity";
 
+export enum UserTypes {
+  SINGER = "Singer",
+}
+
 @Entity("user-profiles")
 export class UserProfile extends BasePostgresModel {
-  @Column()
+  @Column({ nullable: true })
   firstName: string;
 
-  @Column()
+  @Column({ nullable: true })
   lastName: string;
 
   @Column({
@@ -15,10 +19,20 @@ export class UserProfile extends BasePostgresModel {
   })
   middleName: string;
 
+  @Column({ nullable: true })
+  userName: string;
+
+  @Column({
+    type: "enum",
+    enum: UserTypes,
+    nullable: true,
+  })
+  type: UserTypes;
+
   @Column({
     nullable: true,
   })
-  userName: string;
+  profilePicture: string;
 
   @OneToOne(() => User, (destination) => destination.provider)
   @JoinColumn()

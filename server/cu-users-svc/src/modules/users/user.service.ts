@@ -1,31 +1,39 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import * as bcrypt from 'bcrypt';
 import {
   EmptyResponse,
+  FollowRequest,
   ForgotPasswordRequest,
   GetUserByEmailRequest,
   OauthUserRequest,
   Provider,
   RegisterRequest,
   ResetPasswordRequest,
+  UserResponse,
   ValidateUserRequest,
   VerifyEmailRequest,
   VerifyEmailResponse,
   generateRandomCode,
+  mapUserToUserExtendedResponse,
+  mapUserToUserResponse,
 } from '@edotnet/shared-lib';
 import { TransactionsService } from './transactions';
 import { User, UserRoles, UserStatus } from './entities/user.entity';
 import { UserProvider } from './entities/user-provider.entity';
 import { UserProfile } from './entities/user-profile.entity';
+import { UserFollower } from './entities/user-followers';
+import { mapUsersToGetUsersResponse } from './user.serializer';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(UserFollower)
+    private userFollowersRepository: Repository<UserFollower>,
     @InjectRepository(Provider)
     private providerRepository: Repository<Provider>,
     private readonly transactionsService: TransactionsService,
@@ -93,7 +101,17 @@ export class UserService {
     user.email = dto.email;
     user.status = UserStatus.PENDING;
     user.password = dto.password;
-    user.userName = dto.userName;
+    user.profile = new UserProfile();
+    user.profile.userName = dto.userName;
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async login(userId: number): Promise<User> {
+    const user = await this.checkUserExistsById(userId);
+    user.status = UserStatus.ACTIVE;
 
     await this.userRepository.save(user);
 
@@ -192,6 +210,84 @@ export class UserService {
     return {};
   }
 
+  async getMe(userId: number): Promise<UserResponse> {
+    const user = await this.checkUserExistsById(userId);
+
+    return mapUserToUserExtendedResponse(user);
+  }
+
+  async getFollowings(userId: number): Promise<any> {
+    const followings = await this.userRepository.find({
+      where: {
+        followers: { follower: { id: userId, status: UserStatus.ACTIVE } },
+      },
+      relations: ['profile'],
+    });
+
+    return mapUsersToGetUsersResponse(followings);
+  }
+
+  async getNonFollowings(userId: number): Promise<UserResponse[]> {
+    const nonFollowings = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoinAndSelect('user.followers', 'followers')
+      .where('user.id != :userId', { userId })
+      .andWhere('user.status = :status', { status: UserStatus.ACTIVE })
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('follower.followingId')
+          .from(UserFollower, 'follower')
+          .where('follower.followerId = :userId', { userId })
+          .getQuery();
+        return `user.id NOT IN (${subQuery})`;
+      })
+      .getMany();
+
+    return mapUsersToGetUsersResponse(nonFollowings);
+  }
+
+  async follow(userId: number, dto: FollowRequest): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.followingId);
+
+    if (dto.followingId === userId) {
+      throw new RpcException({
+        httpStatus: HttpStatus.FORBIDDEN,
+        message: 'CONNOT_FOLLOW_YOURSELF',
+      });
+    }
+
+    const newFollow = new UserFollower();
+
+    newFollow.follower = new User();
+    newFollow.follower.id = userId;
+    newFollow.following = user;
+
+    await this.userFollowersRepository.save(newFollow);
+
+    return {};
+  }
+
+  async unfollow(userId: number, dto: FollowRequest): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.followingId);
+
+    const follow = await this.userFollowersRepository.findOne({
+      where: { follower: { id: userId }, following: { id: user.id } },
+    });
+
+    if (!follow) {
+      throw new RpcException({
+        httpStatus: HttpStatus.FORBIDDEN,
+        message: 'USER_FOLLOW_DOES_NOT_EXIST',
+      });
+    }
+
+    await this.userFollowersRepository.remove(follow);
+
+    return {};
+  }
+
   private async checkUserExistsByEmail(email: string): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -203,5 +299,21 @@ export class UserService {
         message: 'USER_ALREADY_EXISTS',
       });
     }
+  }
+
+  private async checkUserExistsById(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
+
+    if (!user) {
+      throw new RpcException({
+        httpStatus: HttpStatus.FORBIDDEN,
+        message: 'USER_DOES_NOT_EXIST',
+      });
+    }
+
+    return user;
   }
 }

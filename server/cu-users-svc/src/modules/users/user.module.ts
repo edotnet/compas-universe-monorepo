@@ -10,12 +10,13 @@ import { Provider } from './entities/provider.entity';
 import { UserProvider } from './entities/user-provider.entity';
 import { UserProfile } from './entities/user-profile.entity';
 import { TransactionsServiceName } from '@edotnet/shared-lib';
+import { UserFollower } from './entities/user-followers';
 @Module({
   imports: [
     BullModule.registerQueue({
       name: TransactionsServiceName,
     }),
-    TypeOrmModule.forFeature([User, Provider, UserProvider, UserProfile]),
+    TypeOrmModule.forFeature([User, Provider, UserProvider, UserProfile, UserFollower]),
     TransactionsModule,
     RedisModule.forRoot({
       config: {

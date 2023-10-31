@@ -1,3 +1,4 @@
+export * from "./follow.request";
 export * from "./register.request";
 export * from "./verify-email.request";
 export * from "./validate-user.request";

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { LoggerModule } from 'nestjs-pino';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
+import { ServicesModule } from '@edotnet/shared-lib';
 
 const logger = [
   LoggerModule.forRoot({
@@ -48,6 +49,7 @@ const logger = [
         },
       }),
     }),
+    // ServicesModule,
     TypeOrmModule.forRootAsync({
       useFactory: (logger): TypeOrmModuleOptions => ({
         logging:
