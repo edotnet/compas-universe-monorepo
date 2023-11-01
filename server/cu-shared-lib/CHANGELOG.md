@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/edotnet/compas-universe-monorepo/compare/v1.1.9...v1.2.0) (2023-11-01)
+
+
+### Features
+
+* client implementation ([fdf21bf](https://github.com/edotnet/compas-universe-monorepo/commit/fdf21bf59532837220d38057cb6613349992c581))
+* forgot password ([d73056b](https://github.com/edotnet/compas-universe-monorepo/commit/d73056b67055a01a4ab1e0b03d00a3d6afd6826b))
+* user profile- client side ([c9cab09](https://github.com/edotnet/compas-universe-monorepo/commit/c9cab093785835b1f2e429bb0607d40f3a198f5d))
+* user profile-follow, unfollow ([d3f3004](https://github.com/edotnet/compas-universe-monorepo/commit/d3f3004c71fb8b4e29cd69af2c4cb0ac0f7a8628))
+
+
+### Bug Fixes
+
+* Dockerfiles ([41e838d](https://github.com/edotnet/compas-universe-monorepo/commit/41e838dff99aa5f07164434f1e4bd42e56411411))
+
 ### [1.1.9](https://github.com/edotnet/compas-universe-monorepo/compare/v1.1.8...v1.1.9) (2023-10-25)
 
 ### [1.1.8](https://github.com/edotnet/compas-universe-monorepo/compare/v1.1.7...v1.1.8) (2023-10-25)
