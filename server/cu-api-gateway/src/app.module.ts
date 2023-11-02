@@ -127,7 +127,7 @@ export const getUserIdFromAuthHeader = (headers) => {
     AuthModule,
     UsersModule,
     AsyncHooksModule,
-    // ServicesModule,
+    ServicesModule,
     RedisModule.forRoot({
       config: {
         host: process.env.REDIS_HOST,
@@ -141,11 +141,11 @@ export const getUserIdFromAuthHeader = (headers) => {
       isGlobal: true,
     }),
   ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpErrorFilter,
-    },
-  ],
+  // providers: [
+  //   {
+  //     provide: APP_FILTER,
+  //     useClass: HttpErrorFilter,
+  //   },
+  // ],
 })
 export class AppModule {}

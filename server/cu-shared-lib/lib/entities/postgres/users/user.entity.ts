@@ -4,7 +4,6 @@ import {
   Column,
   OneToOne,
   OneToMany,
-  ManyToMany,
   BeforeInsert,
   BeforeUpdate,
 } from "typeorm";
@@ -13,7 +12,7 @@ import { UserProvider } from "./user-provider.entity";
 import { UserProfile } from "./user-profile.entity";
 import * as bcrypt from "bcrypt";
 import { BasePostgresModel } from "../base-postgres.entity";
-import { UserFollower } from "./user-followers.entity";
+import { UserFriend } from "./user-friends.entity";
 
 export enum UserStatus {
   ACTIVE = "ACTIVE",
@@ -61,11 +60,8 @@ export class User extends BasePostgresModel {
   })
   profile: UserProfile;
 
-  @OneToMany(() => UserFollower, (follower) => follower.following)
-  followers: UserFollower[];
-
-  @ManyToMany(() => UserFollower, (follower) => follower.follower)
-  following: UserFollower[];
+  @OneToMany(() => UserFriend, (destination) => destination.user)
+  friends: UserFriend[];
 
   @BeforeInsert()
   @BeforeUpdate()

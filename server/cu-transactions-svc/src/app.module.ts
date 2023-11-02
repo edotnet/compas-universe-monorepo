@@ -5,6 +5,8 @@ import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerModule } from 'nestjs-pino';
 import { BullModule } from '@nestjs/bull';
+import { CustomLoggerService, ErrorFilter, HttpErrorFilter, LoggerInterceptor, QueryErrorFilter, RpcErrorFilter, ServicesModule, ValidationPipeHybrid } from '@edotnet/shared-lib';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 const logger = [
   LoggerModule.forRoot({
@@ -51,6 +53,33 @@ const logger = [
       }),
     }),
     ...logger,
+  ],
+  providers: [
+    CustomLoggerService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: RpcErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: QueryErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ErrorFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipeHybrid,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
+    },
   ],
   exports: [EmailModule],
 })

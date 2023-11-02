@@ -2,22 +2,11 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { RedisModule } from '@liaoliaots/nestjs-redis/dist';
-import { TransactionsModule, TransactionsService } from './transactions';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { BullModule } from '@nestjs/bull';
-import { Provider } from './entities/provider.entity';
-import { UserProvider } from './entities/user-provider.entity';
-import { UserProfile } from './entities/user-profile.entity';
-import { TransactionsServiceName } from '@edotnet/shared-lib';
-import { UserFollower } from './entities/user-followers';
+import { EventsModule, TransactionsModule } from '@edotnet/shared-lib';
 @Module({
   imports: [
-    BullModule.registerQueue({
-      name: TransactionsServiceName,
-    }),
-    TypeOrmModule.forFeature([User, Provider, UserProvider, UserProfile, UserFollower]),
     TransactionsModule,
+    EventsModule,
     RedisModule.forRoot({
       config: {
         host: process.env.REDIS_HOST,
@@ -29,7 +18,7 @@ import { UserFollower } from './entities/user-followers';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, TransactionsService],
+  providers: [UserService],
   exports: [UserService],
 })
 export class UserModule {}

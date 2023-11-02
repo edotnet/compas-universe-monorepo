@@ -1,9 +1,4 @@
-import {
-  Dispatch,
-  SetStateAction,
-  memo,
-  useCallback,
-} from "react";
+import { Dispatch, SetStateAction, memo, useCallback, useState } from "react";
 import styles from "./index.module.scss";
 import { authApi } from "@/utils/axios";
 import { IUser } from "@/utils/types/user.types";
@@ -13,32 +8,34 @@ import { ErrorEnum } from "@/utils/types/enums/error.enum";
 import { ToastError } from "@/utils/toastify";
 
 interface IProps {
-  connection: IUser;
   status: string;
+  connection: IUser;
+  setStatus: Dispatch<SetStateAction<string>>;
   setConnections: Dispatch<SetStateAction<IUser[]>>;
 }
 
 const ProfileConnectionsItem = ({
-  setConnections,
-  connection,
   status,
+  setStatus,
+  connection,
+  setConnections,
 }: IProps) => {
   const handleConnect = useCallback(
-    async (followingId: number) => {
+    async (friendId: number) => {
       let requestUrl: string = "/users";
       try {
         if (status === "Connect") {
-          requestUrl += "/follow";
+          requestUrl += "/request-friend";
         }
 
         if (status === "Disconnect") {
-          requestUrl += "/unfollow";
+          requestUrl += "/unfriend";
         }
 
-        await authApi.post(requestUrl, { followingId: 0 });
+        await authApi.post(requestUrl, { friendId });
 
         setConnections((prev: IUser[]) =>
-          prev.filter((user) => user.id !== followingId)
+          prev.filter((user) => user.id !== friendId)
         );
       } catch (error: any) {
         ToastError(errorHelper(ERROR_MESSAGES.DEFAULT as ErrorEnum));
@@ -52,7 +49,7 @@ const ProfileConnectionsItem = ({
       <picture>
         <img
           src={connection.profilePicture}
-          alt="follow"
+          alt="friend"
           width={66}
           height={66}
         />

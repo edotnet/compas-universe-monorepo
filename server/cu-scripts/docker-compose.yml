@@ -11,7 +11,7 @@ services:
       context: ../cu-api-gateway
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     depends_on:
@@ -31,7 +31,7 @@ services:
       context: ../cu-users-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -51,7 +51,7 @@ services:
       context: ../cu-scheduler
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -71,7 +71,7 @@ services:
       context: ../cu-migrations
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -91,7 +91,7 @@ services:
       context: ../cu-transactions-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:

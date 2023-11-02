@@ -1,8 +1,4 @@
-import {
-  User,
-  UserRoles,
-  UserStatus,
-} from 'src/modules/schedules/entities/user.entity';
+import { User, UserRoles, UserStatus } from '@edotnet/shared-lib';
 import { DeepPartial } from 'typeorm';
 
 export const users: Array<DeepPartial<User>> = [

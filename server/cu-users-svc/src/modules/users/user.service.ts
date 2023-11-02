@@ -1,12 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository, Not } from 'typeorm';
+import { Repository, Not, In } from 'typeorm';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import * as bcrypt from 'bcrypt';
 import {
   EmptyResponse,
-  FollowRequest,
   ForgotPasswordRequest,
   GetUserByEmailRequest,
   OauthUserRequest,
@@ -18,22 +17,26 @@ import {
   VerifyEmailRequest,
   VerifyEmailResponse,
   generateRandomCode,
+  TransactionsService,
+  UserProvider,
+  UserProfile,
+  User,
+  UserStatus,
+  UserRoles,
   mapUserToUserExtendedResponse,
-  mapUserToUserResponse,
+  UserFriend,
+  FriendRequest,
+  FriendStatus,
+  FriendRequestRespondRequest,
 } from '@edotnet/shared-lib';
-import { TransactionsService } from './transactions';
-import { User, UserRoles, UserStatus } from './entities/user.entity';
-import { UserProvider } from './entities/user-provider.entity';
-import { UserProfile } from './entities/user-profile.entity';
-import { UserFollower } from './entities/user-followers';
 import { mapUsersToGetUsersResponse } from './user.serializer';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-    @InjectRepository(UserFollower)
-    private userFollowersRepository: Repository<UserFollower>,
+    @InjectRepository(UserFriend)
+    private userFriendsRepository: Repository<UserFriend>,
     @InjectRepository(Provider)
     private providerRepository: Repository<Provider>,
     private readonly transactionsService: TransactionsService,
@@ -216,74 +219,172 @@ export class UserService {
     return mapUserToUserExtendedResponse(user);
   }
 
-  async getFollowings(userId: number): Promise<any> {
-    const followings = await this.userRepository.find({
+  async getFriends(userId: number): Promise<any> {
+    console.log('🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ userId:', userId);
+    const friends = await this.userFriendsRepository.find({
       where: {
-        followers: { follower: { id: userId, status: UserStatus.ACTIVE } },
+        user: { id: userId },
       },
+      relations: ['friend'],
+    });
+    console.log('🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ friends:', friends);
+
+    const users = await this.userRepository.find({
+      where: { id: In(friends.map((f) => f.friend.id)) },
       relations: ['profile'],
     });
+    console.log('🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ users:', users);
 
-    return mapUsersToGetUsersResponse(followings);
+    return mapUsersToGetUsersResponse(users);
   }
 
-  async getNonFollowings(userId: number): Promise<UserResponse[]> {
-    const nonFollowings = await this.userRepository
+  async getNonFriends(userId: number): Promise<UserResponse[]> {
+    const nonFriends = await this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.profile', 'profile')
-      .leftJoinAndSelect('user.followers', 'followers')
-      .where('user.id != :userId', { userId })
-      .andWhere('user.status = :status', { status: UserStatus.ACTIVE })
+      .leftJoin('user.friends', 'friends')
+      .where('user.id != :userId AND user.status = :userStatus', {
+        userId,
+        userStatus: UserStatus.ACTIVE,
+      })
       .andWhere((qb) => {
         const subQuery = qb
           .subQuery()
-          .select('follower.followingId')
-          .from(UserFollower, 'follower')
-          .where('follower.followerId = :userId', { userId })
+          .select('friend.friendId')
+          .from(UserFriend, 'friend')
+          .where('friend.userId = :userId', { userId })
+          // .andWhere('friends.status != :status', {
+          //   status: FriendStatus.ACCEPTED,
+          // })
           .getQuery();
         return `user.id NOT IN (${subQuery})`;
       })
       .getMany();
 
-    return mapUsersToGetUsersResponse(nonFollowings);
+    return mapUsersToGetUsersResponse(nonFriends);
   }
 
-  async follow(userId: number, dto: FollowRequest): Promise<EmptyResponse> {
-    const user = await this.checkUserExistsById(dto.followingId);
+  // NOT IN USE YET, NEED NOTIFICATIONS
+  async respondFriendRequest(
+    userId: number,
+    dto: FriendRequestRespondRequest,
+  ): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.friendId);
 
-    if (dto.followingId === userId) {
+    const friendRequst = await this.userFriendsRepository.findOne({
+      where: {
+        friend: { id: userId },
+        user: { id: user.id },
+        status: FriendStatus.PENDING,
+      },
+    });
+
+    if (!friendRequst) {
       throw new RpcException({
         httpStatus: HttpStatus.FORBIDDEN,
-        message: 'CONNOT_FOLLOW_YOURSELF',
+        message: 'USER_FRIEND_DOES_NOT_EXIST',
       });
     }
 
-    const newFollow = new UserFollower();
+    friendRequst.status = dto.status;
 
-    newFollow.follower = new User();
-    newFollow.follower.id = userId;
-    newFollow.following = user;
+    const newFriend = new UserFriend();
 
-    await this.userFollowersRepository.save(newFollow);
+    newFriend.user = new User();
+    newFriend.user.id = userId;
+    newFriend.friend = user;
+    newFriend.status = FriendStatus.ACCEPTED;
+
+    await this.userFriendsRepository.save([friendRequst, newFriend]);
 
     return {};
   }
 
-  async unfollow(userId: number, dto: FollowRequest): Promise<EmptyResponse> {
-    const user = await this.checkUserExistsById(dto.followingId);
+  async requestFriend(
+    userId: number,
+    dto: FriendRequest,
+  ): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.friendId);
 
-    const follow = await this.userFollowersRepository.findOne({
-      where: { follower: { id: userId }, following: { id: user.id } },
-    });
-
-    if (!follow) {
+    if (dto.friendId === userId) {
       throw new RpcException({
         httpStatus: HttpStatus.FORBIDDEN,
-        message: 'USER_FOLLOW_DOES_NOT_EXIST',
+        message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
       });
     }
 
-    await this.userFollowersRepository.remove(follow);
+    const friends = await Promise.all([
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: userId },
+          friend: { id: user.id },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: user.id },
+          friend: { id: userId },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+    ]);
+
+    if (!friends.length) {
+      throw new RpcException({
+        httpStatus: HttpStatus.FORBIDDEN,
+        message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
+      });
+    }
+
+    const userRequest = new UserFriend();
+
+    userRequest.user = new User();
+    userRequest.user.id = userId;
+    userRequest.friend = user;
+    userRequest.status = FriendStatus.ACCEPTED;
+
+    const frientRequest = new UserFriend();
+
+    frientRequest.friend = new User();
+    frientRequest.friend.id = userId;
+    frientRequest.user = user;
+    frientRequest.status = FriendStatus.ACCEPTED;
+
+    await this.userFriendsRepository.save([userRequest, frientRequest]);
+
+    return {};
+  }
+
+  async unfriend(userId: number, dto: FriendRequest): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.friendId);
+
+    const friends = await Promise.all([
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: userId },
+          friend: { id: user.id },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: user.id },
+          friend: { id: userId },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+    ]);
+    console.log("🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ friends:", friends);
+
+    if (!friends.length) {
+      throw new RpcException({
+        httpStatus: HttpStatus.FORBIDDEN,
+        message: 'USER_FRIEND_DOES_NOT_EXIST',
+      });
+    }
+
+    await this.userFriendsRepository.remove(friends);
 
     return {};
   }

@@ -3,9 +3,18 @@ import { UserModule } from './modules/users/user.module';
 import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import { v4 as uuidv4 } from 'uuid';
 import { LoggerModule } from 'nestjs-pino';
-import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
-import { ServicesModule } from '@edotnet/shared-lib';
+import {
+  CustomLoggerService,
+  ErrorFilter,
+  HttpErrorFilter,
+  LoggerInterceptor,
+  QueryErrorFilter,
+  RpcErrorFilter,
+  ServicesModule,
+  ValidationPipeHybrid,
+} from '@edotnet/shared-lib';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 
 const logger = [
   LoggerModule.forRoot({
@@ -49,46 +58,38 @@ const logger = [
         },
       }),
     }),
-    // ServicesModule,
-    TypeOrmModule.forRootAsync({
-      useFactory: (logger): TypeOrmModuleOptions => ({
-        logging:
-          false && logger && ((sql: string): void => logger.log(sql, 'SQL')),
-        type: 'postgres',
-        replication: {
-          master: {
-            host: process.env.POSTGRES_HOST,
-            port: +process.env.POSTGRES_PORT,
-            username: process.env.POSTGRES_USER,
-            password: process.env.POSTGRES_PASSWORD,
-            database: process.env.POSTGRES_DATABASE,
-          },
-          slaves: [
-            {
-              host: process.env.POSTGRES_HOST_REPLICA
-                ? process.env.POSTGRES_HOST_REPLICA
-                : process.env.POSTGRES_HOST,
-              port: +process.env.POSTGRES_PORT,
-              username: process.env.POSTGRES_USER,
-              password: process.env.POSTGRES_PASSWORD,
-              database: process.env.POSTGRES_DATABASE,
-            },
-          ],
-        },
-        entities: [
-          'dist/**/*.model{.ts,.js}',
-          'src/modules/entities/**/*.entity{.ts,.js}',
-        ],
-        synchronize: false,
-        retryAttempts: 100,
-        retryDelay: 10000,
-        autoLoadEntities: true,
-      }),
-    }),
+    ServicesModule,
     AsyncHooksModule,
     UserModule,
     ...logger,
   ],
   exports: [UserModule],
+  providers: [
+    CustomLoggerService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: RpcErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: QueryErrorFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: ErrorFilter,
+    },
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipeHybrid,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
+    },
+  ],
 })
 export class AppModule {}

@@ -14,11 +14,11 @@ const ProfileConnections = () => {
     let requestUrl: string = "/users";
     try {
       if (status === "Connect") {
-        requestUrl += "/non-followings";
+        requestUrl += "/non-friends";
       }
 
       if (status === "Disconnect") {
-        requestUrl += "/followings";
+        requestUrl += "/friends";
       }
 
       const { data } = await authApi.get(requestUrl);
@@ -61,6 +61,7 @@ const ProfileConnections = () => {
             key={connection.id}
             connection={connection}
             status={status}
+            setStatus={setStatus}
           />
         ))}
       </div>

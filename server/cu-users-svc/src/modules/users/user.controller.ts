@@ -4,24 +4,26 @@ import { UserService } from './user.service';
 import {
   EmptyRequest,
   EmptyResponse,
-  FollowRequest,
   ForgotPasswordRequest,
+  FriendRequest,
+  FriendRequestRespondRequest,
   GetUserByEmailRequest,
   InjectAuth,
   OAUTH_UPSERT_USER,
   OauthUserRequest,
   RegisterRequest,
   ResetPasswordRequest,
-  USER_FOLLOW,
-  USER_FOLLOWINGS_GET,
   USER_FORGOT_PASSWORD,
+  USER_FRIENDS_GET,
   USER_GET_BY_EMAIL,
   USER_LOGIN,
   USER_ME_GET,
-  USER_NON_FOLLOWINGS_GET,
+  USER_NON_FRIENDS_GET,
   USER_REGISTER,
+  USER_REQUEST_FRIEND,
   USER_RESET_PASSWORD,
-  USER_UNFOLLOW,
+  USER_RESPOND_TO_FRIEND_REQUEST,
+  USER_UNFRIEND,
   USER_VALIDATE,
   USER_VERIFY_EMAIL,
   User,
@@ -79,25 +81,30 @@ export class UserController {
     return this.service.getMe(dto.userId);
   }
 
-  @MessagePattern(USER_FOLLOW)
-  async follow(dto: InjectAuth<FollowRequest>): Promise<EmptyResponse> {
-    return this.service.follow(dto.userId, dto);
+  @MessagePattern(USER_REQUEST_FRIEND)
+  async requestFriend(dto: InjectAuth<FriendRequest>): Promise<EmptyResponse> {
+    return this.service.requestFriend(dto.userId, dto);
   }
 
-  @MessagePattern(USER_UNFOLLOW)
-  async unfollow(dto: InjectAuth<FollowRequest>): Promise<EmptyResponse> {
-    return this.service.unfollow(dto.userId, dto);
+  @MessagePattern(USER_RESPOND_TO_FRIEND_REQUEST)
+  async respondFriendRequest(
+    dto: InjectAuth<FriendRequestRespondRequest>,
+  ): Promise<EmptyResponse> {
+    return this.service.respondFriendRequest(dto.userId, dto);
   }
 
-  @MessagePattern(USER_NON_FOLLOWINGS_GET)
-  async getNonFollowings(
-    dto: InjectAuth<EmptyRequest>,
-  ): Promise<UserResponse[]> {
-    return this.service.getNonFollowings(dto.userId);
+  @MessagePattern(USER_UNFRIEND)
+  async unfollow(dto: InjectAuth<FriendRequest>): Promise<EmptyResponse> {
+    return this.service.unfriend(dto.userId, dto);
   }
 
-  @MessagePattern(USER_FOLLOWINGS_GET)
-  async getFollowings(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
-    return this.service.getFollowings(dto.userId);
+  @MessagePattern(USER_NON_FRIENDS_GET)
+  async getNonFriends(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
+    return this.service.getNonFriends(dto.userId);
+  }
+
+  @MessagePattern(USER_FRIENDS_GET)
+  async getFriends(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
+    return this.service.getFriends(dto.userId);
   }
 }

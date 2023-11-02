@@ -1,12 +1,14 @@
 import {
   ComposeAuthorizedDto,
   EmptyResponse,
-  FollowRequest,
-  USER_FOLLOW,
-  USER_FOLLOWINGS_GET,
+  FriendRequest,
+  FriendRequestRespondRequest,
+  USER_FRIENDS_GET,
   USER_ME_GET,
-  USER_NON_FOLLOWINGS_GET,
-  USER_UNFOLLOW,
+  USER_NON_FRIENDS_GET,
+  USER_REQUEST_FRIEND,
+  USER_RESPOND_TO_FRIEND_REQUEST,
+  USER_UNFRIEND,
   User,
   UserResponse,
   UsersServiceName,
@@ -32,41 +34,52 @@ export class UsersController {
       .toPromise();
   }
 
-  @Post('/follow')
+  @Post('/request-friend')
   @ApiOkResponse({ type: EmptyResponse })
-  async follow(
+  async requestFriend(
     @UserGuard() user: User,
-    @Body() dto: FollowRequest,
+    @Body() dto: FriendRequest,
   ): Promise<EmptyResponse> {
     return this.client
-      .send(USER_FOLLOW, ComposeAuthorizedDto(user, dto))
+      .send(USER_REQUEST_FRIEND, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
-  @Post('/unfollow')
+  @Post('/respond-friend-request')
   @ApiOkResponse({ type: EmptyResponse })
-  async unfollow(
+  async respondFriendRequest(
     @UserGuard() user: User,
-    @Body() dto: FollowRequest,
+    @Body() dto: FriendRequestRespondRequest,
   ): Promise<EmptyResponse> {
     return this.client
-      .send(USER_UNFOLLOW, ComposeAuthorizedDto(user, dto))
+      .send(USER_RESPOND_TO_FRIEND_REQUEST, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
-  @Get('/followings')
-  @ApiOkResponse({ type: UserResponse, isArray: true })
-  async getFollowings(@UserGuard() user: User): Promise<UserResponse[]> {
+  @Post('/unfriend')
+  @ApiOkResponse({ type: EmptyResponse })
+  async unfriend(
+    @UserGuard() user: User,
+    @Body() dto: FriendRequest,
+  ): Promise<EmptyResponse> {
     return this.client
-      .send(USER_FOLLOWINGS_GET, ComposeAuthorizedDto(user, {}))
+      .send(USER_UNFRIEND, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
-  @Get('/non-followings')
+  @Get('/friends')
   @ApiOkResponse({ type: UserResponse, isArray: true })
-  async getNonFollowings(@UserGuard() user: User): Promise<UserResponse[]> {
+  async getFriends(@UserGuard() user: User): Promise<UserResponse[]> {
     return this.client
-      .send(USER_NON_FOLLOWINGS_GET, ComposeAuthorizedDto(user, {}))
+      .send(USER_FRIENDS_GET, ComposeAuthorizedDto(user, {}))
+      .toPromise();
+  }
+
+  @Get('/non-friends')
+  @ApiOkResponse({ type: UserResponse, isArray: true })
+  async getNonFriends(@UserGuard() user: User): Promise<UserResponse[]> {
+    return this.client
+      .send(USER_NON_FRIENDS_GET, ComposeAuthorizedDto(user, {}))
       .toPromise();
   }
 }
