@@ -158,7 +158,7 @@ export class UserService {
 
     if (currentAttempts && parseInt(currentAttempts) >= 2) {
       throw new RpcException({
-        httpStatus: HttpStatus.TOO_MANY_REQUESTS,
+        statusCode: HttpStatus.TOO_MANY_REQUESTS,
         message: 'LIMIT_REACHED_TRY_LATER',
       });
     }
@@ -191,7 +191,7 @@ export class UserService {
 
     if (code !== dto.code) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'INVALID_CODE',
       });
     }
@@ -220,20 +220,17 @@ export class UserService {
   }
 
   async getFriends(userId: number): Promise<any> {
-    console.log('🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ userId:', userId);
     const friends = await this.userFriendsRepository.find({
       where: {
         user: { id: userId },
       },
       relations: ['friend'],
     });
-    console.log('🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ friends:', friends);
 
     const users = await this.userRepository.find({
       where: { id: In(friends.map((f) => f.friend.id)) },
       relations: ['profile'],
     });
-    console.log('🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ users:', users);
 
     return mapUsersToGetUsersResponse(users);
   }
@@ -281,7 +278,7 @@ export class UserService {
 
     if (!friendRequst) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'USER_FRIEND_DOES_NOT_EXIST',
       });
     }
@@ -308,7 +305,7 @@ export class UserService {
 
     if (dto.friendId === userId) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
       });
     }
@@ -332,7 +329,7 @@ export class UserService {
 
     if (!friends.length) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
       });
     }
@@ -375,11 +372,10 @@ export class UserService {
         },
       }),
     ]);
-    console.log("🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ friends:", friends);
 
     if (!friends.length) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'USER_FRIEND_DOES_NOT_EXIST',
       });
     }
@@ -396,7 +392,7 @@ export class UserService {
 
     if (user) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'USER_ALREADY_EXISTS',
       });
     }
@@ -410,7 +406,7 @@ export class UserService {
 
     if (!user) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'USER_DOES_NOT_EXIST',
       });
     }
