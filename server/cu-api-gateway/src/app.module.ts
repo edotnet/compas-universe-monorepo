@@ -12,6 +12,7 @@ import * as util from 'util';
 import { controllers } from './api/controllers';
 import { AuthModule } from './api/auth/auth.module';
 import { ServicesModule } from '@edotnet/shared-lib';
+import { ChatModule } from './api/chat/chat.module';
 
 export function sanitizeRequest(o) {
   const obj = { ...o };
@@ -126,6 +127,7 @@ export const getUserIdFromAuthHeader = (headers) => {
     }),
     AuthModule,
     UsersModule,
+    ChatModule,
     AsyncHooksModule,
     ServicesModule,
     RedisModule.forRoot({

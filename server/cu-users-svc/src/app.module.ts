@@ -15,6 +15,7 @@ import {
   ValidationPipeHybrid,
 } from '@edotnet/shared-lib';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { ChatModule } from './modules/chat/chat.module';
 
 const logger = [
   LoggerModule.forRoot({
@@ -61,6 +62,7 @@ const logger = [
     ServicesModule,
     AsyncHooksModule,
     UserModule,
+    ChatModule,
     ...logger,
   ],
   exports: [UserModule],

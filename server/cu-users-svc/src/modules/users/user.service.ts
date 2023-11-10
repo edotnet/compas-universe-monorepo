@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository, Not, In } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import * as bcrypt from 'bcrypt';
 import {
@@ -29,7 +29,9 @@ import {
   FriendStatus,
   FriendRequestRespondRequest,
 } from '@edotnet/shared-lib';
-import { mapUsersToGetUsersResponse } from './user.serializer';
+import {
+  mapUsersToGetUsersResponse,
+} from './user.serializer';
 
 @Injectable()
 export class UserService {
@@ -376,7 +378,7 @@ export class UserService {
     if (!friends.length) {
       throw new RpcException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: 'USER_FRIEND_DOES_NOT_EXIST',
+        message: 'USER_IS_NOT_FRIEND',
       });
     }
 

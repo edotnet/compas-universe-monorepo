@@ -13,6 +13,7 @@ import {
   OauthUserRequest,
   RegisterRequest,
   ResetPasswordRequest,
+  USER_CHATS_GET,
   USER_FORGOT_PASSWORD,
   USER_FRIENDS_GET,
   USER_GET_BY_EMAIL,

@@ -1,4 +1,5 @@
 import {
+  ChatResponse,
   ComposeAuthorizedDto,
   EmptyResponse,
   FriendRequest,
@@ -8,12 +9,21 @@ import {
   USER_NON_FRIENDS_GET,
   USER_REQUEST_FRIEND,
   USER_RESPOND_TO_FRIEND_REQUEST,
+  USER_SEND_CHAT_MESSAGE,
   USER_UNFRIEND,
   User,
   UserResponse,
   UsersServiceName,
 } from '@edotnet/shared-lib';
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

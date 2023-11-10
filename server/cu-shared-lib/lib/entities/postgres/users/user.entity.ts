@@ -13,6 +13,7 @@ import { UserProfile } from "./user-profile.entity";
 import * as bcrypt from "bcrypt";
 import { BasePostgresModel } from "../base-postgres.entity";
 import { UserFriend } from "./user-friends.entity";
+import { UserChat } from "./user-chats.entity";
 
 export enum UserStatus {
   ACTIVE = "ACTIVE",
@@ -60,8 +61,15 @@ export class User extends BasePostgresModel {
   })
   profile: UserProfile;
 
-  @OneToMany(() => UserFriend, (destination) => destination.user)
+  @OneToMany(() => UserFriend, (destination) => destination.user, {
+    cascade: true,
+  })
   friends: UserFriend[];
+
+  @OneToMany(() => UserChat, (destination) => destination.user, {
+    cascade: true,
+  })
+  chats: UserChat[];
 
   @BeforeInsert()
   @BeforeUpdate()

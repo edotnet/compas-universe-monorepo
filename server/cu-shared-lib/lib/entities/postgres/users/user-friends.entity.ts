@@ -10,7 +10,7 @@ export enum FriendStatus {
 
 @Entity("user-friends")
 export class UserFriend extends BasePostgresModel {
-  @ManyToOne(() => User, (user) => user.friends)
+  @ManyToOne(() => User, (destination) => destination.friends)
   @JoinColumn()
   user: User;
 
@@ -21,7 +21,7 @@ export class UserFriend extends BasePostgresModel {
   @Column({
     type: "enum",
     enum: FriendStatus,
-    default: FriendStatus.PENDING
+    default: FriendStatus.PENDING,
   })
   status: FriendStatus;
 }
