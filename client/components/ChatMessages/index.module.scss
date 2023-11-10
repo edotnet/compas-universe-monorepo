@@ -1,0 +1,48 @@
+.chatMessages {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 45px;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+
+    > div {
+        display: flex;
+        align-items: flex-end;
+        gap: 12px;
+        
+        img {
+            border-radius: 50%;
+        }
+    }
+    
+    .myMessage {
+        align-self: flex-end;
+        .text {
+
+            border-radius: 20px 20px 0 20px;
+            color: #FFFFFF;
+            background-color: #7414EE;
+            padding: 20px;
+        }
+    }
+
+    .friendMessage  {
+        .text {
+            text-wrap: wrap;
+            border-radius: 20px 20px 20px 0;
+            color: #000000;
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+    }
+    
+}

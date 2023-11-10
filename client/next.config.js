@@ -11,24 +11,9 @@ module.exports = {
   },
 };
 
+const { i18n } = require('./next-i18next.config');
+
 module.exports = {
-  i18n: {
-    locales: ["en-US", "fr", "nl-NL"],
-    defaultLocale: "en-US",
-    domains: [
-      {
-        domain: "example.com",
-        defaultLocale: "en-US",
-      },
-      {
-        domain: "example.nl",
-        defaultLocale: "nl-NL",
-      },
-      {
-        domain: "example.fr",
-        defaultLocale: "fr",
-        http: true,
-      },
-    ],
-  },
+  reactStrictMode: true,
+  i18n
 };

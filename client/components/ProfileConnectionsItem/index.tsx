@@ -48,7 +48,7 @@ const ProfileConnectionsItem = ({
     <div className={styles.profileConnectionsItem}>
       <picture>
         <img
-          src={connection.profilePicture}
+          src={connection.profilePicture || "/images/no-profile-picture.jpeg"}
           alt="friend"
           width={66}
           height={66}

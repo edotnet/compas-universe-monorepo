@@ -1,0 +1,5 @@
+enum SOCKET_EVENT {
+  NEW_MESSAGE = "NEW_MESSAGE",
+}
+
+export default SOCKET_EVENT;

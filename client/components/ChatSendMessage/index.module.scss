@@ -1,0 +1,75 @@
+.chatSendMessage {
+    background-color: #FFFFFF;
+    border-radius: 6px;
+    padding: 18px 12px 12px 20px;
+    z-index: 1;
+    position: relative;
+
+    .messageArea {
+        border-bottom: 1px solid #E3E8E7;
+        padding-bottom: 10px;
+
+        form {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            textarea {
+                width: 100%;
+                border: none;
+                resize: none;
+                overflow-y: hidden;
+            }
+    
+            textarea:focus {
+                outline: none;
+            }
+    
+            button {
+                background-color: transparent;
+                border: none;
+                position: absolute;
+                bottom: 12px;
+                right: 14px;
+                cursor: pointer;
+            }
+        }
+
+    }
+
+    .messageIcons {
+        padding-top: 12px;
+        display: flex;
+        align-items: center;
+
+        div {
+            display: flex;
+            align-items: center;
+
+            img {
+                cursor: pointer;
+            }
+        }
+        
+        div:nth-of-type(1) {
+            padding-right:  14px;
+
+            flex-basis: 17.5%;
+            gap: 12px;
+            border-right: 1px solid #E3E8E7;
+        }
+
+        div:nth-of-type(2) {
+            padding: 0 14px;
+            flex-basis: 17.5%;
+            gap: 12px;
+            border-right: 1px solid #E3E8E7;
+        }
+
+        div:nth-of-type(3) {
+            padding: 0 14px;
+            flex-basis: 65%;
+            justify-content: space-between;
+        }
+    }
+}

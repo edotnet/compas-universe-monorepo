@@ -1,20 +1,20 @@
-import { useTranslation } from "next-i18next";
-import styles from "./index.module.scss";
+import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 
-const LanguageSwitcher = () => {
-  const { t, i18n } = useTranslation();
+function LanguageSwitcher() {
+  const { t } = useTranslation();
 
   const changeLanguage = (locale: string) => {
-     i18n.changeLanguage(locale)
+    i18next.changeLanguage(locale);
   };
 
   return (
-    <div className={styles.menu}>
-      <button onClick={() => changeLanguage("en")}>English</button>
-      <button onClick={() => changeLanguage("fr")}>French</button>
-      <button onClick={() => changeLanguage("es")}>Spanish</button>
+    <div>
+      <button onClick={() => changeLanguage('en')}>English</button>
+      <button onClick={() => changeLanguage('fr')}>French</button>
+      <button onClick={() => changeLanguage('es')}>Spanish</button>
     </div>
   );
-};
+}
 
 export default LanguageSwitcher;

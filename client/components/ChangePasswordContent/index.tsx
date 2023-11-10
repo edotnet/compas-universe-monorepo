@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import LogoContent from "../LogoContent";
 import { api } from "@/utils/axios";
 import styles from "./index.module.scss";
