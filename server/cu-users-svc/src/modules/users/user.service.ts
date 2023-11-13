@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository, In } from 'typeorm';
+import { Repository, In, Brackets } from 'typeorm';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import * as bcrypt from 'bcrypt';
 import {
@@ -28,10 +28,12 @@ import {
   FriendRequest,
   FriendStatus,
   FriendRequestRespondRequest,
+  ChatMessages,
+  Chat,
 } from '@edotnet/shared-lib';
-import {
-  mapUsersToGetUsersResponse,
-} from './user.serializer';
+import { mapUsersToGetUsersResponse } from './user.serializer';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class UserService {
@@ -41,6 +43,10 @@ export class UserService {
     private userFriendsRepository: Repository<UserFriend>,
     @InjectRepository(Provider)
     private providerRepository: Repository<Provider>,
+    @InjectRepository(Chat)
+    private chatRepository: Repository<Chat>,
+    @InjectModel(ChatMessages.name)
+    private chatMessagesRepository: Model<ChatMessages>,
     private readonly transactionsService: TransactionsService,
     private readonly redisService: RedisService,
   ) {}
@@ -375,6 +381,8 @@ export class UserService {
       }),
     ]);
 
+    await this.removeConfersations(userId, friends);
+
     if (!friends.length) {
       throw new RpcException({
         statusCode: HttpStatus.FORBIDDEN,
@@ -414,5 +422,39 @@ export class UserService {
     }
 
     return user;
+  }
+
+  private async removeConfersations(userId: number, friends: UserFriend[]) {
+    friends.map(async (f) => {
+      const users = [f.friend.id, userId];
+      const queryBuilder = this.chatRepository.createQueryBuilder('chat');
+
+      users.forEach((id, index) => {
+        const alias = `users${index + 1}`;
+        queryBuilder
+          .innerJoin('chat.users', alias)
+          .andWhere(`${alias}.user.id = :userId${index + 1}`, {
+            [`userId${index + 1}`]: id,
+          });
+      });
+
+      const chat = await queryBuilder
+        .leftJoinAndSelect('chat.users', 'fullUsers')
+        .leftJoinAndSelect('fullUsers.user', 'user')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .getOne();
+
+      chat.archived = true;
+      await this.chatRepository.save(chat);
+
+      if (chat) {
+        await this.chatMessagesRepository.deleteMany(
+          {
+            chatId: chat.id,
+          },
+          { $eq: ['$user.id', userId] },
+        );
+      }
+    });
   }
 }

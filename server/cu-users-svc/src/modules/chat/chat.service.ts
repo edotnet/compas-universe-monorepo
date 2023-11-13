@@ -1,10 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository, Not, Brackets, DeepPartial, In } from 'typeorm';
+import { Repository, Brackets, DeepPartial, In } from 'typeorm';
 import {
   EmptyResponse,
-  User,
   UserFriend,
   ChatMessages,
   Chat,
@@ -21,6 +20,7 @@ import {
   ChatResponse,
   mapChatToChatResponse,
   MessageEvent,
+  NEW_MESSAGE_EVENT,
 } from '@edotnet/shared-lib';
 import { mapChatsToGetChatsResponse } from './chat.serializer';
 import { Model } from 'mongoose';
@@ -73,38 +73,27 @@ export class ChatService {
     userId: number,
     dto: GetChatsRequest,
   ): Promise<GetChatsResponse[]> {
-    const querybuilder = this.userFriendsRepository
-      .createQueryBuilder('friends')
-      .leftJoinAndSelect('friends.friend', 'friend')
-      .leftJoinAndSelect('friend.profile', 'profile')
-      .where('friends."userId" = :userId', { userId });
+    const friends = await this.getUserFriends(userId, dto.searchTerm);
 
-    if (dto.searchTerm) {
-      querybuilder.andWhere(
-        new Brackets((qb) => {
-          qb.where('profile.firstName ILIKE :searchTerm', {
-            searchTerm: `%${dto.searchTerm}%`,
-          });
-          qb.orWhere('profile.lastName ILIKE :searchTerm', {
-            searchTerm: `%${dto.searchTerm}%`,
-          });
-          qb.orWhere('profile.userName ILIKE :searchTerm', {
-            searchTerm: `%${dto.searchTerm}%`,
-          });
-        }),
-      );
-    }
-
-    const friends = await querybuilder.getMany();
-
-    const users: GetChatsResponse[] = await Promise.all(
+    const chats: GetChatsResponse[] = await Promise.all(
       friends.map(async (f) => {
-        const chat = await this.chatRepository.findOne({
-          where: {
-            users: { user: { id: f.friend.id } },
-          },
-          relations: ['users.user.profile'],
+        const users = [f.friend.id, userId];
+        const queryBuilder = this.chatRepository.createQueryBuilder('chat');
+
+        users.forEach((id, index) => {
+          const alias = `users${index + 1}`;
+          queryBuilder
+            .innerJoin('chat.users', alias)
+            .andWhere(`${alias}.user.id = :userId${index + 1}`, {
+              [`userId${index + 1}`]: id,
+            });
         });
+
+        const chat = await queryBuilder
+          .leftJoinAndSelect('chat.users', 'fullUsers')
+          .leftJoinAndSelect('fullUsers.user', 'user')
+          .leftJoinAndSelect('user.profile', 'profile')
+          .getOne();
 
         let message: ChatMessages;
 
@@ -126,7 +115,7 @@ export class ChatService {
       }),
     );
 
-    return users;
+    return chats;
   }
 
   async sendMessage(
@@ -164,11 +153,12 @@ export class ChatService {
     const message = new this.chatMessagesRepository(newMessage);
     await message.save();
 
-    this.eventManager.raise('NEW_MESSAGE_EVENT', {
+    this.eventManager.raise(NEW_MESSAGE_EVENT, {
       userId,
       user: mapUserToUserResponse(chatUser.user),
       message: mapChatMessageToChatMessageResponse(message),
       userIds: chat.users.map((u) => u.user.id),
+      chatId: chat.id,
     } as MessageEvent);
 
     return {};
@@ -221,5 +211,91 @@ export class ChatService {
     }
 
     return mapChatToChatResponse(userChat.chat);
+  }
+
+  async switchActiveChat(
+    userId: number,
+    dto: GetChatMessagesRequest,
+  ): Promise<EmptyResponse> {
+    const userChat = await this.userChatsRepository.findOne({
+      where: { user: { id: userId }, inChat: true },
+    });
+
+    userChat.inChat = false;
+
+    await this.userChatsRepository.save(userChat);
+
+    const switchedChat = await this.userChatsRepository.findOne({
+      where: { user: { id: userId }, chat: { id: dto.chatId } },
+    });
+
+    switchedChat.inChat = true;
+
+    await this.userChatsRepository.save(switchedChat);
+
+    return {};
+  }
+
+  async removeConfersations(userId: number, friends: UserFriend[]) {
+    friends.map(async (f) => {
+      const users = [f.friend.id, userId];
+      const queryBuilder = this.chatRepository.createQueryBuilder('chat');
+
+      users.forEach((id, index) => {
+        const alias = `users${index + 1}`;
+        queryBuilder
+          .innerJoin('chat.users', alias)
+          .andWhere(`${alias}.user.id = :userId${index + 1}`, {
+            [`userId${index + 1}`]: id,
+          });
+      });
+
+      const chat = await queryBuilder
+        .leftJoinAndSelect('chat.users', 'fullUsers')
+        .leftJoinAndSelect('fullUsers.user', 'user')
+        .leftJoinAndSelect('user.profile', 'profile')
+        .getOne();
+
+      chat.archived = true;
+      await this.chatRepository.save(chat);
+
+      if (chat) {
+        await this.chatMessagesRepository.deleteMany(
+          {
+            chatId: chat.id,
+          },
+          { $eq: ['$user.id', userId] },
+        );
+      }
+    });
+  }
+
+  private async getUserFriends(
+    userId: number,
+    searchTerm?: string,
+  ): Promise<UserFriend[]> {
+    const querybuilder = this.userFriendsRepository
+      .createQueryBuilder('friends')
+      .leftJoinAndSelect('friends.friend', 'friend')
+      .leftJoinAndSelect('friend.profile', 'profile')
+      .where('friends."userId" = :userId', { userId });
+
+    if (searchTerm) {
+      querybuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('profile.firstName ILIKE :searchTerm', {
+            searchTerm: `%${searchTerm}%`,
+          });
+          qb.orWhere('profile.lastName ILIKE :searchTerm', {
+            searchTerm: `%${searchTerm}%`,
+          });
+          qb.orWhere('profile.userName ILIKE :searchTerm', {
+            searchTerm: `%${searchTerm}%`,
+          });
+        }),
+      );
+    }
+
+    return await querybuilder.getMany();
   }
 }

@@ -8,4 +8,6 @@ export class MessageEvent extends BaseEvent {
   message: Pick<ChatMessages, "text" | "media" | "seen">;
 
   userIds: number[];
+
+  chatId: number
 }

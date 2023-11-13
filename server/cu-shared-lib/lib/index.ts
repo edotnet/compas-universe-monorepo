@@ -5,4 +5,6 @@ export * from "./common";
 export * from "./modules";
 export * from "./entities";
 export * from "./decorator";
+export * from "./socket-events";
+export * from "./event-messages";
 export * from "./message-patterns";

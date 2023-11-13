@@ -36,7 +36,7 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
   @WebSocketServer() server: Server;
 
   async onModuleInit() {
-    this.logger.info('Websocket is initialized.');
+    this.logger.info('WebSocket is initialized.');
   }
 
   async handleConnection(client: Socket) {
@@ -50,7 +50,6 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
 
       if (userSockets.length >= this.MAX_CONNECTIONS_PER_USER) {
         client.disconnect();
-
         return;
       }
 
@@ -62,7 +61,7 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
         this.handleDisconnection(client.id, userId);
       });
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(`Failed to authenticate user. ${err.message}`);
       client.disconnect();
     }
   }
@@ -82,7 +81,7 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
         }
       }
     } catch (err) {
-      this.logger.error(err);
+      this.logger.error(`Error handling disconnection. ${err.message}`);
     }
   }
 
@@ -90,10 +89,11 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
     delete (message.data as BaseEvent).userId;
 
     if (message.receiver.userIds.length) {
-      message.receiver.userIds.map((id) => {
+      message.receiver.userIds.forEach((id) => {
         if (this.sockets.has(id)) {
           const sockets = this.sockets.get(id);
 
+          message.data['me'] = id === message.data['user'].id;
           sockets.forEach((socket: Socket) => {
             socket.emit(message.message, message.data);
           });
