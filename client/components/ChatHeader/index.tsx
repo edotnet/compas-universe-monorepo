@@ -8,7 +8,7 @@ const ChatHeader = () => {
   const { currentChat, activeChat } = useContext(ChatContext)!;
   const { me } = useContext(GlobalContext)!;
 
-  const friend = activeChat?.users.find((u) => u.id !== me?.id);
+  const friend = activeChat?.users?.find((u) => u.id !== me?.id);
 
   return (
     <div className={styles.chatHeader}>

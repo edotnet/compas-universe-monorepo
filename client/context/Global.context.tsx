@@ -1,3 +1,4 @@
+import AuthService from "@/services/AuthService";
 import { authApi } from "@/utils/axios";
 import { IExtendedUser } from "@/utils/types/user.types";
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
@@ -7,13 +8,13 @@ interface IProps {
 }
 
 interface IGlobalContextProps {
-  me: IExtendedUser | undefined;
+  me: IExtendedUser;
 }
 
-export const GlobalContext = createContext<IGlobalContextProps | undefined>(undefined);
+export const GlobalContext = createContext<IGlobalContextProps>(null!);
 
 export const GlobalProvider = ({ children }: IProps) => {
-  const [me, setMe] = useState<IExtendedUser>();
+  const [me, setMe] = useState<IExtendedUser>(null!);
 
   useEffect(() => {
     try {

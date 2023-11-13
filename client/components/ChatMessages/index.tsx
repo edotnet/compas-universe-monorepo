@@ -1,10 +1,6 @@
-import { useContext, useEffect } from "react";
-import { authApi } from "@/utils/axios";
+import { useContext } from "react";
 import { ChatContext } from "@/context/Chat.context";
 import styles from "./index.module.scss";
-import { WebsocketContext } from "@/context/Websocket.Context";
-import SOCKET_EVENT from "@/utils/types/enums/socket.enum";
-
 const ChatMessages = () => {
   const { messages } = useContext(ChatContext)!;
 

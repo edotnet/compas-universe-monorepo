@@ -1,24 +1,28 @@
-import {
-  FormEvent,
-  useCallback,
-  useContext,
-  KeyboardEvent,
-  useEffect,
-} from "react";
+import { FormEvent, useCallback, useContext, KeyboardEvent } from "react";
 import { authApi } from "@/utils/axios";
 import { ToastError } from "@/utils/toastify";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import { ChatContext } from "@/context/Chat.context";
 import styles from "./index.module.scss";
-import { WebsocketContext } from "@/context/Websocket.Context";
-import SOCKET_EVENT from "@/utils/types/enums/socket.enum";
 import { GlobalContext } from "@/context/Global.context";
-import { IMessageResponse } from "@/utils/types/chat.types";
+import { MediaMessageTypes } from "@/utils/types/chat.types";
 
 const ChatSendMessage = () => {
-  const { currentChat, setMessages, activeChat } = useContext(ChatContext)!;
+  const { currentChat, activeChat, setMessages, messages } =
+    useContext(ChatContext)!;
   const { me } = useContext(GlobalContext)!;
-  const socket = useContext(WebsocketContext);
+
+  // export interface IMessage {
+  //   text: string;
+  //   media: MediaData;
+  //   seen: boolean;
+  // }
+
+  // export interface IMessageResponse extends IMessage {
+  //   user: IUser;
+  //   me: boolean;
+  //   createdAt: Date;
+  // }
 
   const handleInputExpand = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
     const maxHeight = 80;
@@ -27,7 +31,10 @@ const ChatSendMessage = () => {
     if (!e.shiftKey && e.key === "Enter") {
       e.preventDefault();
       if ((currentChat || activeChat) && target.value.trim()) {
-        await sendMessageRequest(target, currentChat?.chat.id || activeChat.id);
+        await sendMessageRequest(
+          target,
+          currentChat?.chat?.id || activeChat.id
+        );
       }
     } else {
       target.style.height = "auto";
@@ -43,7 +50,7 @@ const ChatSendMessage = () => {
       const input = target[0] as HTMLTextAreaElement;
 
       if ((currentChat || activeChat) && input.value.trim()) {
-        await sendMessageRequest(input, currentChat?.chat.id || activeChat.id);
+        await sendMessageRequest(input, currentChat?.chat?.id || activeChat.id);
       }
     },
     [currentChat]
@@ -53,6 +60,21 @@ const ChatSendMessage = () => {
     target: HTMLTextAreaElement,
     chatId: number
   ) => {
+    // setMessages((prev) => [
+    //   {
+    //     text: target.value,
+    //     me: true,
+    //     seen: true,
+    //     media: [],
+    //     user: {
+    //       id: me.id,
+    //       userName: me.userName,
+    //       profilePicture: me.profilePicture,
+    //     },
+    //     createdAt: new Date(),
+    //   },
+    //   ...prev,
+    // ]);
     const data = {
       text: target.value,
       chatId,
@@ -65,17 +87,6 @@ const ChatSendMessage = () => {
     } catch (error: any) {
       ToastError(errorHelper(error?.response?.data.message));
     }
-
-    socket
-      .off(`${SOCKET_EVENT.NEW_MESSAGE}`)
-      .on(`${SOCKET_EVENT.NEW_MESSAGE}`, async (data: IMessageResponse) => {
-        if (data) {
-          setMessages((prev) => [
-            { ...data, me: data.user.id === me?.id },
-            ...prev,
-          ]);
-        }
-      });
   };
 
   return (

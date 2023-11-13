@@ -19,11 +19,11 @@ interface IProps {
 }
 
 interface IChatContextProps {
-  activeChat: IChat;
-  setActiveChat: Dispatch<SetStateAction<IChat>>;
   messages: IMessageResponse[];
+  activeChat: IChat;
   setMessages: Dispatch<SetStateAction<IMessageResponse[]>>;
   currentChat: IChatResponse;
+  setActiveChat: Dispatch<SetStateAction<IChat>>;
   setCurrentChat: Dispatch<SetStateAction<IChatResponse>>;
 }
 
@@ -48,7 +48,7 @@ export const ChatProvider = ({ children }: IProps) => {
         }
       } catch (error) {}
     })();
-  }, []);
+  }, [currentChat]);
 
   const value = useMemo(
     () => ({

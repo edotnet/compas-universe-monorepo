@@ -14,7 +14,7 @@ export interface MediaData {
 
 export interface IMessage {
   text: string;
-  media: MediaData;
+  media: MediaData[];
   seen: boolean;
 }
 
