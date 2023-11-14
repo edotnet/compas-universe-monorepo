@@ -19,7 +19,7 @@ import { ChatService } from '../chat/chat.service';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, ChatService],
   exports: [UserService],
 })
 export class UserModule {}

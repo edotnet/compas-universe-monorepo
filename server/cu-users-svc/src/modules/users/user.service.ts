@@ -34,6 +34,7 @@ import {
 import { mapUsersToGetUsersResponse } from './user.serializer';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class UserService {
@@ -49,6 +50,7 @@ export class UserService {
     private chatMessagesRepository: Model<ChatMessages>,
     private readonly transactionsService: TransactionsService,
     private readonly redisService: RedisService,
+    private readonly chatService: ChatService,
   ) {}
 
   async upsertUser(dto: OauthUserRequest): Promise<User> {
@@ -381,7 +383,7 @@ export class UserService {
       }),
     ]);
 
-    await this.removeConfersations(userId, friends);
+    await this.chatService.removeConfersations(userId, friends);
 
     if (!friends.length) {
       throw new RpcException({
@@ -422,39 +424,5 @@ export class UserService {
     }
 
     return user;
-  }
-
-  private async removeConfersations(userId: number, friends: UserFriend[]) {
-    friends.map(async (f) => {
-      const users = [f.friend.id, userId];
-      const queryBuilder = this.chatRepository.createQueryBuilder('chat');
-
-      users.forEach((id, index) => {
-        const alias = `users${index + 1}`;
-        queryBuilder
-          .innerJoin('chat.users', alias)
-          .andWhere(`${alias}.user.id = :userId${index + 1}`, {
-            [`userId${index + 1}`]: id,
-          });
-      });
-
-      const chat = await queryBuilder
-        .leftJoinAndSelect('chat.users', 'fullUsers')
-        .leftJoinAndSelect('fullUsers.user', 'user')
-        .leftJoinAndSelect('user.profile', 'profile')
-        .getOne();
-
-      chat.archived = true;
-      await this.chatRepository.save(chat);
-
-      if (chat) {
-        await this.chatMessagesRepository.deleteMany(
-          {
-            chatId: chat.id,
-          },
-          { $eq: ['$user.id', userId] },
-        );
-      }
-    });
   }
 }

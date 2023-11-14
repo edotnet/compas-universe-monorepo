@@ -8,13 +8,15 @@ import {
   GetChatsRequest,
   GetChatsResponse,
   SendMessageRequest,
-  USER_CHATS_GET,
-  USER_CHAT_ACTIVE_GET,
-  USER_CHAT_CREATE,
-  USER_CHAT_MESSAGES_GET,
-  USER_SEND_CHAT_MESSAGE,
+  CHATS_GET,
+  CHAT_ACTIVE_GET,
+  CHAT_CREATE,
+  CHAT_MESSAGES_GET,
+  SEND_CHAT_MESSAGE,
   User,
   UsersServiceName,
+  SwitchActiveChatRequest,
+  CHAT_SWITCH_ACTIVE,
 } from '@edotnet/shared-lib';
 import {
   Body,
@@ -23,6 +25,7 @@ import {
   Inject,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -39,13 +42,13 @@ export class ChatController {
   constructor(@Inject(UsersServiceName) private readonly client: ClientProxy) {}
 
   @Post()
-  @ApiOkResponse({ type: EmptyResponse })
+  @ApiOkResponse({ type: GetChatsResponse })
   async createChat(
     @UserGuard() user: User,
     @Body() dto: CreateChatRequest,
-  ): Promise<EmptyResponse> {
+  ): Promise<GetChatsResponse> {
     return this.client
-      .send(USER_CHAT_CREATE, ComposeAuthorizedDto(user, dto))
+      .send(CHAT_CREATE, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
@@ -56,7 +59,7 @@ export class ChatController {
     @Query() dto: GetChatsRequest,
   ): Promise<GetChatsResponse[]> {
     return this.client
-      .send(USER_CHATS_GET, ComposeAuthorizedDto(user, dto))
+      .send(CHATS_GET, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
@@ -67,7 +70,7 @@ export class ChatController {
     @Body() dto: SendMessageRequest,
   ): Promise<EmptyResponse> {
     return this.client
-      .send(USER_SEND_CHAT_MESSAGE, ComposeAuthorizedDto(user, dto))
+      .send(SEND_CHAT_MESSAGE, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
@@ -78,7 +81,7 @@ export class ChatController {
     @Param() dto: GetChatMessagesRequest,
   ): Promise<GetChatMessagesResponse[]> {
     return this.client
-      .send(USER_CHAT_MESSAGES_GET, ComposeAuthorizedDto(user, dto))
+      .send(CHAT_MESSAGES_GET, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
@@ -86,7 +89,18 @@ export class ChatController {
   @ApiOkResponse({ type: ChatResponse })
   async getActiveChat(@UserGuard() user: User): Promise<ChatResponse> {
     return this.client
-      .send(USER_CHAT_ACTIVE_GET, ComposeAuthorizedDto(user, {}))
+      .send(CHAT_ACTIVE_GET, ComposeAuthorizedDto(user, {}))
+      .toPromise();
+  }
+
+  @Put('/switch-active')
+  @ApiOkResponse({ type: EmptyResponse })
+  async switchActiveChat(
+    @UserGuard() user: User,
+    @Body() dto: SwitchActiveChatRequest,
+  ): Promise<EmptyResponse> {
+    return this.client
+      .send(CHAT_SWITCH_ACTIVE, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 }

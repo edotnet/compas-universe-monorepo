@@ -1,7 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository, Brackets, DeepPartial, In } from 'typeorm';
+import {
+  Repository,
+  Brackets,
+  DeepPartial,
+  In,
+  SelectQueryBuilder,
+} from 'typeorm';
 import {
   EmptyResponse,
   UserFriend,
@@ -43,9 +49,10 @@ export class ChatService {
   async createChat(
     userId: number,
     dto: CreateChatRequest,
-  ): Promise<EmptyResponse> {
-    const isFriend = await this.userFriendsRepository.findOne({
-      where: { friend: { id: In(dto.userIds) }, user: { id: userId } },
+  ): Promise<GetChatsResponse> {
+    const isFriend: UserFriend = await this.userFriendsRepository.findOne({
+      where: { friend: { id: dto.friendId }, user: { id: userId } },
+      relations: ['friend.profile'],
     });
 
     if (!isFriend) {
@@ -55,45 +62,47 @@ export class ChatService {
       });
     }
 
-    dto.userIds.push(userId);
+    const userIds: number[] = [dto.friendId, userId];
+
+    const existingChat = await this.getChatForUsers(userIds);
+
+    if (existingChat) {
+      await this.inactivateUserInChat(userId, existingChat.id);
+
+      return mapChatsToGetChatsResponse(isFriend.friend, existingChat);
+    }
 
     const chat: DeepPartial<Chat> = new Chat();
-    chat.users = dto.userIds.map((id: number) => ({
-      chat,
-      user: { id },
-      inChat: true,
-    }));
+    chat.users = userIds.map(
+      (id: number): DeepPartial<UserChat> => ({
+        chat,
+        user: { id },
+        inChat: id === userId,
+      }),
+    );
 
     await this.chatRepository.save(chat);
 
-    return {};
+    const createdChat: Chat = await this.getChatForUsers(userIds);
+
+    await this.inactivateUserInChat(userId, createdChat.id);
+
+    return mapChatsToGetChatsResponse(isFriend.friend, createdChat);
   }
 
   async getChats(
     userId: number,
     dto: GetChatsRequest,
   ): Promise<GetChatsResponse[]> {
-    const friends = await this.getUserFriends(userId, dto.searchTerm);
+    const friends: UserFriend[] = await this.getUserFriends(
+      userId,
+      dto.searchTerm,
+    );
 
     const chats: GetChatsResponse[] = await Promise.all(
       friends.map(async (f) => {
-        const users = [f.friend.id, userId];
-        const queryBuilder = this.chatRepository.createQueryBuilder('chat');
-
-        users.forEach((id, index) => {
-          const alias = `users${index + 1}`;
-          queryBuilder
-            .innerJoin('chat.users', alias)
-            .andWhere(`${alias}.user.id = :userId${index + 1}`, {
-              [`userId${index + 1}`]: id,
-            });
-        });
-
-        const chat = await queryBuilder
-          .leftJoinAndSelect('chat.users', 'fullUsers')
-          .leftJoinAndSelect('fullUsers.user', 'user')
-          .leftJoinAndSelect('user.profile', 'profile')
-          .getOne();
+        const userIds: number[] = [f.friend.id, userId];
+        const chat: Chat = await this.getChatForUsers(userIds);
 
         let message: ChatMessages;
 
@@ -122,7 +131,7 @@ export class ChatService {
     userId: number,
     dto: SendMessageRequest,
   ): Promise<EmptyResponse> {
-    const chat = await this.chatRepository.findOne({
+    const chat: Chat = await this.chatRepository.findOne({
       where: { id: dto.chatId, archived: false },
       relations: ['users.user.profile'],
     });
@@ -134,7 +143,7 @@ export class ChatService {
       });
     }
 
-    const chatUser = await this.userChatsRepository.findOne({
+    const chatUser: UserChat = await this.userChatsRepository.findOne({
       where: {
         user: { id: userId },
         chat: { id: dto.chatId },
@@ -142,11 +151,18 @@ export class ChatService {
       relations: ['user.profile'],
     });
 
-    const newMessage = new ChatMessages();
+    const chatFriend: UserChat = await this.userChatsRepository.findOne({
+      where: {
+        user: { id: chat.users.find((u) => u.user.id != userId).user.id },
+        chat: { id: dto.chatId },
+      },
+    });
+
+    const newMessage: ChatMessages = new ChatMessages();
 
     newMessage.chatId = dto.chatId;
     newMessage.text = dto.text;
-    newMessage.seen = chatUser.inChat;
+    newMessage.seen = chatFriend.inChat;
     newMessage.user = mapUserToUserResponse(chatUser.user);
     // newMessage.media = dto.media
 
@@ -168,7 +184,7 @@ export class ChatService {
     userId: number,
     dto: GetChatMessagesRequest,
   ): Promise<GetChatMessagesResponse[]> {
-    const chat = await this.chatRepository.findOne({
+    const chat: Chat = await this.chatRepository.findOne({
       where: { id: dto.chatId },
     });
 
@@ -179,26 +195,27 @@ export class ChatService {
       });
     }
 
-    const messages = await this.chatMessagesRepository.aggregate([
-      { $match: { chatId: chat.id } },
-      {
-        $project: {
-          user: 1,
-          text: 1,
-          media: 1,
-          seen: 1,
-          me: { $eq: ['$user.id', userId] },
-          createdAt: 1,
+    const messages: GetChatMessagesResponse[] =
+      await this.chatMessagesRepository.aggregate([
+        { $match: { chatId: chat.id } },
+        {
+          $project: {
+            user: 1,
+            text: 1,
+            media: 1,
+            seen: 1,
+            me: { $eq: ['$user.id', userId] },
+            createdAt: 1,
+          },
         },
-      },
-      { $sort: { createdAt: -1, _id: -1 } },
-    ]);
+        { $sort: { createdAt: -1, _id: -1 } },
+      ]);
 
     return messages;
   }
 
   async getActiveChat(userId: number): Promise<ChatResponse> {
-    const userChat = await this.userChatsRepository.findOne({
+    const userChat: UserChat = await this.userChatsRepository.findOne({
       where: { user: { id: userId }, inChat: true },
       relations: ['chat.users.user.profile'],
     });
@@ -217,15 +234,9 @@ export class ChatService {
     userId: number,
     dto: GetChatMessagesRequest,
   ): Promise<EmptyResponse> {
-    const userChat = await this.userChatsRepository.findOne({
-      where: { user: { id: userId }, inChat: true },
-    });
+    await this.inactivateUserInChat(userId, dto.chatId);
 
-    userChat.inChat = false;
-
-    await this.userChatsRepository.save(userChat);
-
-    const switchedChat = await this.userChatsRepository.findOne({
+    const switchedChat: UserChat = await this.userChatsRepository.findOne({
       where: { user: { id: userId }, chat: { id: dto.chatId } },
     });
 
@@ -238,28 +249,13 @@ export class ChatService {
 
   async removeConfersations(userId: number, friends: UserFriend[]) {
     friends.map(async (f) => {
-      const users = [f.friend.id, userId];
-      const queryBuilder = this.chatRepository.createQueryBuilder('chat');
+      const userIds: number[] = [f.friend.id, userId];
 
-      users.forEach((id, index) => {
-        const alias = `users${index + 1}`;
-        queryBuilder
-          .innerJoin('chat.users', alias)
-          .andWhere(`${alias}.user.id = :userId${index + 1}`, {
-            [`userId${index + 1}`]: id,
-          });
-      });
-
-      const chat = await queryBuilder
-        .leftJoinAndSelect('chat.users', 'fullUsers')
-        .leftJoinAndSelect('fullUsers.user', 'user')
-        .leftJoinAndSelect('user.profile', 'profile')
-        .getOne();
-
-      chat.archived = true;
-      await this.chatRepository.save(chat);
-
+      const chat: Chat = await this.getChatForUsers(userIds);
       if (chat) {
+        chat.archived = true;
+
+        await this.chatRepository.save(chat);
         await this.chatMessagesRepository.deleteMany(
           {
             chatId: chat.id,
@@ -274,11 +270,12 @@ export class ChatService {
     userId: number,
     searchTerm?: string,
   ): Promise<UserFriend[]> {
-    const querybuilder = this.userFriendsRepository
-      .createQueryBuilder('friends')
-      .leftJoinAndSelect('friends.friend', 'friend')
-      .leftJoinAndSelect('friend.profile', 'profile')
-      .where('friends."userId" = :userId', { userId });
+    const querybuilder: SelectQueryBuilder<UserFriend> =
+      this.userFriendsRepository
+        .createQueryBuilder('friends')
+        .leftJoinAndSelect('friends.friend', 'friend')
+        .leftJoinAndSelect('friend.profile', 'profile')
+        .where('friends."userId" = :userId', { userId });
 
     if (searchTerm) {
       querybuilder.andWhere(
@@ -297,5 +294,54 @@ export class ChatService {
     }
 
     return await querybuilder.getMany();
+  }
+
+  private async getChatForUsers(userIds: number[]): Promise<Chat> {
+    const queryBuilder: SelectQueryBuilder<Chat> =
+      this.chatRepository.createQueryBuilder('chat');
+
+    userIds.forEach((id, index) => {
+      const alias: string = `users${index + 1}`;
+      queryBuilder
+        .innerJoin('chat.users', alias)
+        .andWhere(`${alias}.user.id = :userId${index + 1}`, {
+          [`userId${index + 1}`]: id,
+        });
+    });
+
+    const chat: Chat = await queryBuilder
+      .leftJoinAndSelect('chat.users', 'users')
+      .leftJoinAndSelect('users.user', 'user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .getOne();
+
+    return chat;
+  }
+
+  private async inactivateUserInChat(
+    userId: number,
+    chatId: number,
+  ): Promise<void> {
+    const activeChat: UserChat = await this.userChatsRepository.findOne({
+      where: { user: { id: userId }, inChat: true },
+      relations: ['chat'],
+    });
+
+    if (!activeChat) {
+      const userChat: UserChat = await this.userChatsRepository.findOne({
+        where: { user: { id: userId }, chat: { id: chatId } },
+        relations: ['chat'],
+      });
+
+      userChat.inChat = true;
+
+      await this.userChatsRepository.save(userChat);
+    }
+
+    if (activeChat.chat.id !== chatId) {
+      activeChat.inChat = false;
+
+      await this.userChatsRepository.save(activeChat);
+    }
   }
 }
