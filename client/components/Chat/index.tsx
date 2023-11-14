@@ -11,21 +11,47 @@ interface IProps {
 }
 
 const Chat = ({ chat }: IProps) => {
-  const { setCurrentChat, setMessages } = useContext(ChatContext)!;
+  const {
+    setCurrentChat,
+    setMessages,
+    chats,
+    setChats,
+    currentChat,
+    activeChat,
+    setActiveChat,
+  } = useContext(ChatContext)!;
 
   const handleChatCreation = async (userId: number) => {
     setCurrentChat({ ...chat });
 
     if (chat?.chat?.id) {
+      setActiveChat(chat.chat);
+
       try {
         const { data } = await authApi.get(`/chat/messages/${chat?.chat?.id}`);
         if (data) {
           setMessages(data);
         }
+
+        if (currentChat?.chat.id !== chat.chat.id) {
+          await authApi.put("/chat/switch-active", { chatId: chat.chat.id });
+        }
       } catch (error) {}
     } else {
       try {
-        await authApi.post("/chat", { userIds: [userId] });
+        const { data } = await authApi.post("/chat", { friendId: userId });
+        const index = chats.findIndex(
+          (chat) => chat.friend.id === data.friend.id
+        );
+
+        if (index !== -1) {
+          const updatedChats = [...chats];
+          updatedChats[index] = data;
+
+          setChats(updatedChats);
+        }
+        setCurrentChat(data);
+        setActiveChat(data.chat);
       } catch (error: any) {
         ToastError(errorHelper(error?.response?.data.message));
       }
@@ -34,7 +60,11 @@ const Chat = ({ chat }: IProps) => {
 
   return (
     <div
-      className={styles.chat}
+      className={
+        activeChat && activeChat.id === chat?.chat?.id
+          ? `${styles.active} ${styles.chat}`
+          : styles.chat
+      }
       onClick={() => handleChatCreation(chat.friend.id)}
     >
       <div className={styles.friendProfile}>

@@ -33,7 +33,7 @@ const ChatSendMessage = () => {
       if ((currentChat || activeChat) && target.value.trim()) {
         await sendMessageRequest(
           target,
-          currentChat?.chat?.id || activeChat.id
+          currentChat?.chat?.id || activeChat?.id
         );
       }
     } else {
@@ -50,7 +50,7 @@ const ChatSendMessage = () => {
       const input = target[0] as HTMLTextAreaElement;
 
       if ((currentChat || activeChat) && input.value.trim()) {
-        await sendMessageRequest(input, currentChat?.chat?.id || activeChat.id);
+        await sendMessageRequest(input, currentChat?.chat?.id || activeChat?.id);
       }
     },
     [currentChat]

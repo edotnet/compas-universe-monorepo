@@ -6,6 +6,7 @@ import { GlobalContext } from "@/context/Global.context";
 
 const ChatHeader = () => {
   const { currentChat, activeChat } = useContext(ChatContext)!;
+
   const { me } = useContext(GlobalContext)!;
 
   const friend = activeChat?.users?.find((u) => u.id !== me?.id);
@@ -16,9 +17,9 @@ const ChatHeader = () => {
         <picture>
           <img
             src={
-              currentChat?.friend.profilePicture ||
-              friend?.profilePicture ||
-              "/images/no-profile-picture.jpeg"
+              (currentChat
+                ? currentChat.friend.profilePicture
+                : friend?.profilePicture) || "/images/no-profile-picture.jpeg"
             }
             alt="profile"
             width={52}

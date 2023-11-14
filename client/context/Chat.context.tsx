@@ -19,6 +19,8 @@ interface IProps {
 }
 
 interface IChatContextProps {
+  chats: IChatResponse[];
+  setChats: Dispatch<SetStateAction<IChatResponse[]>>;
   messages: IMessageResponse[];
   activeChat: IChat;
   setMessages: Dispatch<SetStateAction<IMessageResponse[]>>;
@@ -30,6 +32,7 @@ interface IChatContextProps {
 export const ChatContext = createContext<IChatContextProps>(null!);
 
 export const ChatProvider = ({ children }: IProps) => {
+  const [chats, setChats] = useState<IChatResponse[]>([]);
   const [currentChat, setCurrentChat] = useState<IChatResponse>(null!);
   const [messages, setMessages] = useState<IMessageResponse[]>([]);
   const [activeChat, setActiveChat] = useState<IChat>(null!);
@@ -40,7 +43,7 @@ export const ChatProvider = ({ children }: IProps) => {
         const { data: activeChatData } = await authApi.get("/chat/active");
 
         if (activeChatData) {
-          setActiveChat(activeChatData);
+          setActiveChat({ ...activeChatData });
           const { data: activeChatMessagesData } = await authApi.get(
             `/chat/messages/${activeChatData.id}`
           );
@@ -48,10 +51,12 @@ export const ChatProvider = ({ children }: IProps) => {
         }
       } catch (error) {}
     })();
-  }, [currentChat]);
+  }, []);
 
   const value = useMemo(
     () => ({
+      chats,
+      setChats,
       messages,
       activeChat,
       setMessages,
@@ -60,6 +65,8 @@ export const ChatProvider = ({ children }: IProps) => {
       setCurrentChat,
     }),
     [
+      chats,
+      setChats,
       messages,
       activeChat,
       setMessages,

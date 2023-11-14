@@ -3,7 +3,7 @@
     align-items: center;
     justify-content: space-between;
     border-bottom: 1px solid #E3E8E7;
-    padding: 24px 0;
+    padding: 24px;
     cursor: pointer;
 
     .friendProfile {
@@ -13,6 +13,7 @@
 
         img {
             border-radius: 50%;
+            object-fit: cover;
         }
 
         .info {
@@ -62,4 +63,10 @@
             }
         }
     }
+}
+
+.active {
+    border-left: 6px solid #7414EE;
+    background-color: #E8ECF78F;
+    width: 100%;
 }
