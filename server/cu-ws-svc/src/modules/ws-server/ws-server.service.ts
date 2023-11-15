@@ -2,7 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { WsServerGateway } from './ws-server.gateway';
 import {
   EventsMessage,
+  MESSAGE_SEEN,
+  MESSAGE_SEEN_EVENT,
   MessageEvent,
+  MessageSeenEvent,
   NEW_MESSAGE,
   NEW_MESSAGE_EVENT,
 } from '@edotnet/shared-lib';
@@ -16,12 +19,25 @@ export class WsServerService {
     this.gateway.emit({
       message: NEW_MESSAGE,
       data: {
-        user: event.user,
-        ...event.message,
+        message: event.message,
         chatId: event.chatId,
       },
       receiver: {
-        userIds: event.userIds,
+        userId: event.userId,
+      },
+    });
+  }
+
+  @EventsMessage(MESSAGE_SEEN_EVENT, 'ws')
+  async messageSeen(event: MessageSeenEvent) {
+    this.gateway.emit({
+      message: MESSAGE_SEEN,
+      data: {
+        message: event.message,
+        chatId: event.chatId,
+      },
+      receiver: {
+        userId: event.userId,
       },
     });
   }

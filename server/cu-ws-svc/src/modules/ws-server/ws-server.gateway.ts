@@ -1,10 +1,8 @@
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
-import { HttpStatus, OnModuleInit } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { OnModuleInit } from '@nestjs/common';
 import {
   OnGatewayConnection,
-  SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
@@ -88,17 +86,14 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
   public emit(message: WsMessageRequest) {
     delete (message.data as BaseEvent).userId;
 
-    if (message.receiver.userIds.length) {
-      message.receiver.userIds.forEach((id) => {
-        if (this.sockets.has(id)) {
-          const sockets = this.sockets.get(id);
+    if (message.receiver.userId) {
+      if (this.sockets.has(message.receiver.userId)) {
+        const sockets = this.sockets.get(message.receiver.userId);
 
-          message.data['me'] = id === message.data['user'].id;
-          sockets.forEach((socket: Socket) => {
-            socket.emit(message.message, message.data);
-          });
-        }
-      });
+        sockets.forEach((socket: Socket) => {
+          socket.emit(message.message, message.data);
+        });
+      }
     }
   }
 }

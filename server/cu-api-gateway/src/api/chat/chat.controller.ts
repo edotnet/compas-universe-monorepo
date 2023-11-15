@@ -4,7 +4,6 @@ import {
   CreateChatRequest,
   EmptyResponse,
   GetChatMessagesRequest,
-  GetChatMessagesResponse,
   GetChatsRequest,
   GetChatsResponse,
   SendMessageRequest,
@@ -17,6 +16,7 @@ import {
   UsersServiceName,
   SwitchActiveChatRequest,
   CHAT_SWITCH_ACTIVE,
+  ExtendedMessageResponse,
 } from '@edotnet/shared-lib';
 import {
   Body,
@@ -75,11 +75,11 @@ export class ChatController {
   }
 
   @Get('/messages/:chatId')
-  @ApiOkResponse({ type: GetChatMessagesResponse, isArray: true })
+  @ApiOkResponse({ type: ExtendedMessageResponse, isArray: true })
   async getChatMessages(
     @UserGuard() user: User,
     @Param() dto: GetChatMessagesRequest,
-  ): Promise<GetChatMessagesResponse[]> {
+  ): Promise<ExtendedMessageResponse[]> {
     return this.client
       .send(CHAT_MESSAGES_GET, ComposeAuthorizedDto(user, dto))
       .toPromise();

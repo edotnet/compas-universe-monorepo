@@ -1,13 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import {
-  Repository,
-  Brackets,
-  DeepPartial,
-  In,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { Repository, Brackets, DeepPartial, SelectQueryBuilder } from 'typeorm';
 import {
   EmptyResponse,
   UserFriend,
@@ -22,11 +16,14 @@ import {
   mapChatMessageToChatMessageResponse,
   CreateChatRequest,
   EventsManagerService,
-  GetChatMessagesResponse,
   ChatResponse,
   mapChatToChatResponse,
   MessageEvent,
   NEW_MESSAGE_EVENT,
+  User,
+  ExtendedMessageResponse,
+  MESSAGE_SEEN_EVENT,
+  MessageSeenEvent,
 } from '@edotnet/shared-lib';
 import { mapChatsToGetChatsResponse } from './chat.serializer';
 import { Model } from 'mongoose';
@@ -104,18 +101,11 @@ export class ChatService {
         const userIds: number[] = [f.friend.id, userId];
         const chat: Chat = await this.getChatForUsers(userIds);
 
-        let message: ChatMessages;
+        let message: ExtendedMessageResponse;
 
         if (chat) {
-          message = await this.chatMessagesRepository
-            .findOne(
-              {
-                chatId: chat.id,
-              },
-              {},
-              { $eq: ['$user.id', userId] },
-            )
-            .sort({ createdAt: 'desc', _id: 'desc' });
+          // await this.getUnSeenMessagesCount(userId, chat.id);
+          message = await this.getLastMessage(chat.id, userId);
 
           return mapChatsToGetChatsResponse(f.friend, chat, message);
         }
@@ -169,13 +159,17 @@ export class ChatService {
     const message = new this.chatMessagesRepository(newMessage);
     await message.save();
 
-    this.eventManager.raise(NEW_MESSAGE_EVENT, {
-      userId,
-      user: mapUserToUserResponse(chatUser.user),
-      message: mapChatMessageToChatMessageResponse(message),
-      userIds: chat.users.map((u) => u.user.id),
-      chatId: chat.id,
-    } as MessageEvent);
+    chat.users.forEach((u) => {
+      this.eventManager.raise(NEW_MESSAGE_EVENT, {
+        userId: u.user.id,
+        user: mapUserToUserResponse(chatUser.user),
+        message: {
+          ...mapChatMessageToChatMessageResponse(message),
+          me: u.user.id === userId,
+        },
+        chatId: chat.id,
+      } as MessageEvent);
+    });
 
     return {};
   }
@@ -183,7 +177,7 @@ export class ChatService {
   async getChatMessages(
     userId: number,
     dto: GetChatMessagesRequest,
-  ): Promise<GetChatMessagesResponse[]> {
+  ): Promise<ExtendedMessageResponse[]> {
     const chat: Chat = await this.chatRepository.findOne({
       where: { id: dto.chatId },
     });
@@ -195,7 +189,7 @@ export class ChatService {
       });
     }
 
-    const messages: GetChatMessagesResponse[] =
+    const messages: ExtendedMessageResponse[] =
       await this.chatMessagesRepository.aggregate([
         { $match: { chatId: chat.id } },
         {
@@ -238,17 +232,50 @@ export class ChatService {
 
     const switchedChat: UserChat = await this.userChatsRepository.findOne({
       where: { user: { id: userId }, chat: { id: dto.chatId } },
+      relations: ['chat.users.user'],
     });
 
     switchedChat.inChat = true;
 
     await this.userChatsRepository.save(switchedChat);
 
+    const friend: User = switchedChat.chat.users.find(
+      (u) => u.user.id !== userId,
+    ).user;
+
+    const lastMessage: ExtendedMessageResponse = await this.getLastMessage(
+      dto.chatId,
+      friend.id,
+    );
+
+    if (lastMessage && lastMessage.seen) {
+      return;
+    }
+
+    const messages: ChatMessages[] = await this.chatMessagesRepository.find({
+      chatId: dto.chatId,
+      'user.id': friend.id,
+    });
+
+    await this.chatMessagesRepository.updateMany(
+      { _id: { $in: messages.map((message: ChatMessages) => message._id) } },
+      { $set: { seen: true } },
+    );
+
+    const updatedLastMessage: ExtendedMessageResponse =
+      await this.getLastMessage(dto.chatId, friend.id);
+
+    this.eventManager.raise(MESSAGE_SEEN_EVENT, {
+      userId: friend.id,
+      message: updatedLastMessage,
+      chatId: dto.chatId,
+    } as MessageSeenEvent);
+
     return {};
   }
 
   async removeConfersations(userId: number, friends: UserFriend[]) {
-    friends.map(async (f) => {
+    friends.map(async (f: UserFriend) => {
       const userIds: number[] = [f.friend.id, userId];
 
       const chat: Chat = await this.getChatForUsers(userIds);
@@ -318,6 +345,23 @@ export class ChatService {
     return chat;
   }
 
+  private async getUnSeenMessagesCount(userId: number, chatId: number) {
+    const userChat = await this.userChatsRepository.findOne({
+      where: { user: { id: userId }, chat: { id: chatId }, inChat: false },
+      relations: ['chat.users.user'],
+    });
+
+    const friend: User = userChat.chat.users.find(
+      (u) => u.user.id !== userId,
+    ).user;
+
+    const count: number = await this.chatMessagesRepository.count({
+      chatId: userChat.chat.id,
+      seen: false,
+      'user.id': friend.id,
+    });
+  }
+
   private async inactivateUserInChat(
     userId: number,
     chatId: number,
@@ -338,10 +382,33 @@ export class ChatService {
       await this.userChatsRepository.save(userChat);
     }
 
-    if (activeChat.chat.id !== chatId) {
+    if (activeChat && activeChat.chat.id !== chatId) {
       activeChat.inChat = false;
 
       await this.userChatsRepository.save(activeChat);
     }
+  }
+
+  private async getLastMessage(
+    chatId: number,
+    userId: number,
+  ): Promise<ExtendedMessageResponse> {
+    const message = await this.chatMessagesRepository.aggregate([
+      { $match: { chatId } },
+      {
+        $project: {
+          user: 1,
+          text: 1,
+          media: 1,
+          seen: 1,
+          me: { $eq: ['$user.id', userId] },
+          createdAt: 1,
+        },
+      },
+      { $sort: { createdAt: -1, _id: -1 } },
+      { $limit: 1 },
+    ]);
+
+    return message[0];
   }
 }

@@ -11,8 +11,8 @@ import {
   CreateChatRequest,
   EmptyRequest,
   EmptyResponse,
+  ExtendedMessageResponse,
   GetChatMessagesRequest,
-  GetChatMessagesResponse,
   GetChatsRequest,
   GetChatsResponse,
   InjectAuth,
@@ -49,7 +49,7 @@ export class ChatController {
   @MessagePattern(CHAT_MESSAGES_GET)
   async getChatMessages(
     dto: InjectAuth<GetChatMessagesRequest>,
-  ): Promise<GetChatMessagesResponse[]> {
+  ): Promise<ExtendedMessageResponse[]> {
     return this.service.getChatMessages(dto.userId, dto);
   }
 

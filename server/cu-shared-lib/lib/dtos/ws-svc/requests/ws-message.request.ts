@@ -3,10 +3,9 @@ import { ApiProperty } from "@nestjs/swagger";
 
 export class WsReceiver {
   @IsOptional()
-  @IsArray()
-  @IsNumber({}, { each: true })
+  @IsNumber()
   @ApiProperty()
-  userIds?: number[];
+  userId?: number;
 }
 
 export class WsMessageRequest {

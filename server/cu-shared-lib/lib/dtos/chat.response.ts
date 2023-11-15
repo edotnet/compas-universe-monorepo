@@ -1,6 +1,6 @@
 import { IsNotEmpty } from "class-validator";
 import { UserResponse, mapUserToUserResponse } from "./user.response";
-import { Chat, ChatMessages } from "../entities";
+import { Chat, ChatMessages, MediaData } from "../entities";
 
 export class ChatResponse {
   @IsNotEmpty()
@@ -10,12 +10,32 @@ export class ChatResponse {
   users: UserResponse[];
 }
 
+export class MessageResponse {
+  @IsNotEmpty()
+  text: string;
+
+  @IsNotEmpty()
+  seen: boolean;
+
+  @IsNotEmpty()
+  media: MediaData[];
+
+  @IsNotEmpty()
+  createdAt: Date;
+}
+
+export class ExtendedMessageResponse extends MessageResponse {
+  @IsNotEmpty()
+  me: boolean;
+}
+
 export const mapChatMessageToChatMessageResponse = (
   message: ChatMessages
-): Pick<ChatMessages, "text" | "media" | "seen"> => ({
+): MessageResponse => ({
   text: message.text,
   media: message.media,
   seen: message.seen,
+  createdAt: message.createdAt,
 });
 
 export const mapChatToChatResponse = (chat: Chat): ChatResponse => ({

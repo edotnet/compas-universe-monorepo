@@ -1,20 +1,13 @@
 import { IsNotEmpty } from "class-validator";
-import { ChatResponse } from "../../chat.response";
+import {
+  ChatResponse,
+  ExtendedMessageResponse,
+} from "../../chat.response";
 import { UserResponse } from "../../user.response";
-import { MediaData } from "../../../entities";
 
-export class MessageResponse {
+export class GetChatMessageResponse extends ExtendedMessageResponse {
   @IsNotEmpty()
   user: UserResponse;
-
-  @IsNotEmpty()
-  text: string;
-
-  @IsNotEmpty()
-  seen: boolean;
-
-  @IsNotEmpty()
-  media: MediaData[];
 }
 
 export class GetChatsResponse {
@@ -25,5 +18,5 @@ export class GetChatsResponse {
   friend: UserResponse;
 
   @IsNotEmpty()
-  lastMessage: MessageResponse;
+  lastMessage: GetChatMessageResponse;
 }
