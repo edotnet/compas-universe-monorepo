@@ -1,5 +1,6 @@
-import { IMessageResponse } from "./chat.types";
+import { IMessage } from "./chat.types";
 
-export interface IMessageEvent extends IMessageResponse{
-    chatId: number
+export interface IMessageEvent {
+  message: IMessage;
+  chatId: number;
 }

@@ -1,5 +1,6 @@
 enum SOCKET_EVENT {
   NEW_MESSAGE = "NEW_MESSAGE",
+  MESSAGE_SEEN = "MESSAGE_SEEN"
 }
 
 export default SOCKET_EVENT;

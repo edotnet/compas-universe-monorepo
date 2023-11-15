@@ -1,5 +1,5 @@
 export declare enum UserTypes {
-    SINGER = "Singer"
+  SINGER = "Singer",
 }
 
 export interface IUser {
@@ -9,5 +9,5 @@ export interface IUser {
 }
 
 export interface IExtendedUser extends IUser {
-    type: UserTypes
+  type: UserTypes;
 }

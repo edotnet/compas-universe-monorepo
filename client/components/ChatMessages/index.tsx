@@ -14,7 +14,7 @@ const ChatMessages = () => {
             </div>
             <picture>
               <img
-                src={m.user.profilePicture || "/images/no-profile-picture.jpeg"}
+                src={m.user?.profilePicture || "/images/no-profile-picture.jpeg"}
                 alt="profile"
                 width={36}
                 height={36}
@@ -25,7 +25,7 @@ const ChatMessages = () => {
           <div key={index} className={styles.friendMessage}>
             <picture>
               <img
-                src={m.user.profilePicture || "/images/no-profile-picture.jpeg"}
+                src={m.user?.profilePicture || "/images/no-profile-picture.jpeg"}
                 alt="profile"
                 width={36}
                 height={36}

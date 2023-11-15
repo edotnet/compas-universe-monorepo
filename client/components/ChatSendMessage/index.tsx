@@ -4,25 +4,9 @@ import { ToastError } from "@/utils/toastify";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import { ChatContext } from "@/context/Chat.context";
 import styles from "./index.module.scss";
-import { GlobalContext } from "@/context/Global.context";
-import { MediaMessageTypes } from "@/utils/types/chat.types";
 
 const ChatSendMessage = () => {
-  const { currentChat, activeChat, setMessages, messages } =
-    useContext(ChatContext)!;
-  const { me } = useContext(GlobalContext)!;
-
-  // export interface IMessage {
-  //   text: string;
-  //   media: MediaData;
-  //   seen: boolean;
-  // }
-
-  // export interface IMessageResponse extends IMessage {
-  //   user: IUser;
-  //   me: boolean;
-  //   createdAt: Date;
-  // }
+  const { currentChat, activeChat } = useContext(ChatContext)!;
 
   const handleInputExpand = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
     const maxHeight = 80;
@@ -50,7 +34,10 @@ const ChatSendMessage = () => {
       const input = target[0] as HTMLTextAreaElement;
 
       if ((currentChat || activeChat) && input.value.trim()) {
-        await sendMessageRequest(input, currentChat?.chat?.id || activeChat?.id);
+        await sendMessageRequest(
+          input,
+          currentChat?.chat?.id || activeChat?.id
+        );
       }
     },
     [currentChat]

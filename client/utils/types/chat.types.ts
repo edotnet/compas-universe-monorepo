@@ -13,17 +13,13 @@ export interface MediaData {
 }
 
 export interface IMessage {
+  user: IUser;
   text: string;
   media: MediaData[];
   seen: boolean;
-}
-
-export interface IMessageResponse extends IMessage {
-  user: IUser;
   me: boolean;
   createdAt: Date;
 }
-
 export interface IChat {
   id: number;
   users: IUser[];
@@ -32,7 +28,7 @@ export interface IChat {
 export interface IChatResponse {
   friend: IUser;
   chat: IChat;
-  lastMessage: IMessageResponse;
+  lastMessage: IMessage;
 }
 
 export interface IMessageRequest {

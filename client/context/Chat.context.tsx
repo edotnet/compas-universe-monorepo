@@ -1,9 +1,5 @@
 import { authApi } from "@/utils/axios";
-import {
-  IChat,
-  IChatResponse,
-  IMessageResponse,
-} from "@/utils/types/chat.types";
+import { IChat, IChatResponse, IMessage } from "@/utils/types/chat.types";
 import {
   Dispatch,
   ReactNode,
@@ -21,9 +17,9 @@ interface IProps {
 interface IChatContextProps {
   chats: IChatResponse[];
   setChats: Dispatch<SetStateAction<IChatResponse[]>>;
-  messages: IMessageResponse[];
+  messages: IMessage[];
   activeChat: IChat;
-  setMessages: Dispatch<SetStateAction<IMessageResponse[]>>;
+  setMessages: Dispatch<SetStateAction<IMessage[]>>;
   currentChat: IChatResponse;
   setActiveChat: Dispatch<SetStateAction<IChat>>;
   setCurrentChat: Dispatch<SetStateAction<IChatResponse>>;
@@ -34,7 +30,7 @@ export const ChatContext = createContext<IChatContextProps>(null!);
 export const ChatProvider = ({ children }: IProps) => {
   const [chats, setChats] = useState<IChatResponse[]>([]);
   const [currentChat, setCurrentChat] = useState<IChatResponse>(null!);
-  const [messages, setMessages] = useState<IMessageResponse[]>([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [activeChat, setActiveChat] = useState<IChat>(null!);
 
   useEffect(() => {

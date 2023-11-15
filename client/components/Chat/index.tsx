@@ -40,10 +40,18 @@ const Chat = ({ chat }: IProps) => {
     } else {
       try {
         const { data } = await authApi.post("/chat", { friendId: userId });
+
+        if (data) {
+          const { data: messagesData } = await authApi.get(
+            `/chat/messages/${data.chat.id}`
+          );
+          setMessages(messagesData);
+        }
+
         const index = chats.findIndex(
           (chat) => chat.friend.id === data.friend.id
         );
-
+        
         if (index !== -1) {
           const updatedChats = [...chats];
           updatedChats[index] = data;
@@ -91,7 +99,7 @@ const Chat = ({ chat }: IProps) => {
             <div className={styles.newMessage}>
               <p>2</p>
             </div>
-          ) : (
+          ) : chat.lastMessage?.me ? (
             <picture>
               <img
                 src={
@@ -102,6 +110,8 @@ const Chat = ({ chat }: IProps) => {
                 alt="message-status"
               />
             </picture>
+          ) : (
+            <></>
           )}
         </div>
       )}

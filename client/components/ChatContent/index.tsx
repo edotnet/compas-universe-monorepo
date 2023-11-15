@@ -30,18 +30,33 @@ const ChatContent = () => {
       .on(`${SOCKET_EVENT.NEW_MESSAGE}`, async (data: IMessageEvent) => {
         if (data) {
           if (data.chatId === activeChat?.id) {
-            setMessages((prev) => [data, ...prev]);
+            setMessages((prev) => [data.message, ...prev]);
           }
+
           setChats((prev) => [
             ...prev.map((chat) =>
               chat?.chat?.id === data.chatId
-                ? { ...chat, lastMessage: data }
+                ? { ...chat, lastMessage: data.message }
                 : chat
             ),
           ]);
         }
       });
-  }, [activeChat]);
+
+    socket
+      .off(`${SOCKET_EVENT.MESSAGE_SEEN}`)
+      .on(`${SOCKET_EVENT.MESSAGE_SEEN}`, async (data: IMessageEvent) => {
+        if (data) {
+          setChats((prev) => [
+            ...prev.map((chat) =>
+              chat?.chat?.id === data.chatId
+                ? { ...chat, lastMessage: data.message }
+                : chat
+            ),
+          ]);
+        }
+      });
+  }, [activeChat, currentChat]);
 
   return (
     <div className={styles.chatContent}>
