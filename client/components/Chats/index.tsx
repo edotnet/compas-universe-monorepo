@@ -1,7 +1,7 @@
 import { useContext } from "react";
+import { ChatContext } from "@/context/Chat.context";
 import Chat from "../Chat";
 import styles from "./index.module.scss";
-import { ChatContext } from "@/context/Chat.context";
 
 const Chats = () => {
   const { chats } = useContext(ChatContext)!;

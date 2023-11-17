@@ -1,24 +1,27 @@
-import { IChatResponse } from "@/utils/types/chat.types";
-import { memo, useContext } from "react";
-import styles from "./index.module.scss";
+import { memo, useContext, useEffect, useState } from "react";
 import { authApi } from "@/utils/axios";
-import { errorHelper } from "@/utils/helpers/error.helper";
 import { ToastError } from "@/utils/toastify";
 import { ChatContext } from "@/context/Chat.context";
+import { errorHelper } from "@/utils/helpers/error.helper";
+import { calculateTimeAgo } from "@/utils/helpers/calculate-time-ago.helper";
+import { IChatResponse } from "@/utils/types/chat.types";
+import styles from "./index.module.scss";
 
 interface IProps {
   chat: IChatResponse;
 }
 
 const Chat = ({ chat }: IProps) => {
+  const [timeAgo, setTimeAgo] = useState<string>("");
+
   const {
-    setCurrentChat,
-    setMessages,
     chats,
     setChats,
-    currentChat,
     activeChat,
+    currentChat,
+    setMessages,
     setActiveChat,
+    setCurrentChat,
   } = useContext(ChatContext)!;
 
   const handleChatCreation = async (userId: number) => {
@@ -33,9 +36,15 @@ const Chat = ({ chat }: IProps) => {
           setMessages(data);
         }
 
-        if (currentChat?.chat.id !== chat.chat.id) {
+        if (currentChat?.chat?.id !== chat.chat.id) {
           await authApi.put("/chat/switch-active", { chatId: chat.chat.id });
         }
+
+        setChats((prev) => [
+          ...prev.map((ch) =>
+            chat.chat?.id === ch.chat?.id ? { ...ch, newMessagesCount: 0 } : ch
+          ),
+        ]);
       } catch (error) {}
     } else {
       try {
@@ -51,7 +60,7 @@ const Chat = ({ chat }: IProps) => {
         const index = chats.findIndex(
           (chat) => chat.friend.id === data.friend.id
         );
-        
+
         if (index !== -1) {
           const updatedChats = [...chats];
           updatedChats[index] = data;
@@ -65,6 +74,11 @@ const Chat = ({ chat }: IProps) => {
       }
     }
   };
+
+  useEffect(() => {
+    chat.lastMessage &&
+      calculateTimeAgo(chat.lastMessage?.createdAt, setTimeAgo);
+  }, [chat]);
 
   return (
     <div
@@ -94,10 +108,10 @@ const Chat = ({ chat }: IProps) => {
       </div>
       {chat.lastMessage && (
         <div className={styles.messageInfo}>
-          <span>5s</span>
-          {false ? (
+          <span>{timeAgo}</span>
+          {chat?.newMessagesCount ? (
             <div className={styles.newMessage}>
-              <p>2</p>
+              <p>{chat?.newMessagesCount}</p>
             </div>
           ) : chat.lastMessage?.me ? (
             <picture>

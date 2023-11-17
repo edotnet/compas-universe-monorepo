@@ -36,10 +36,29 @@ const ChatContent = () => {
           setChats((prev) => [
             ...prev.map((chat) =>
               chat?.chat?.id === data.chatId
-                ? { ...chat, lastMessage: data.message }
+                ? {
+                    ...chat,
+                    lastMessage: data.message,
+                    inChat: data.inChat,
+                  }
                 : chat
             ),
           ]);
+
+          if (!data.inChat) {
+            setChats((prev) => [
+              ...prev.map((chat) =>
+                chat?.chat?.id === data.chatId && !chat.lastMessage?.me
+                  ? {
+                      ...chat,
+                      newMessagesCount: chat.newMessagesCount + 1,
+                    }
+                  : !chat?.chat && chat.friend.id === data.friendId
+                  ? { ...chat, chat: { id: data.chatId, users: [] } }
+                  : chat
+              ),
+            ]);
+          }
         }
       });
 
@@ -54,6 +73,10 @@ const ChatContent = () => {
                 : chat
             ),
           ]);
+
+          setMessages((prev) => [
+            ...prev.map((message) => ({ ...message, seen: true })),
+          ]);
         }
       });
   }, [activeChat, currentChat]);
@@ -61,7 +84,7 @@ const ChatContent = () => {
   return (
     <div className={styles.chatContent}>
       <ChatLeftSide />
-      {(chats.length && currentChat) || activeChat ? (
+      {(chats.length && currentChat) || (chats.length && activeChat) ? (
         <ChatRightSide />
       ) : (
         <ChatStart />

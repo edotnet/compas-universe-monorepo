@@ -18,7 +18,7 @@ export interface IMessage {
   media: MediaData[];
   seen: boolean;
   me: boolean;
-  createdAt: Date;
+  createdAt: string;
 }
 export interface IChat {
   id: number;
@@ -27,8 +27,10 @@ export interface IChat {
 
 export interface IChatResponse {
   friend: IUser;
-  chat: IChat;
-  lastMessage: IMessage;
+  chat?: IChat;
+  newMessagesCount: number;
+  lastMessage?: IMessage;
+  inChat?: boolean;
 }
 
 export interface IMessageRequest {
