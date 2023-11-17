@@ -11,7 +11,6 @@ import {
   mapUserToUserResponse,
   GetChatsRequest,
   GetChatsResponse,
-  GetChatMessagesRequest,
   SendMessageRequest,
   mapChatMessageToChatMessageResponse,
   CreateChatRequest,
@@ -28,6 +27,7 @@ import {
 import { mapChatsToGetChatsResponse } from './chat.serializer';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { ChatRequest } from '@edotnet/shared-lib/dist/dtos/chat/requests/chat.request';
 
 @Injectable()
 export class ChatService {
@@ -65,8 +65,9 @@ export class ChatService {
 
     if (existingChat) {
       await this.inactivateUserInChat(userId, existingChat.id);
+      const count = await this.getUnSeenMessagesCount(userId, existingChat.id);
 
-      return mapChatsToGetChatsResponse(isFriend.friend, existingChat);
+      return mapChatsToGetChatsResponse(isFriend.friend, count, existingChat);
     }
 
     const chat: DeepPartial<Chat> = new Chat();
@@ -83,8 +84,9 @@ export class ChatService {
     const createdChat: Chat = await this.getChatForUsers(userIds);
 
     await this.inactivateUserInChat(userId, createdChat.id);
+    const count = await this.getUnSeenMessagesCount(userId, createdChat.id);
 
-    return mapChatsToGetChatsResponse(isFriend.friend, createdChat);
+    return mapChatsToGetChatsResponse(isFriend.friend, count, createdChat);
   }
 
   async getChats(
@@ -104,13 +106,24 @@ export class ChatService {
         let message: ExtendedMessageResponse;
 
         if (chat) {
-          // await this.getUnSeenMessagesCount(userId, chat.id);
+          const count = await this.getUnSeenMessagesCount(userId, chat.id);
+
+          const userChat = await this.userChatsRepository.findOne({
+            where: { chat: { id: chat.id }, user: { id: userId } },
+          });
+
           message = await this.getLastMessage(chat.id, userId);
 
-          return mapChatsToGetChatsResponse(f.friend, chat, message);
+          return mapChatsToGetChatsResponse(
+            f.friend,
+            count,
+            chat,
+            userChat,
+            message,
+          );
         }
 
-        return mapChatsToGetChatsResponse(f.friend);
+        return mapChatsToGetChatsResponse(f.friend, 0);
       }),
     );
 
@@ -162,11 +175,11 @@ export class ChatService {
     chat.users.forEach((u) => {
       this.eventManager.raise(NEW_MESSAGE_EVENT, {
         userId: u.user.id,
-        user: mapUserToUserResponse(chatUser.user),
         message: {
           ...mapChatMessageToChatMessageResponse(message),
           me: u.user.id === userId,
         },
+        inChat: u.inChat,
         chatId: chat.id,
       } as MessageEvent);
     });
@@ -176,7 +189,7 @@ export class ChatService {
 
   async getChatMessages(
     userId: number,
-    dto: GetChatMessagesRequest,
+    dto: ChatRequest,
   ): Promise<ExtendedMessageResponse[]> {
     const chat: Chat = await this.chatRepository.findOne({
       where: { id: dto.chatId },
@@ -210,7 +223,7 @@ export class ChatService {
 
   async getActiveChat(userId: number): Promise<ChatResponse> {
     const userChat: UserChat = await this.userChatsRepository.findOne({
-      where: { user: { id: userId }, inChat: true },
+      where: { user: { id: userId }, inChat: true, chat: { archived: false } },
       relations: ['chat.users.user.profile'],
     });
 
@@ -226,7 +239,7 @@ export class ChatService {
 
   async switchActiveChat(
     userId: number,
-    dto: GetChatMessagesRequest,
+    dto: ChatRequest,
   ): Promise<EmptyResponse> {
     await this.inactivateUserInChat(userId, dto.chatId);
 
@@ -340,6 +353,7 @@ export class ChatService {
       .leftJoinAndSelect('chat.users', 'users')
       .leftJoinAndSelect('users.user', 'user')
       .leftJoinAndSelect('user.profile', 'profile')
+      .andWhere('chat.archived = :archived', { archived: false })
       .getOne();
 
     return chat;
@@ -351,15 +365,17 @@ export class ChatService {
       relations: ['chat.users.user'],
     });
 
-    const friend: User = userChat.chat.users.find(
+    const friend: User = userChat?.chat.users.find(
       (u) => u.user.id !== userId,
     ).user;
 
     const count: number = await this.chatMessagesRepository.count({
-      chatId: userChat.chat.id,
+      chatId: userChat?.chat.id,
       seen: false,
-      'user.id': friend.id,
+      'user.id': friend?.id,
     });
+
+    return count;
   }
 
   private async inactivateUserInChat(

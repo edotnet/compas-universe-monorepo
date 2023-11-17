@@ -12,14 +12,13 @@ import {
   EmptyRequest,
   EmptyResponse,
   ExtendedMessageResponse,
-  GetChatMessagesRequest,
   GetChatsRequest,
   GetChatsResponse,
   InjectAuth,
   SEND_CHAT_MESSAGE,
   SendMessageRequest,
-  SwitchActiveChatRequest,
 } from '@edotnet/shared-lib';
+import { ChatRequest } from '@edotnet/shared-lib/dist/dtos/chat/requests/chat.request';
 
 @Controller()
 export class ChatController {
@@ -48,7 +47,7 @@ export class ChatController {
 
   @MessagePattern(CHAT_MESSAGES_GET)
   async getChatMessages(
-    dto: InjectAuth<GetChatMessagesRequest>,
+    dto: InjectAuth<ChatRequest>,
   ): Promise<ExtendedMessageResponse[]> {
     return this.service.getChatMessages(dto.userId, dto);
   }
@@ -59,9 +58,7 @@ export class ChatController {
   }
 
   @MessagePattern(CHAT_SWITCH_ACTIVE)
-  async switchActiveChat(
-    dto: InjectAuth<SwitchActiveChatRequest>,
-  ): Promise<EmptyResponse> {
+  async switchActiveChat(dto: InjectAuth<ChatRequest>): Promise<EmptyResponse> {
     return this.service.switchActiveChat(dto.userId, dto);
   }
 }

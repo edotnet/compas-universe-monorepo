@@ -21,6 +21,8 @@ export class WsServerService {
       data: {
         message: event.message,
         chatId: event.chatId,
+        ...(!event.message.me && { friendId: event.userId }),
+        inChat: event.inChat,
       },
       receiver: {
         userId: event.userId,

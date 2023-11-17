@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsNumber } from "class-validator";
 
-export class SwitchActiveChatRequest {
+export class ChatRequest {
   @IsNumber()
   @Type(() => Number)
   chatId: number;

@@ -12,6 +12,9 @@ export class ChatResponse {
 
 export class MessageResponse {
   @IsNotEmpty()
+  user: UserResponse;
+
+  @IsNotEmpty()
   text: string;
 
   @IsNotEmpty()
@@ -32,6 +35,7 @@ export class ExtendedMessageResponse extends MessageResponse {
 export const mapChatMessageToChatMessageResponse = (
   message: ChatMessages
 ): MessageResponse => ({
+  user: message.user,
   text: message.text,
   media: message.media,
   seen: message.seen,

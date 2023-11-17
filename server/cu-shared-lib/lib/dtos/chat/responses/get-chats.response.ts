@@ -1,14 +1,6 @@
 import { IsNotEmpty } from "class-validator";
-import {
-  ChatResponse,
-  ExtendedMessageResponse,
-} from "../../chat.response";
+import { ChatResponse, ExtendedMessageResponse } from "../../chat.response";
 import { UserResponse } from "../../user.response";
-
-export class GetChatMessageResponse extends ExtendedMessageResponse {
-  @IsNotEmpty()
-  user: UserResponse;
-}
 
 export class GetChatsResponse {
   @IsNotEmpty()
@@ -18,5 +10,11 @@ export class GetChatsResponse {
   friend: UserResponse;
 
   @IsNotEmpty()
-  lastMessage: GetChatMessageResponse;
+  lastMessage: ExtendedMessageResponse;
+
+  @IsNotEmpty()
+  newMessagesCount: number
+
+  @IsNotEmpty()
+  inChat: boolean
 }

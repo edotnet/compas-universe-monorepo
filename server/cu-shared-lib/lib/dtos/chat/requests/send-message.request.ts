@@ -1,11 +1,8 @@
 import { Type } from "class-transformer";
-import { IsNumber, IsString } from "class-validator";
+import { IsString } from "class-validator";
+import { ChatRequest } from "./chat.request";
 
-export class SendMessageRequest {
-  @IsNumber()
-  @Type(() => Number)
-  chatId: number;
-
+export class SendMessageRequest extends ChatRequest {
   @IsString()
   @Type(() => String)
   text: string;

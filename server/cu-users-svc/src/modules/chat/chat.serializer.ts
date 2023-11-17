@@ -3,13 +3,16 @@ import {
   ExtendedMessageResponse,
   GetChatsResponse,
   User,
+  UserChat,
   mapChatToChatResponse,
   mapUserToUserResponse,
 } from '@edotnet/shared-lib';
 
 export const mapChatsToGetChatsResponse = (
   user: User,
+  count: number,
   chat?: Chat,
+  userChat?: UserChat,
   message?: ExtendedMessageResponse,
 ): GetChatsResponse => ({
   friend: mapUserToUserResponse(user),
@@ -17,6 +20,10 @@ export const mapChatsToGetChatsResponse = (
     chat: mapChatToChatResponse(chat),
   }),
   ...(message && {
-    lastMessage: { ...message, user: mapUserToUserResponse(user) },
+    lastMessage: message,
   }),
+  ...(userChat && {
+    inChat: userChat.inChat,
+  }),
+  newMessagesCount: count,
 });

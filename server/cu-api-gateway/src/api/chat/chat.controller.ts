@@ -3,7 +3,6 @@ import {
   ComposeAuthorizedDto,
   CreateChatRequest,
   EmptyResponse,
-  GetChatMessagesRequest,
   GetChatsRequest,
   GetChatsResponse,
   SendMessageRequest,
@@ -14,7 +13,6 @@ import {
   SEND_CHAT_MESSAGE,
   User,
   UsersServiceName,
-  SwitchActiveChatRequest,
   CHAT_SWITCH_ACTIVE,
   ExtendedMessageResponse,
 } from '@edotnet/shared-lib';
@@ -33,6 +31,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserGuard } from '../auth/guards/user.guard';
+import { ChatRequest } from '@edotnet/shared-lib/dist/dtos/chat/requests/chat.request';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -78,7 +77,7 @@ export class ChatController {
   @ApiOkResponse({ type: ExtendedMessageResponse, isArray: true })
   async getChatMessages(
     @UserGuard() user: User,
-    @Param() dto: GetChatMessagesRequest,
+    @Param() dto: ChatRequest,
   ): Promise<ExtendedMessageResponse[]> {
     return this.client
       .send(CHAT_MESSAGES_GET, ComposeAuthorizedDto(user, dto))
@@ -97,7 +96,7 @@ export class ChatController {
   @ApiOkResponse({ type: EmptyResponse })
   async switchActiveChat(
     @UserGuard() user: User,
-    @Body() dto: SwitchActiveChatRequest,
+    @Body() dto: ChatRequest,
   ): Promise<EmptyResponse> {
     return this.client
       .send(CHAT_SWITCH_ACTIVE, ComposeAuthorizedDto(user, dto))
