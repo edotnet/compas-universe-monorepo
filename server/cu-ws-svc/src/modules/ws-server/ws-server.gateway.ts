@@ -28,7 +28,6 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
   constructor(
     private readonly jwtService: JwtService,
     private readonly logger: CustomLoggerService,
-    private readonly eventManager: EventsManagerService,
   ) {}
 
   @WebSocketServer() server: Server;
@@ -83,7 +82,7 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
     }
   }
 
-  public emit(message: WsMessageRequest) {
+  public emit<T>(message: WsMessageRequest<T>) {
     delete (message.data as BaseEvent).userId;
 
     if (message.receiver.userId) {

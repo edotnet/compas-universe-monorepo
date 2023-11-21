@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import ProfileConnectionsItem from "../ProfileConnectionsItem";
-import styles from "./index.module.scss";
 import { authApi } from "@/utils/axios";
-import { IUser } from "@/utils/types/user.types";
+import { IFriend } from "@/utils/types/user.types";
+import styles from "./index.module.scss";
 
 const ProfileConnections = () => {
-  const [connections, setConnections] = useState<IUser[]>([]);
+  const [connections, setConnections] = useState<IFriend[]>([]);
   const [status, setStatus] = useState<string>("Connect");
 
   const handleConnections = useCallback(async () => {
@@ -21,7 +21,7 @@ const ProfileConnections = () => {
         requestUrl += "/friends";
       }
 
-      const { data } = await authApi.get(requestUrl);
+      const { data } = await authApi.get(`${requestUrl}?skip=${0}&take=${10}`);
 
       if (data.length) {
         setConnections(data);
@@ -61,7 +61,6 @@ const ProfileConnections = () => {
             key={connection.id}
             connection={connection}
             status={status}
-            setStatus={setStatus}
           />
         ))}
       </div>

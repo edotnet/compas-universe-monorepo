@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios, { AxiosRequestHeaders } from "axios";
 import { parseCookies } from "nookies";
+import { contextType } from "./types/context.types";
 
 export const api = axios.create({
   withCredentials: true,
@@ -33,3 +34,13 @@ authApi.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const authHeader = (context: contextType): AxiosRequestHeaders | any => {
+  const { accessToken } = parseCookies(context);
+
+  return {
+    headers: {
+      Authorization: accessToken ? `Bearer ${accessToken}` : "",
+    },
+  };
+};

@@ -11,3 +11,13 @@ export interface IUser {
 export interface IExtendedUser extends IUser {
   type: UserTypes;
 }
+
+export interface IUserProfileResponse {
+  user: IExtendedUser;
+  isFriend: boolean;
+}
+
+export interface IFriend extends IUser {
+  isFriend: boolean;
+  me: boolean;
+}

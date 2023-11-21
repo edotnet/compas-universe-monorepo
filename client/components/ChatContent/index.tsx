@@ -26,8 +26,8 @@ const ChatContent = () => {
     } catch (error) {}
 
     socket
-      .off(`${SOCKET_EVENT.NEW_MESSAGE}`)
-      .on(`${SOCKET_EVENT.NEW_MESSAGE}`, async (data: IMessageEvent) => {
+      .off(`${SOCKET_EVENT.MESSAGE_NEW}`)
+      .on(`${SOCKET_EVENT.MESSAGE_NEW}`, async (data: IMessageEvent) => {
         if (data) {
           if (data.chatId === activeChat?.id) {
             setMessages((prev) => [data.message, ...prev]);

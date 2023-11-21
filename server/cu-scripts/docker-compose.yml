@@ -122,6 +122,26 @@ services:
     env_file:
       - ../cu-ws-svc/.env
 
+  notifications-svc:
+    init: true
+    image: notifications
+    container_name: notifications-svc
+    volumes:
+      - ../cu-notifications-svc:/usr/src/app
+    build:
+      context: ../cu-notifications-svc
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5006:5006"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-notifications-svc/.env
+
   rabbitmq:
     init: true
     image: rabbitmq:3-management

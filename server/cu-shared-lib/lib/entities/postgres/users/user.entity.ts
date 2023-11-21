@@ -14,6 +14,7 @@ import * as bcrypt from "bcrypt";
 import { BasePostgresModel } from "../base-postgres.entity";
 import { UserFriend } from "./user-friends.entity";
 import { UserChat } from "./user-chats.entity";
+import { Notifications } from "../notifications";
 
 export enum UserStatus {
   ACTIVE = "ACTIVE",
@@ -70,6 +71,11 @@ export class User extends BasePostgresModel {
     cascade: true,
   })
   chats: UserChat[];
+
+  @OneToMany(() => Notifications, (destination) => destination.user, {
+    cascade: true,
+  })
+  notifications: Notifications[];
 
   @BeforeInsert()
   @BeforeUpdate()
