@@ -1,6 +1,7 @@
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { Module } from "@nestjs/common";
-import { entitiesPostgres } from "../../entities";
+import { entitiesMongo, entitiesPostgres } from "../../entities";
+import { MongooseModule } from "@nestjs/mongoose";
 
 const LOG_SQL_QUERIES = false;
 
@@ -42,10 +43,16 @@ const getPostgresOrmConfig = () => ({
   }),
 });
 
-const dynamicModules = TypeOrmModule.forFeature([...entitiesPostgres]);
+const dynamicModules = TypeOrmModule.forFeature(entitiesPostgres);
+const dynamicModulesMongoose = MongooseModule.forFeature(entitiesMongo);
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync(getPostgresOrmConfig()), dynamicModules],
-  exports: [dynamicModules],
+  imports: [
+    TypeOrmModule.forRootAsync(getPostgresOrmConfig()),
+    MongooseModule.forRoot(process.env.MONGODB_URL),
+    dynamicModules,
+    dynamicModulesMongoose,
+  ],
+  exports: [dynamicModules, dynamicModulesMongoose],
 })
 export class DatabaseModule {}

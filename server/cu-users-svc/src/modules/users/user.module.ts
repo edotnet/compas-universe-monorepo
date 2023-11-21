@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { RedisModule } from '@liaoliaots/nestjs-redis/dist';
 import { EventsModule, TransactionsModule } from '@edotnet/shared-lib';
+import { ChatService } from '../chat/chat.service';
 @Module({
   imports: [
     TransactionsModule,
@@ -18,7 +19,7 @@ import { EventsModule, TransactionsModule } from '@edotnet/shared-lib';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, ChatService],
   exports: [UserService],
 })
 export class UserModule {}

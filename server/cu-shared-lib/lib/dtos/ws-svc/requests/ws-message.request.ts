@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsOptional } from "class-validator";
+import { IsArray, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { BaseEvent } from "../../events/base.event";
 
 export class WsReceiver {
   @IsOptional()
+  @IsNumber()
   @ApiProperty()
   userId?: number;
 }

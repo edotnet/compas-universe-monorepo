@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository, Not, In } from 'typeorm';
+import { Repository, In, Brackets } from 'typeorm';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import * as bcrypt from 'bcrypt';
 import {
@@ -28,8 +28,13 @@ import {
   FriendRequest,
   FriendStatus,
   FriendRequestRespondRequest,
+  ChatMessages,
+  Chat,
 } from '@edotnet/shared-lib';
 import { mapUsersToGetUsersResponse } from './user.serializer';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class UserService {
@@ -39,8 +44,13 @@ export class UserService {
     private userFriendsRepository: Repository<UserFriend>,
     @InjectRepository(Provider)
     private providerRepository: Repository<Provider>,
+    @InjectRepository(Chat)
+    private chatRepository: Repository<Chat>,
+    @InjectModel(ChatMessages.name)
+    private chatMessagesRepository: Model<ChatMessages>,
     private readonly transactionsService: TransactionsService,
     private readonly redisService: RedisService,
+    private readonly chatService: ChatService,
   ) {}
 
   async upsertUser(dto: OauthUserRequest): Promise<User> {
@@ -373,10 +383,12 @@ export class UserService {
       }),
     ]);
 
+    await this.chatService.removeConfersations(userId, friends);
+
     if (!friends.length) {
       throw new RpcException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: 'USER_FRIEND_DOES_NOT_EXIST',
+        message: 'USER_IS_NOT_FRIEND',
       });
     }
 

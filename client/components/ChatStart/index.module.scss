@@ -1,0 +1,22 @@
+.chatStart {
+    flex-basis: 75%;
+    
+    .chatStartContent {
+        background: url(../../public/images/logo-blured.png), linear-gradient(#7D43A417, #2D34DA00, #D5CCFF8C);;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 28px 50px;
+        height: calc(100vh - 105px);
+        width: 100%;
+    }
+
+    .chatHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 32px;
+        height: 105px;
+        border-left: 1px solid #E3E8E7;
+        border-bottom: 1px solid #E3E8E7;
+    }
+}

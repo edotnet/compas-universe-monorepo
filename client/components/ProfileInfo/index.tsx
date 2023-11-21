@@ -1,27 +1,16 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { authApi } from "@/utils/axios";
-import { IExtendedUser } from "@/utils/types/user.types";
-import styles from "./index.module.scss";
+import { useContext, useState } from "react";
 import AuthService from "@/services/AuthService";
 import { useRouter } from "next/router";
+import styles from "./index.module.scss";
+import { GlobalContext } from "@/context/Global.context";
 
 const ProfileInfo = () => {
-  const [me, setMe] = useState<IExtendedUser>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const router = useRouter();
 
-  useEffect(() => {
-    try {
-      (async () => {
-        const { data } = await authApi.get("/users/me");
-        if (data) {
-          setMe(data);
-        }
-      })();
-    } catch (error) {}
-  }, []);
+  const { me } = useContext(GlobalContext)!;
 
   const handleLogout = async () => {
     await AuthService.logout();
@@ -42,7 +31,7 @@ const ProfileInfo = () => {
         <div className={styles.profileImgContainer}>
           <picture>
             <img
-              src={me?.profilePicture}
+              src={me?.profilePicture || "/images/no-profile-picture.jpeg"}
               alt="profile"
               width={247}
               height={186}

@@ -1,6 +1,5 @@
 import { ReactElement } from "react";
 import styles from "./index.module.scss";
-import LanguageSwitcher from "../LanguageSwitcher";
 
 interface IProps {
   component: ReactElement;
@@ -9,7 +8,6 @@ interface IProps {
 
 const LoginPagesWrapper = ({ component, register }: IProps) => (
   <div className={styles.wrapper}>
-    {/* <LanguageSwitcher/> */}
     <div className={styles.imgContainer}>
       <div className={register ? styles.register : styles.login}></div>
     </div>
