@@ -4,21 +4,27 @@ import {
   EmptyResponse,
   FriendRequest,
   FriendRequestRespondRequest,
+  GetFriendsRequest,
+  GetNoneFriendsRequest,
   USER_FRIENDS_GET,
   USER_ME_GET,
   USER_NON_FRIENDS_GET,
+  USER_PROFILE_GET,
   USER_REQUEST_FRIEND,
   USER_RESPOND_TO_FRIEND_REQUEST,
   USER_UNFRIEND,
   User,
+  UserExtendedResponse,
   UserResponse,
   UsersServiceName,
+  getUserProfileResponse,
 } from '@edotnet/shared-lib';
 import {
   Body,
   Controller,
   Get,
   Inject,
+  Param,
   Post,
   Query,
   UseGuards,
@@ -36,8 +42,8 @@ export class UsersController {
   constructor(@Inject(UsersServiceName) private readonly client: ClientProxy) {}
 
   @Get('/me')
-  @ApiOkResponse({ type: UserResponse })
-  async getMe(@UserGuard() user: User): Promise<UserResponse> {
+  @ApiOkResponse({ type: UserExtendedResponse })
+  async getMe(@UserGuard() user: User): Promise<UserExtendedResponse> {
     return this.client
       .send(USER_ME_GET, ComposeAuthorizedDto(user, {}))
       .toPromise();
@@ -78,17 +84,34 @@ export class UsersController {
 
   @Get('/friends')
   @ApiOkResponse({ type: UserResponse, isArray: true })
-  async getFriends(@UserGuard() user: User): Promise<UserResponse[]> {
+  async getFriends(
+    @UserGuard() user: User,
+    @Query() dto: GetFriendsRequest,
+  ): Promise<UserResponse[]> {
     return this.client
-      .send(USER_FRIENDS_GET, ComposeAuthorizedDto(user, {}))
+      .send(USER_FRIENDS_GET, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
   @Get('/non-friends')
   @ApiOkResponse({ type: UserResponse, isArray: true })
-  async getNonFriends(@UserGuard() user: User): Promise<UserResponse[]> {
+  async getNonFriends(
+    @UserGuard() user: User,
+    @Query() dto: GetNoneFriendsRequest,
+  ): Promise<UserResponse[]> {
     return this.client
-      .send(USER_NON_FRIENDS_GET, ComposeAuthorizedDto(user, {}))
+      .send(USER_NON_FRIENDS_GET, ComposeAuthorizedDto(user, dto))
+      .toPromise();
+  }
+
+  @Get('/profile/:friendId')
+  @ApiOkResponse({ type: getUserProfileResponse })
+  async getUserProfile(
+    @UserGuard() user: User,
+    @Param() dto: FriendRequest,
+  ): Promise<getUserProfileResponse> {
+    return this.client
+      .send(USER_PROFILE_GET, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 }

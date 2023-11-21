@@ -7,6 +7,8 @@ import {
   ForgotPasswordRequest,
   FriendRequest,
   FriendRequestRespondRequest,
+  GetFriendsRequest,
+  GetNoneFriendsRequest,
   GetUserByEmailRequest,
   InjectAuth,
   OAUTH_UPSERT_USER,
@@ -19,6 +21,7 @@ import {
   USER_LOGIN,
   USER_ME_GET,
   USER_NON_FRIENDS_GET,
+  USER_PROFILE_GET,
   USER_REGISTER,
   USER_REQUEST_FRIEND,
   USER_RESET_PASSWORD,
@@ -27,6 +30,7 @@ import {
   USER_VALIDATE,
   USER_VERIFY_EMAIL,
   User,
+  UserExtendedResponse,
   UserResponse,
   ValidateUserRequest,
   VerifyEmailRequest,
@@ -77,7 +81,7 @@ export class UserController {
   }
 
   @MessagePattern(USER_ME_GET)
-  async getMe(dto: InjectAuth<EmptyRequest>): Promise<UserResponse> {
+  async getMe(dto: InjectAuth<EmptyRequest>): Promise<UserExtendedResponse> {
     return this.service.getMe(dto.userId);
   }
 
@@ -99,12 +103,21 @@ export class UserController {
   }
 
   @MessagePattern(USER_NON_FRIENDS_GET)
-  async getNonFriends(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
-    return this.service.getNonFriends(dto.userId);
+  async getNonFriends(
+    dto: InjectAuth<GetNoneFriendsRequest>,
+  ): Promise<UserResponse[]> {
+    return this.service.getNonFriends(dto.userId, dto);
   }
 
   @MessagePattern(USER_FRIENDS_GET)
-  async getFriends(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
-    return this.service.getFriends(dto.userId);
+  async getFriends(
+    dto: InjectAuth<GetFriendsRequest>,
+  ): Promise<UserResponse[]> {
+    return this.service.getFriends(dto.userId, dto);
+  }
+
+  @MessagePattern(USER_PROFILE_GET)
+  async getUserProfile(dto: InjectAuth<FriendRequest>): Promise<any> {
+    return this.service.getUserProfile(dto.userId, dto);
   }
 }

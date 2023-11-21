@@ -288,22 +288,24 @@ export class ChatService {
   }
 
   async removeConfersations(userId: number, friends: UserFriend[]) {
-    friends.map(async (f: UserFriend) => {
-      const userIds: number[] = [f.friend.id, userId];
+    if (friends.length) {
+      friends.map(async (f: UserFriend) => {
+        const userIds: number[] = [f.friend.id, userId];
 
-      const chat: Chat = await this.getChatForUsers(userIds);
-      if (chat) {
-        chat.archived = true;
+        const chat: Chat = await this.getChatForUsers(userIds);
+        if (chat) {
+          chat.archived = true;
 
-        await this.chatRepository.save(chat);
-        await this.chatMessagesRepository.deleteMany(
-          {
-            chatId: chat.id,
-          },
-          { $eq: ['$user.id', userId] },
-        );
-      }
-    });
+          await this.chatRepository.save(chat);
+          await this.chatMessagesRepository.deleteMany(
+            {
+              chatId: chat.id,
+            },
+            { $eq: ['$user.id', userId] },
+          );
+        }
+      });
+    }
   }
 
   private async getUserFriends(

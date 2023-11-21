@@ -7,6 +7,7 @@ import { BullModule } from '@nestjs/bull';
 import {
   CustomLoggerService,
   ErrorFilter,
+  EventsModule,
   HttpErrorFilter,
   LoggerInterceptor,
   QueryErrorFilter,
@@ -59,6 +60,7 @@ const logger = [
         },
       }),
     }),
+    EventsModule,
     ServicesModule,
     AsyncHooksModule,
     UserModule,

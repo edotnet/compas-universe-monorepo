@@ -1,23 +1,18 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumber, IsOptional } from "class-validator";
 
 export class WsReceiver {
   @IsOptional()
   @IsNumber()
-  @ApiProperty()
   userId?: number;
 }
 
-export class WsMessageRequest {
+export class WsMessageRequest<T> {
   @IsNotEmpty()
-  @ApiProperty({ type: WsReceiver })
   receiver: WsReceiver;
 
   @IsNotEmpty()
-  @ApiProperty()
   message: string;
 
   @IsNotEmpty()
-  @ApiProperty()
-  data: unknown;
+  data: T;
 }
