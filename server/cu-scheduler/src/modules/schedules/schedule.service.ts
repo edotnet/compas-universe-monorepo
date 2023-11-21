@@ -1,10 +1,9 @@
+import { Provider, User } from '@edotnet/shared-lib';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Provider } from './entities/provider.entity';
 import { providers } from 'src/common/constants/seeds/providers.seed';
-import { User } from './entities/user.entity';
 import { users } from 'src/common/constants/seeds/users.seed';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ScheduleService {

@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import styles from "./index.module.scss";
 import { api } from "@/utils/axios";
+import { errorHelper } from "@/utils/helpers/error.helper";
 
 interface IProps {
   email: string;
-  setError: (value: string) => void
+  setError: (value: string) => void;
 }
 
 const Timer = ({ email, setError }: IProps) => {
   const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
+  const [codeSent, setCodeSent] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,22 +20,26 @@ const Timer = ({ email, setError }: IProps) => {
       } else if (minutes > 0) {
         setMinutes(minutes - 1);
         setSeconds(59);
-      } else {
+      } else if(!codeSent) {
         clearInterval(interval);
         (async () => {
           try {
             await api.post("/auth/forgot-password", { email });
-          } catch (error) {
-            setError("Limit reached")
+          } catch (error: any) {
+            setError(errorHelper(error?.response?.data.message));
           }
+
+          setCodeSent(true);
         })();
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [minutes, seconds]);
+  }, [minutes, seconds, codeSent]);
 
-  return (
+  return codeSent ? (
+    <p className={styles.timer}>Code sent</p>
+  ) : (
     <p className={styles.timer}>
       Send code again{" "}
       <span>

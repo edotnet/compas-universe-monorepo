@@ -1,7 +1,4 @@
-import {
-  OAuthProviders,
-  Provider,
-} from 'src/modules/schedules/entities/provider.entity';
+import { OAuthProviders, Provider } from '@edotnet/shared-lib';
 import { DeepPartial } from 'typeorm';
 
 export const providers: Array<DeepPartial<Provider>> = Object.values(

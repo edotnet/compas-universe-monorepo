@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RpcException } from '@nestjs/microservices';
-import { Repository } from 'typeorm';
+import { Repository, In, Brackets } from 'typeorm';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import * as bcrypt from 'bcrypt';
 import {
@@ -12,24 +12,45 @@ import {
   Provider,
   RegisterRequest,
   ResetPasswordRequest,
+  UserResponse,
   ValidateUserRequest,
   VerifyEmailRequest,
   VerifyEmailResponse,
   generateRandomCode,
+  TransactionsService,
+  UserProvider,
+  UserProfile,
+  User,
+  UserStatus,
+  UserRoles,
+  mapUserToUserExtendedResponse,
+  UserFriend,
+  FriendRequest,
+  FriendStatus,
+  FriendRequestRespondRequest,
+  ChatMessages,
+  Chat,
 } from '@edotnet/shared-lib';
-import { TransactionsService } from './transactions';
-import { User, UserRoles, UserStatus } from './entities/user.entity';
-import { UserProvider } from './entities/user-provider.entity';
-import { UserProfile } from './entities/user-profile.entity';
+import { mapUsersToGetUsersResponse } from './user.serializer';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(UserFriend)
+    private userFriendsRepository: Repository<UserFriend>,
     @InjectRepository(Provider)
     private providerRepository: Repository<Provider>,
+    @InjectRepository(Chat)
+    private chatRepository: Repository<Chat>,
+    @InjectModel(ChatMessages.name)
+    private chatMessagesRepository: Model<ChatMessages>,
     private readonly transactionsService: TransactionsService,
     private readonly redisService: RedisService,
+    private readonly chatService: ChatService,
   ) {}
 
   async upsertUser(dto: OauthUserRequest): Promise<User> {
@@ -93,7 +114,17 @@ export class UserService {
     user.email = dto.email;
     user.status = UserStatus.PENDING;
     user.password = dto.password;
-    user.userName = dto.userName;
+    user.profile = new UserProfile();
+    user.profile.userName = dto.userName;
+
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async login(userId: number): Promise<User> {
+    const user = await this.checkUserExistsById(userId);
+    user.status = UserStatus.ACTIVE;
 
     await this.userRepository.save(user);
 
@@ -137,7 +168,7 @@ export class UserService {
 
     if (currentAttempts && parseInt(currentAttempts) >= 2) {
       throw new RpcException({
-        httpStatus: HttpStatus.TOO_MANY_REQUESTS,
+        statusCode: HttpStatus.TOO_MANY_REQUESTS,
         message: 'LIMIT_REACHED_TRY_LATER',
       });
     }
@@ -170,7 +201,7 @@ export class UserService {
 
     if (code !== dto.code) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'INVALID_CODE',
       });
     }
@@ -192,6 +223,180 @@ export class UserService {
     return {};
   }
 
+  async getMe(userId: number): Promise<UserResponse> {
+    const user = await this.checkUserExistsById(userId);
+
+    return mapUserToUserExtendedResponse(user);
+  }
+
+  async getFriends(userId: number): Promise<any> {
+    const friends = await this.userFriendsRepository.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['friend'],
+    });
+
+    const users = await this.userRepository.find({
+      where: { id: In(friends.map((f) => f.friend.id)) },
+      relations: ['profile'],
+    });
+
+    return mapUsersToGetUsersResponse(users);
+  }
+
+  async getNonFriends(userId: number): Promise<UserResponse[]> {
+    const nonFriends = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.profile', 'profile')
+      .leftJoin('user.friends', 'friends')
+      .where('user.id != :userId AND user.status = :userStatus', {
+        userId,
+        userStatus: UserStatus.ACTIVE,
+      })
+      .andWhere((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('friend.friendId')
+          .from(UserFriend, 'friend')
+          .where('friend.userId = :userId', { userId })
+          // .andWhere('friends.status != :status', {
+          //   status: FriendStatus.ACCEPTED,
+          // })
+          .getQuery();
+        return `user.id NOT IN (${subQuery})`;
+      })
+      .getMany();
+
+    return mapUsersToGetUsersResponse(nonFriends);
+  }
+
+  // NOT IN USE YET, NEED NOTIFICATIONS
+  async respondFriendRequest(
+    userId: number,
+    dto: FriendRequestRespondRequest,
+  ): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.friendId);
+
+    const friendRequst = await this.userFriendsRepository.findOne({
+      where: {
+        friend: { id: userId },
+        user: { id: user.id },
+        status: FriendStatus.PENDING,
+      },
+    });
+
+    if (!friendRequst) {
+      throw new RpcException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: 'USER_FRIEND_DOES_NOT_EXIST',
+      });
+    }
+
+    friendRequst.status = dto.status;
+
+    const newFriend = new UserFriend();
+
+    newFriend.user = new User();
+    newFriend.user.id = userId;
+    newFriend.friend = user;
+    newFriend.status = FriendStatus.ACCEPTED;
+
+    await this.userFriendsRepository.save([friendRequst, newFriend]);
+
+    return {};
+  }
+
+  async requestFriend(
+    userId: number,
+    dto: FriendRequest,
+  ): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.friendId);
+
+    if (dto.friendId === userId) {
+      throw new RpcException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
+      });
+    }
+
+    const friends = await Promise.all([
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: userId },
+          friend: { id: user.id },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: user.id },
+          friend: { id: userId },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+    ]);
+
+    if (!friends.length) {
+      throw new RpcException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
+      });
+    }
+
+    const userRequest = new UserFriend();
+
+    userRequest.user = new User();
+    userRequest.user.id = userId;
+    userRequest.friend = user;
+    userRequest.status = FriendStatus.ACCEPTED;
+
+    const frientRequest = new UserFriend();
+
+    frientRequest.friend = new User();
+    frientRequest.friend.id = userId;
+    frientRequest.user = user;
+    frientRequest.status = FriendStatus.ACCEPTED;
+
+    await this.userFriendsRepository.save([userRequest, frientRequest]);
+
+    return {};
+  }
+
+  async unfriend(userId: number, dto: FriendRequest): Promise<EmptyResponse> {
+    const user = await this.checkUserExistsById(dto.friendId);
+
+    const friends = await Promise.all([
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: userId },
+          friend: { id: user.id },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+      this.userFriendsRepository.findOne({
+        where: {
+          user: { id: user.id },
+          friend: { id: userId },
+          status: FriendStatus.ACCEPTED,
+        },
+      }),
+    ]);
+
+    await this.chatService.removeConfersations(userId, friends);
+
+    if (!friends.length) {
+      throw new RpcException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: 'USER_IS_NOT_FRIEND',
+      });
+    }
+
+    await this.userFriendsRepository.remove(friends);
+
+    return {};
+  }
+
   private async checkUserExistsByEmail(email: string): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { email },
@@ -199,9 +404,25 @@ export class UserService {
 
     if (user) {
       throw new RpcException({
-        httpStatus: HttpStatus.FORBIDDEN,
+        statusCode: HttpStatus.FORBIDDEN,
         message: 'USER_ALREADY_EXISTS',
       });
     }
+  }
+
+  private async checkUserExistsById(id: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['profile'],
+    });
+
+    if (!user) {
+      throw new RpcException({
+        statusCode: HttpStatus.FORBIDDEN,
+        message: 'USER_DOES_NOT_EXIST',
+      });
+    }
+
+    return user;
   }
 }

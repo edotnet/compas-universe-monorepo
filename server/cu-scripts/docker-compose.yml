@@ -11,7 +11,7 @@ services:
       context: ../cu-api-gateway
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     depends_on:
@@ -31,7 +31,7 @@ services:
       context: ../cu-users-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -51,7 +51,7 @@ services:
       context: ../cu-scheduler
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -71,7 +71,7 @@ services:
       context: ../cu-migrations
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -91,7 +91,7 @@ services:
       context: ../cu-transactions-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -101,6 +101,26 @@ services:
       - rabbitmq
     env_file:
       - ../cu-transactions-svc/.env
+
+  ws-svc:
+    init: true
+    image: ws
+    container_name: ws-svc
+    volumes:
+      - ../cu-ws-svc:/usr/src/app
+    build:
+      context: ../cu-ws-svc
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5005:5005"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-ws-svc/.env
 
   rabbitmq:
     init: true
@@ -133,6 +153,17 @@ services:
       POSTGRES_DB: testdb
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+
+  mongodb:
+    init: true
+    image: mongo:latest
+    container_name: cu-mongo
+    networks:
+      - "cu"
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
 
   redis:
     init: true

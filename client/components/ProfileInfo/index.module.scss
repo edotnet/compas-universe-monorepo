@@ -1,0 +1,105 @@
+.profileInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+
+    .profileImgContainer {
+        display: flex;
+        align-items: center;
+        gap: 33px;
+
+        picture {
+            img {
+                border-radius: 12px;
+            }
+        }
+
+        .profileDetails {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+
+            p {
+                color: #272727;
+                font-weight: 600;
+                font-size: 36px;
+            }
+
+            span {
+                font-weight: 400;
+                font-size: 20px;
+                color: #7A8580;
+            }
+
+            .buttons {
+                display: flex;
+                align-items: center;
+                gap: 18px;
+                
+                button {
+                    border-radius: 6px;
+                    font-size: 15px;
+                    cursor: pointer;
+                }
+                
+                button:nth-of-type(1) {
+                    padding: 11px 15px;
+                    background-color: #882BFF;
+                    color: #FAFAFA;
+                    border: none;
+                }
+
+                button:nth-of-type(2) {
+                    padding: 2px 15px 13px;
+                    background-color: transparent;
+                    color: #AFB6B2;
+                    border: 1px solid #AFB6B3;
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+    .logout {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background-color: transparent;
+        border: none;
+        font-weight: 500;
+        color: #882BFF;
+        cursor: pointer;
+    }
+
+    img {
+        cursor: pointer;
+    }
+
+}
+
+.loadingBar {
+    width: 100%;
+    background-color: #eee;
+}
+
+.loadingBar .progress {
+    width: 0;
+    height: 5px;
+    border-radius: 10px;
+    background-color: #882BFF;
+    position: absolute;
+    animation: loading 2s linear infinite;
+}
+
+@keyframes loading {
+    0% {
+        width: 0;
+    }
+    50% {
+        width: 50%;
+    }
+    100% {
+        width: 100%;
+    }
+}

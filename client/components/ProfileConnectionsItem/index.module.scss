@@ -1,0 +1,34 @@
+.profileConnectionsItem {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+
+    p {
+        color: #6B7280;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 120px;
+    }
+
+    picture {
+        img {
+            border-radius: 50%;
+            border: 2px solid #272727;
+            outline: 3px solid #C8BFBF;
+        }
+    }
+
+    button {
+        border-radius: 1.91px;
+        background-color: #7414EE;
+        color: #FFFFFF;
+        border: none;
+        padding: 4.77px 0;
+        width: 95px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+}

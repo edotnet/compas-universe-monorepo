@@ -3,6 +3,7 @@ import LogoContent from "../LogoContent";
 import styles from "./index.module.scss";
 import { api } from "@/utils/axios";
 import Timer from "../Timer";
+import { errorHelper } from "@/utils/helpers/error.helper";
 
 interface IProps {
   setVerifyEmail: (value: boolean) => void;
@@ -32,16 +33,7 @@ const CheckEmailContent = ({ setVerifyEmail, setSendEmail, email }: IProps) => {
         }
         setError("");
       } catch (error: any) {
-        setError("Something went wrong");
-        
-        if (error?.response?.data.message) {
-          setError(
-            error.response.data.message
-              .split("_")
-              .map((str: string) => str.toLowerCase())
-              .join(" ")
-          );
-        }
+        setError(errorHelper(error?.response?.data.message));
       }
     }
   }, []);

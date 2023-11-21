@@ -2,21 +2,12 @@ import { Module } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { RedisModule } from '@liaoliaots/nestjs-redis/dist';
-import { TransactionsModule, TransactionsService } from './transactions';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { BullModule } from '@nestjs/bull';
-import { Provider } from './entities/provider.entity';
-import { UserProvider } from './entities/user-provider.entity';
-import { UserProfile } from './entities/user-profile.entity';
-import { TransactionsServiceName } from '@edotnet/shared-lib';
+import { EventsModule, TransactionsModule } from '@edotnet/shared-lib';
+import { ChatService } from '../chat/chat.service';
 @Module({
   imports: [
-    BullModule.registerQueue({
-      name: TransactionsServiceName,
-    }),
-    TypeOrmModule.forFeature([User, Provider, UserProvider, UserProfile]),
     TransactionsModule,
+    EventsModule,
     RedisModule.forRoot({
       config: {
         host: process.env.REDIS_HOST,
@@ -28,7 +19,7 @@ import { TransactionsServiceName } from '@edotnet/shared-lib';
     }),
   ],
   controllers: [UserController],
-  providers: [UserService, TransactionsService],
+  providers: [UserService, ChatService],
   exports: [UserService],
 })
 export class UserModule {}

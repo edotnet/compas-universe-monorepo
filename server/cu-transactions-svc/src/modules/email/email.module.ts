@@ -3,7 +3,7 @@ import { EmailService } from './email.service';
 import { ConfigService } from '@nestjs/config';
 import { EmailAdapter } from 'src/adapters/email.adapter';
 import { EmailProcessor } from './email.processor';
-import { TransactionsModule } from './transactions';
+import { TransactionsModule } from '@edotnet/shared-lib';
 
 @Module({
   imports: [TransactionsModule],

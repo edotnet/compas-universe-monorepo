@@ -12,6 +12,7 @@ import * as util from 'util';
 import { controllers } from './api/controllers';
 import { AuthModule } from './api/auth/auth.module';
 import { ServicesModule } from '@edotnet/shared-lib';
+import { ChatModule } from './api/chat/chat.module';
 
 export function sanitizeRequest(o) {
   const obj = { ...o };
@@ -126,8 +127,9 @@ export const getUserIdFromAuthHeader = (headers) => {
     }),
     AuthModule,
     UsersModule,
+    ChatModule,
     AsyncHooksModule,
-    // ServicesModule,
+    ServicesModule,
     RedisModule.forRoot({
       config: {
         host: process.env.REDIS_HOST,
@@ -141,11 +143,11 @@ export const getUserIdFromAuthHeader = (headers) => {
       isGlobal: true,
     }),
   ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpErrorFilter,
-    },
-  ],
+  // providers: [
+  //   {
+  //     provide: APP_FILTER,
+  //     useClass: HttpErrorFilter,
+  //   },
+  // ],
 })
 export class AppModule {}

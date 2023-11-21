@@ -5,6 +5,7 @@ import { api } from "@/utils/axios";
 import CheckEmailContent from "../CheckEmailContent";
 import ChangePasswordContent from "../ChangePasswordContent";
 import PasswordChangedContent from "../PasswordChangedContent";
+import { errorHelper } from "@/utils/helpers/error.helper";
 
 const ForgotPasswordContent = () => {
   const [error, setError] = useState<string>("");
@@ -27,21 +28,11 @@ const ForgotPasswordContent = () => {
 
       try {
         await api.post("/auth/forgot-password", payload);
-        console.log(sendEmail, "1q1111111111111111111111111");
 
         setError("");
         setSendEmail(true);
-        console.log(sendEmail, "222222222222222222222222");
       } catch (error: any) {
-        setError("Something went wrong");
-        if (typeof error?.response?.data.message === "string") {
-          setError(
-            error.response.data.message
-              .split("_")
-              .map((str: string) => str.toLowerCase())
-              .join(" ")
-          );
-        }
+        setError(errorHelper(error?.response?.data.message));
       }
     }
   };

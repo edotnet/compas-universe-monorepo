@@ -16,11 +16,13 @@ import { AllowUnauthorized } from './guards/allow-unauthorized.guard';
 import { UserGuard } from './guards/user.guard';
 import { LOCAL_STRATEGY_NAME } from 'src/common/constants';
 import {
+  ComposeAuthorizedDto,
   ForgotPasswordRequest,
   OAUTH_UPSERT_USER,
   OAuthProviders,
   OauthUserRequest,
   USER_FORGOT_PASSWORD,
+  USER_LOGIN,
   USER_REGISTER,
   USER_RESET_PASSWORD,
   USER_VERIFY_EMAIL,
@@ -70,7 +72,11 @@ export class AuthController {
   @UseGuards(AuthGuard(LOCAL_STRATEGY_NAME))
   @AllowUnauthorized()
   async login(@UserGuard() user: User, @Res() res) {
-    const redirectUrl = this.createSignInRedirectUrl(user);
+    const loggedInUser = await this.client
+      .send(USER_LOGIN, ComposeAuthorizedDto(user, {}))
+      .toPromise();
+
+    const redirectUrl = this.createSignInRedirectUrl(loggedInUser);
 
     return res.send(redirectUrl);
   }
@@ -111,10 +117,7 @@ export class AuthController {
 
   private async loginUser(user): Promise<[any, string]> {
     try {
-      return [
-        await this.client.send(OAUTH_UPSERT_USER, user).toPromise(),
-        '',
-      ];
+      return [await this.client.send(OAUTH_UPSERT_USER, user).toPromise(), ''];
     } catch (error) {
       const url = this.unauthorizedUrl();
 

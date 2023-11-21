@@ -19,3 +19,4 @@ replaceShared cu-scheduler
 replaceShared cu-migrations
 replaceShared cu-users-svc
 replaceShared cu-transactions-svc 
+replaceShared cu-ws-svc

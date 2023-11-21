@@ -2,20 +2,32 @@ import { Controller, Inject } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
 import { UserService } from './user.service';
 import {
+  EmptyRequest,
   EmptyResponse,
   ForgotPasswordRequest,
+  FriendRequest,
+  FriendRequestRespondRequest,
   GetUserByEmailRequest,
+  InjectAuth,
   OAUTH_UPSERT_USER,
   OauthUserRequest,
   RegisterRequest,
   ResetPasswordRequest,
   USER_FORGOT_PASSWORD,
+  USER_FRIENDS_GET,
   USER_GET_BY_EMAIL,
+  USER_LOGIN,
+  USER_ME_GET,
+  USER_NON_FRIENDS_GET,
   USER_REGISTER,
+  USER_REQUEST_FRIEND,
   USER_RESET_PASSWORD,
+  USER_RESPOND_TO_FRIEND_REQUEST,
+  USER_UNFRIEND,
   USER_VALIDATE,
   USER_VERIFY_EMAIL,
   User,
+  UserResponse,
   ValidateUserRequest,
   VerifyEmailRequest,
 } from '@edotnet/shared-lib';
@@ -32,6 +44,11 @@ export class UserController {
   @MessagePattern(USER_REGISTER)
   async register(dto: RegisterRequest): Promise<User> {
     return this.service.register(dto);
+  }
+
+  @MessagePattern(USER_LOGIN)
+  async login(dto: InjectAuth<EmptyRequest>): Promise<User> {
+    return this.service.login(dto.userId);
   }
 
   @MessagePattern(USER_VALIDATE)
@@ -57,5 +74,37 @@ export class UserController {
   @MessagePattern(USER_RESET_PASSWORD)
   async resetPassword(dto: ResetPasswordRequest): Promise<EmptyResponse> {
     return this.service.resetPassword(dto);
+  }
+
+  @MessagePattern(USER_ME_GET)
+  async getMe(dto: InjectAuth<EmptyRequest>): Promise<UserResponse> {
+    return this.service.getMe(dto.userId);
+  }
+
+  @MessagePattern(USER_REQUEST_FRIEND)
+  async requestFriend(dto: InjectAuth<FriendRequest>): Promise<EmptyResponse> {
+    return this.service.requestFriend(dto.userId, dto);
+  }
+
+  @MessagePattern(USER_RESPOND_TO_FRIEND_REQUEST)
+  async respondFriendRequest(
+    dto: InjectAuth<FriendRequestRespondRequest>,
+  ): Promise<EmptyResponse> {
+    return this.service.respondFriendRequest(dto.userId, dto);
+  }
+
+  @MessagePattern(USER_UNFRIEND)
+  async unfollow(dto: InjectAuth<FriendRequest>): Promise<EmptyResponse> {
+    return this.service.unfriend(dto.userId, dto);
+  }
+
+  @MessagePattern(USER_NON_FRIENDS_GET)
+  async getNonFriends(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
+    return this.service.getNonFriends(dto.userId);
+  }
+
+  @MessagePattern(USER_FRIENDS_GET)
+  async getFriends(dto: InjectAuth<EmptyRequest>): Promise<UserResponse[]> {
+    return this.service.getFriends(dto.userId);
   }
 }

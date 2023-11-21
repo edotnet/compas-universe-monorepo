@@ -1,0 +1,50 @@
+.sidebar {
+    background-color: #FFFFFF;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 31px;
+
+    ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 9.54px;
+
+        a {
+            text-decoration: none;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 9.54px;
+            color: #939393;
+            padding: 9.54px;
+            border-radius: 3.82px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+    }
+
+    .firstMenu {
+        .active {
+            background-color: #7414EE;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+    }
+
+    .secondMenu {
+        border-top: 1px solid #C4C4C4;
+        padding-top: 56px;
+
+        li {
+            font-size: 14px;
+        }
+    
+        li:nth-of-type(1) {
+            gap: 19.08px;
+        }
+    }
+}
