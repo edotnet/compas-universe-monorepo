@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
-import ProfileConnectionsItem from "../ProfileConnectionsItem";
 import { authApi } from "@/utils/axios";
 import { IFriend } from "@/utils/types/user.types";
+import { useRouter } from "next/router";
+import ViewProfileConnectionsItem from "../ViewProfileConnectionsItem";
 import styles from "./index.module.scss";
 
-const ProfileConnections = () => {
+const ViewProfileConnections = () => {
   const [connections, setConnections] = useState<IFriend[]>([]);
   const [status, setStatus] = useState<string>("Connect");
+
+  const router = useRouter();
 
   const handleConnections = useCallback(async () => {
     setConnections([]);
@@ -21,19 +24,25 @@ const ProfileConnections = () => {
         requestUrl += "/friends";
       }
 
-      const { data } = await authApi.get(`${requestUrl}?skip=${0}&take=${10}`);
+      requestUrl += `?skip=${0}&take=${10}`;
+
+      if (router.query.id) {
+        requestUrl += `&friendId=${router.query.id}`;
+      }
+
+      const { data } = await authApi.get(requestUrl);
 
       if (data.length) {
         setConnections(data);
       }
     } catch (error) {}
-  }, [status]);
+  }, [status, router.query.id]);
 
   useEffect(() => {
     (async () => {
       await handleConnections();
     })();
-  }, [status]);
+  }, [status, router.query.id]);
 
   return (
     <div className={styles.profileConnections}>
@@ -56,11 +65,10 @@ const ProfileConnections = () => {
       </div>
       <div className={styles.itemContainer}>
         {connections.map((connection) => (
-          <ProfileConnectionsItem
-            setConnections={setConnections}
+          <ViewProfileConnectionsItem
             key={connection.id}
             connection={connection}
-            status={status}
+            setConnections={setConnections}
           />
         ))}
       </div>
@@ -68,4 +76,4 @@ const ProfileConnections = () => {
   );
 };
 
-export default ProfileConnections;
+export default ViewProfileConnections;

@@ -1,4 +1,4 @@
-export enum ErrorEnum {
+enum ErrorEnum {
   DEFAULT = "DEFAULT",
   INVALID_CODE = "INVALID_CODE",
   USER_IS_NOT_FRIEND = "USER_IS_NOT_FRIEND",
@@ -7,3 +7,5 @@ export enum ErrorEnum {
   LIMIT_REACHED_TRY_LATER = "LIMIT_REACHED_TRY_LATER",
   USER_DEACTIVATED_OR_CANCELLED = "USER_DEACTIVATED_OR_CANCELLED",
 }
+
+export default ErrorEnum

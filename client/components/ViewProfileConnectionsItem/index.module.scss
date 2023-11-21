@@ -24,12 +24,25 @@
 
     button {
         border-radius: 1.91px;
-        background-color: #7414EE;
-        color: #FFFFFF;
         border: none;
         padding: 4.77px 0;
         width: 95px;
         font-size: 13px;
+    }
+
+    .connect {
+        background-color: #7414EE;
+        color: #FFFFFF;
         cursor: pointer;
+    }
+
+    .connected {
+        background-color: transparent;
+        color: #7414EE;
+        cursor: default;
+    }
+
+    .me {
+        color: #7414EE;
     }
 }

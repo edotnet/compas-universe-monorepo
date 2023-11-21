@@ -1,27 +1,28 @@
-import { Dispatch, SetStateAction, memo, useCallback, useState } from "react";
-import styles from "./index.module.scss";
+import { Dispatch, SetStateAction, memo, useCallback } from "react";
+import { useRouter } from "next/router";
 import { authApi } from "@/utils/axios";
-import { IUser } from "@/utils/types/user.types";
+import { IFriend } from "@/utils/types/user.types";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import ERROR_MESSAGES from "@/utils/constants/error-messages.constant";
-import { ErrorEnum } from "@/utils/types/enums/error.enum";
+import ErrorEnum from "@/utils/types/enums/error.enum";
 import { ToastError } from "@/utils/toastify";
+import styles from "./index.module.scss";
 
 interface IProps {
   status: string;
-  connection: IUser;
-  setStatus: Dispatch<SetStateAction<string>>;
-  setConnections: Dispatch<SetStateAction<IUser[]>>;
+  connection: IFriend;
+  setConnections: Dispatch<SetStateAction<IFriend[]>>;
 }
 
 const ProfileConnectionsItem = ({
   status,
-  setStatus,
   connection,
   setConnections,
 }: IProps) => {
+  const router = useRouter();
+
   const handleConnect = useCallback(
-    async (friendId: number) => {
+    async (userId: number) => {
       let requestUrl: string = "/users";
       try {
         if (status === "Connect") {
@@ -32,10 +33,10 @@ const ProfileConnectionsItem = ({
           requestUrl += "/unfriend";
         }
 
-        await authApi.post(requestUrl, { friendId });
+        await authApi.post(requestUrl, { friendId: userId });
 
-        setConnections((prev: IUser[]) =>
-          prev.filter((user) => user.id !== friendId)
+        setConnections((prev: IFriend[]) =>
+          prev.filter((user) => user.id !== userId)
         );
       } catch (error: any) {
         ToastError(errorHelper(ERROR_MESSAGES.DEFAULT as ErrorEnum));
@@ -43,6 +44,10 @@ const ProfileConnectionsItem = ({
     },
     [status]
   );
+
+  const handleViewProfile = (userId: number) => {
+    router.push(`/profile/${userId}`);
+  };
 
   return (
     <div className={styles.profileConnectionsItem}>
@@ -52,6 +57,9 @@ const ProfileConnectionsItem = ({
           alt="friend"
           width={66}
           height={66}
+          onClick={() => {
+            handleViewProfile(connection.id);
+          }}
         />
       </picture>
       <p>{connection.userName}</p>

@@ -1,4 +1,3 @@
-import ChatHeader from "../ChatHeader";
 import styles from "./index.module.scss";
 
 const ChatStart = () => {

@@ -1,4 +1,4 @@
-import { ErrorEnum } from "../types/enums/error.enum";
+import ErrorEnum from "../types/enums/error.enum";
 
 const ERROR_MESSAGES: Record<ErrorEnum, string> = {
   INVALID_CODE: "Invalid code.",
