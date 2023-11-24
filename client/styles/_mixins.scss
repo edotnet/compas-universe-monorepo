@@ -1,0 +1,12 @@
+@mixin fontStyles($styles) {
+  @each $property, $value in $styles {
+    #{$property}: $value;
+  }
+}
+
+@mixin ellipsisWithMaxWidth($maxWidth) {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: $maxWidth;
+}

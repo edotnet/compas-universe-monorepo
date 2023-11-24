@@ -1,7 +1,8 @@
+import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
+import { CardText, ListGroup, ListGroupItem } from "reactstrap";
 import styles from "./index.module.scss";
-import { useRouter } from "next/router";
 
 const Sidebar = () => {
   const router = useRouter();
@@ -14,9 +15,11 @@ const Sidebar = () => {
         width={127}
         height={55.3}
       />
-      <ul className={styles.firstMenu}>
+      <ListGroup className={styles.firstMenu}>
         <Link href="/profile">
-          <li className={router.pathname === "/profile" ? styles.active : ""}>
+          <ListGroupItem
+            className={router.pathname === "/profile" ? styles.active : ""}
+          >
             <Image
               src={
                 router.pathname === "/profile"
@@ -27,11 +30,13 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <p>My profile</p>
-          </li>
+            <CardText>My profile</CardText>
+          </ListGroupItem>
         </Link>
         <Link href="/admin">
-          <li className={router.pathname === "/admin" ? styles.active : ""}>
+          <ListGroupItem
+            className={router.pathname === "/admin" ? styles.active : ""}
+          >
             <Image
               src={
                 router.pathname === "/admin"
@@ -42,11 +47,13 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <p>Admin</p>
-          </li>
+            <CardText>Admin</CardText>
+          </ListGroupItem>
         </Link>
         <Link href="/feed">
-          <li className={router.pathname === "/feed" ? styles.active : ""}>
+          <ListGroupItem
+            className={router.pathname === "/feed" ? styles.active : ""}
+          >
             <Image
               src={
                 router.pathname === "/feed"
@@ -57,11 +64,13 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <p>Feeds</p>
-          </li>
+            <CardText>Feeds</CardText>
+          </ListGroupItem>
         </Link>
         <Link href="/artist">
-          <li className={router.pathname === "/artist" ? styles.active : ""}>
+          <ListGroupItem
+            className={router.pathname === "/artist" ? styles.active : ""}
+          >
             <Image
               src={
                 router.pathname === "/artist"
@@ -72,26 +81,43 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <p>Artist</p>
-          </li>
+            <CardText>Artist</CardText>
+          </ListGroupItem>
         </Link>
-      </ul>
-      <ul className={styles.secondMenu}>
-        <li>
-          <p>Top 100</p>
+        <Link href="/chat">
+          <ListGroupItem
+            className={router.pathname === "/chat" ? styles.active : ""}
+          >
+            <Image
+              src={
+                router.pathname === "/chat"
+                  ? "/images/icons/chat-active.svg"
+                  : "/images/icons/chat.svg"
+              }
+              alt="chat"
+              width={22.8}
+              height={22.8}
+            />
+            <CardText>Chat</CardText>
+          </ListGroupItem>
+        </Link>
+      </ListGroup>
+      <ListGroup className={styles.secondMenu}>
+        <ListGroupItem>
+          <CardText>Top 100</CardText>
           <Image
             src="/images/icons/chart.svg"
             alt="chart"
             width={19}
             height={19}
           />
-        </li>
-        <li>Rich Brian’s collections</li>
-        <li>deep focus</li>
-        <li>Lo-Fi Jazz upbeat</li>
-        <li>For workplace</li>
-        <li>Christmas playlist</li>
-      </ul>
+        </ListGroupItem>
+        <ListGroupItem>Rich Brian’s collections</ListGroupItem>
+        <ListGroupItem>deep focus</ListGroupItem>
+        <ListGroupItem>Lo-Fi Jazz upbeat</ListGroupItem>
+        <ListGroupItem>For workplace</ListGroupItem>
+        <ListGroupItem>Christmas playlist</ListGroupItem>
+      </ListGroup>
     </aside>
   );
 };

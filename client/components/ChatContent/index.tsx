@@ -2,12 +2,11 @@ import { useContext, useEffect } from "react";
 import { authApi } from "@/utils/axios";
 import { ChatContext } from "@/context/Chat.context";
 import { WebsocketContext } from "@/context/Websocket.Context";
-import ChatStart from "../ChatStart";
-import ChatLeftSide from "../ChatLeftSide";
-import ChatRightSide from "../ChatRightSide";
 import SOCKET_EVENT from "@/utils/types/enums/socket.enum";
 import { IMessageEvent } from "@/utils/types/socket-event.types";
-import styles from "./index.module.scss";
+import ChatLeftSide from "./ChatLeftSide";
+import ChatRightSide from "./ChatRightSide";
+import ChatStart from "./ChatStart";
 
 const ChatContent = () => {
   const { setMessages, currentChat, setChats, chats, activeChat } =
@@ -82,7 +81,7 @@ const ChatContent = () => {
   }, [activeChat, currentChat]);
 
   return (
-    <div className={styles.chatContent}>
+    <div className="d-flex w-100">
       <ChatLeftSide />
       {(chats.length && currentChat) || (chats.length && activeChat) ? (
         <ChatRightSide />

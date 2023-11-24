@@ -7,7 +7,7 @@ export interface ILayout {
 }
 
 const MainLayout = ({ children }: ILayout) => (
-  <div className={styles.mainLayout}>
+  <div className={`${styles.mainLayout} d-flex`}>
     {/* <LanguageSwitcher /> */}
     <Sidebar />
     {children}

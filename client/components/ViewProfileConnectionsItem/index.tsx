@@ -6,8 +6,10 @@ import { errorHelper } from "@/utils/helpers/error.helper";
 import ERROR_MESSAGES from "@/utils/constants/error-messages.constant";
 import ErrorEnum from "@/utils/types/enums/error.enum";
 import { ToastError } from "@/utils/toastify";
-import styles from "./index.module.scss";
 import { GlobalContext } from "@/context/Global.context";
+import ProfilePicture from "../ProfileContent/ProfilePicture";
+import { Button, CardText, Card } from "reactstrap";
+import styles from "./index.module.scss";
 
 interface IProps {
   connection: IFriend;
@@ -47,33 +49,41 @@ const ViewProfileConnectionsItem = ({ connection, setConnections }: IProps) => {
   };
 
   return (
-    <div className={styles.profileConnectionsItem}>
-      <picture>
-        <img
-          src={connection.profilePicture || "/images/no-profile-picture.jpeg"}
-          alt="friend"
-          width={66}
-          height={66}
-          onClick={() => {
-            handleViewProfile(connection.id);
-          }}
-        />
-      </picture>
-      <p>{connection.userName}</p>
+    <Card className="d-flex flex-column align-items-center gap-2 bg-transparent border-0">
+      <ProfilePicture
+        src={connection.profilePicture}
+        width={66}
+        height={66}
+        borderRadius="50%"
+        onClick={() => handleViewProfile(connection.id)}
+        styles={{
+          border: "2px solid #272727",
+          outline: "3px solid #C8BFBF",
+          cursor: "pointer",
+        }}
+      />
+      <CardText className="text-6b-4-13 ellipsis-standard">
+        {connection.userName}
+      </CardText>
       {connection.me ? (
         <p className={styles.me}>You</p>
       ) : (
-        <button
+        <Button
+          color="primary" // is friend condition
           className={
-            connection.isFriend ? `${styles.connected}` : `${styles.connect}`
+            connection.isFriend ? `${styles.connected} ${styles.btn}` : `${styles.connect} ${styles.btn}`
           }
           onClick={() => handleConnect(connection.id)}
           disabled={connection.isFriend || connection.me}
         >
-          {connection.me ? "You": connection.isFriend ? "Connected" : "Connect"}
-        </button>
+          {connection.me
+            ? "You"
+            : connection.isFriend
+            ? "Connected"
+            : "Connect"}
+        </Button>
       )}
-    </div>
+    </Card>
   );
 };
 

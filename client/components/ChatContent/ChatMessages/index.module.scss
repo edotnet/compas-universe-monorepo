@@ -1,0 +1,77 @@
+@import "../../../styles/variables";
+
+.chatMessages {
+    padding: 20px 0;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+
+    > div {
+        display: flex;
+        align-items: flex-end;
+        flex-direction: column;
+        gap: 12px;
+
+        >div {
+            .text {
+                max-width: 340px;
+                word-wrap: break-word;
+                padding: 20px;
+            }
+        }
+    }
+
+    .text {
+        border-radius: 20px 20px 0 20px;
+        color: #FFFFFF;
+        background-color: $primary;
+    }
+
+    .messageInfo {
+        display: flex;
+        padding-right: 50px;
+        gap: 6px;
+
+        .date {
+            color: #939393;
+            font-size: 12px;
+            font-weight: 500;
+        }
+    }
+    
+
+    .friendMessage  {
+        align-self: flex-start;
+
+        .messageBox {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+
+            .text {
+                text-wrap: wrap;
+                border-radius: 20px 20px 20px 0;
+                color: #000000;
+                background-color: #FFFFFF;
+            }
+        }
+
+        .messageInfo {
+            display: flex;
+            padding-left: 50px;
+            gap: 6px;
+
+            .date {
+                color: #939393;
+                font-size: 12px;
+                font-weight: 500;
+            }
+        }
+    }
+}

@@ -1,0 +1,12 @@
+.chatRightSide {
+    flex-basis: 75%;
+
+    .messagesContainer {
+        background: url(../../../public/images/logo-blurred.png), linear-gradient(#7D43A417, #2D34DA00, #D5CCFF8C);;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 28px 50px;
+        height: calc(100vh - 105px);
+        overflow: auto;
+    }
+}

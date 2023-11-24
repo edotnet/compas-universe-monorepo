@@ -3,7 +3,7 @@ import { appWithTranslation } from "next-i18next";
 import { socket, WebsocketProvider } from "../context/Websocket.Context";
 import { GlobalProvider } from "@/context/Global.context";
 import { useRouter } from "next/router";
-import "../styles/global.module.scss";
+import "../styles/global.scss";
 import "../styles/global.css";
 
 const MyApp = ({ Component, pageProps }: AppProps) => {

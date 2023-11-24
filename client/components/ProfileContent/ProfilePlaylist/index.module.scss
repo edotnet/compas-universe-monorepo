@@ -1,0 +1,26 @@
+
+.searchBox {
+    height: 66px;
+    
+    > picture { 
+        padding: 0 7px;
+        background-color: #FFFFFF;
+        height: 100%;
+        border: 1px solid #E4E5E4;
+
+        img {
+            height: 100%;
+        }
+    }
+
+    .search {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .microphone {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+}

@@ -1,0 +1,27 @@
+.profilePlaylistCard {
+    border: none;
+    min-width: auto;
+    gap: 20px;
+    background-color: transparent;
+
+    .cardBody {
+        padding: 0;
+    }
+
+    img {
+        border-radius: 3.82px;
+        width: 100%;
+    }
+
+    p {
+        color: #4F4F4F;
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    span {
+        font-size: 13px;
+        font-weight: 400;
+    }
+}
