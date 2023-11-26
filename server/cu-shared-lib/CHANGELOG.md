@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/edotnet/compas-universe-monorepo/compare/v1.1.11...v1.3.0) (2023-11-26)
+
+
+### Features
+
+* .gitignore ([f313588](https://github.com/edotnet/compas-universe-monorepo/commit/f3135888184b19d5468333fc4b417244f898073a))
+* chat functionality front-end ([4aa481f](https://github.com/edotnet/compas-universe-monorepo/commit/4aa481f60d4a1d1690559fe9d7d5c843a6ccde51))
+* new messages - client ([7e5ba50](https://github.com/edotnet/compas-universe-monorepo/commit/7e5ba50ed752272d362ca6c06600fafb5c165cf3))
+* new messages - server ([dfb2683](https://github.com/edotnet/compas-universe-monorepo/commit/dfb2683841f898f0228ccfc0a0f69cf209e004fc))
+* seen/recieved - client ([e3548c4](https://github.com/edotnet/compas-universe-monorepo/commit/e3548c44d4a4d07c1c4b03a016e1f5ae5e4d31ca))
+* seen/recieved - server ([e96906c](https://github.com/edotnet/compas-universe-monorepo/commit/e96906c85cf0057d39a91e3809ba8fb5d270d60a))
+* shared lib ([41c1aae](https://github.com/edotnet/compas-universe-monorepo/commit/41c1aaefc90f9577f8ebd71eaf30d456ac1329f6))
+* switch active chat - client ([935f8a0](https://github.com/edotnet/compas-universe-monorepo/commit/935f8a06837f1849eb2798769a9c843bb2a2632c))
+* switch active chat - server ([8a10f77](https://github.com/edotnet/compas-universe-monorepo/commit/8a10f77e5adf60b78c59cf7a23c02a915b0ef400))
+* view user profile ([29cb42a](https://github.com/edotnet/compas-universe-monorepo/commit/29cb42a4e99eeea311769622d09633bb711920a6))
+* view user profile - client ([657f5da](https://github.com/edotnet/compas-universe-monorepo/commit/657f5da879f60becd56b297febf65bdec2998207))
+* websocket initialize, chat functionality ([3b9e0d8](https://github.com/edotnet/compas-universe-monorepo/commit/3b9e0d89f5a6b06d7baa125aaa46640a7a03d859))
+
+
+### Bug Fixes
+
+* custom css to bootstrap - client ([d0af793](https://github.com/edotnet/compas-universe-monorepo/commit/d0af793aacf0f5d0280f93906d63867f0dd31956))
+* minor fixes ([c9001cc](https://github.com/edotnet/compas-universe-monorepo/commit/c9001cc57d776997556356ef757b26593f8df27b))
+* socket bugs backend ([15652a3](https://github.com/edotnet/compas-universe-monorepo/commit/15652a3a69dcf2ffe2ebe594d91899230dd8b53c))
+* socket bugs frontend ([6fa4ca0](https://github.com/edotnet/compas-universe-monorepo/commit/6fa4ca00bd4dd0a95ceccec58c64d733ce32e0ef))
+
 ## [1.2.0](https://github.com/edotnet/compas-universe-monorepo/compare/v1.1.11...v1.2.0) (2023-11-26)
 
 
