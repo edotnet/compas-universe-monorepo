@@ -1,9 +1,16 @@
 import { useCallback, useState } from "react";
 import LogoContent from "../LogoContent";
 import { api } from "@/utils/axios";
-import styles from "./index.module.scss";
 import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
 import { errorHelper } from "@/utils/helpers/error.helper";
+import {
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
 
 interface IProps {
   setResetPassword: (value: boolean) => void;
@@ -47,21 +54,34 @@ const ChangePasswordContent = ({
   }, []);
 
   return (
-    <div className={styles.changePasswordContainer}>
-      <div className={styles.changePassword}>
+    <div
+      className="d-flex flex-column align-items-center justify-content-center"
+      style={{ flexBasis: "50%" }}
+    >
+      <div
+        className="d-flex flex-column justify-content-center gap-3 w-100"
+        style={{ maxWidth: 384 }}
+      >
         <LogoContent heading="Change Password" title="Write a new password" />
-        <div className={styles.formContainer}>
-          <form
-            className={styles.form}
+        <div className="d-flex flex-column justify-content-center gap-3">
+          <Form
+            className="d-flex flex-column gap-3 w-100"
             onSubmit={(e) => handleResetPassword(e)}
           >
-            <div className={styles.inputContainer}>
-              <p>Password</p>
-              <input type="password" />
-              <p className={styles.error}>{error}</p>
-            </div>
-            <button type="submit">Confirm</button>
-          </form>
+            <FormGroup>
+              <Label className="text-37-5-14" for="password">
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                invalid={!!error}
+                style={{ height: 42 }}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>{error}</FormFeedback>
+            </FormGroup>
+            <Button color="primary">Confirm</Button>
+          </Form>
         </div>
       </div>
     </div>

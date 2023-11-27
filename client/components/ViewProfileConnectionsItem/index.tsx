@@ -66,21 +66,16 @@ const ViewProfileConnectionsItem = ({ connection, setConnections }: IProps) => {
         {connection.userName}
       </CardText>
       {connection.me ? (
-        <p className={styles.me}>You</p>
+        <CardText className="text-74-5-15">You</CardText>
+      ) : connection.isFriend ? (
+        <CardText className="text-74-5-15">Connected</CardText>
       ) : (
         <Button
-          color="primary" // is friend condition
-          className={
-            connection.isFriend ? `${styles.connected} ${styles.btn}` : `${styles.connect} ${styles.btn}`
-          }
+          color="primary"
+          className={`${styles.connect} ${styles.btn}`}
           onClick={() => handleConnect(connection.id)}
-          disabled={connection.isFriend || connection.me}
         >
-          {connection.me
-            ? "You"
-            : connection.isFriend
-            ? "Connected"
-            : "Connect"}
+          Connect
         </Button>
       )}
     </Card>

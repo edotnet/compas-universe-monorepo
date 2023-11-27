@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import LogoContent from "../LogoContent";
-import styles from "./index.module.scss";
+import { Button } from "reactstrap";
 
 const PasswordChangedContent = () => {
   const router = useRouter();
@@ -10,19 +10,22 @@ const PasswordChangedContent = () => {
   };
 
   return (
-    <div className={styles.passwordChangedContainer}>
-      <div className={styles.passwordChanged}>
+    <div
+      className=" d-flex flex-column align-items-center justify-content-center"
+      style={{ flexBasis: "50%" }}
+    >
+      <div
+        className="d-flex flex-column justify-content-center gap-3 w-100"
+        style={{ maxWidth: 384 }}
+      >
         <LogoContent
           heading="Password Changed"
-          title="Your password has been changed succesfully"
+          title="Your password has been changed successfully"
           stars="/images/stars.png"
         />
-        <button
-          className={styles.backToLogin}
-          onClick={() => handleBackToLogin()}
-        >
+        <Button color="primary" onClick={() => handleBackToLogin()}>
           Back to Login
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Input, InputGroup } from "reactstrap";
-import styles from "./index.module.scss";
+import { Input, InputGroup, InputGroupText } from "reactstrap";
 import ProfilePlaylistCardsContainer from "../ProfilePlaylistCardsContainer";
 
 const ProfilePlaylist = () => {
@@ -93,24 +92,31 @@ const ProfilePlaylist = () => {
 
   return (
     <div className="d-flex flex-column gap-4">
-      <InputGroup className={`${styles.searchBox}  d-flex align-items-center`}>
-        <picture className={styles.search}>
-          <img
-            src="/images/icons/search.svg"
-            alt="search"
-            width={23}
-            height={23}
-          />
-        </picture>
-        <Input className="h-100 border-start-0" placeholder="Search artists, songs, albums..." />
-        <picture className={styles.microphone}>
-          <img
-            src="/images/icons/microphone.svg"
-            alt="microphone"
-            width={22}
-            height={22}
-          />
-        </picture>
+      <InputGroup className="d-flex align-items-center" style={{ height: 60 }}>
+        <InputGroupText className="h-100">
+          <picture>
+            <img
+              src="/images/icons/search.svg"
+              alt="search"
+              width={23}
+              height={23}
+            />
+          </picture>
+        </InputGroupText>
+        <Input
+          className="h-100"
+          placeholder="Search artists, songs, albums..."
+        />
+        <InputGroupText className="h-100">
+          <picture>
+            <img
+              src="/images/icons/microphone.svg"
+              alt="microphone"
+              width={22}
+              height={22}
+            />
+          </picture>
+        </InputGroupText>
       </InputGroup>
       <ProfilePlaylistCardsContainer playlist={playlist} />
     </div>

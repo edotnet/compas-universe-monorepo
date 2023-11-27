@@ -1,12 +1,20 @@
+import { FormEvent, useCallback, useState } from "react";
 import { useRouter } from "next/router";
-import WebsiteButtons from "../WebsiteButtons";
-import LogoContent from "../LogoContent";
-import styles from "./index.module.scss";
-import { useCallback, useState } from "react";
 import { api } from "@/utils/axios";
 import validator from "validator";
 import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
 import { errorHelper } from "@/utils/helpers/error.helper";
+import LogoContent from "../LogoContent";
+import WebsiteButtons from "../WebsiteButtons";
+import styles from "./index.module.scss";
+import {
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
 
 const RegistrationForm = () => {
   const [errors, setErrors] = useState({
@@ -47,7 +55,7 @@ const RegistrationForm = () => {
         if (!password) {
           setErrors({
             ...errors,
-            password: "Password is not valid",
+            password: "Password is required",
           });
           return;
         } else {
@@ -56,6 +64,14 @@ const RegistrationForm = () => {
             password: error as string,
           });
         }
+        return;
+      }
+
+      if (!confirmPassword) {
+        setErrors({
+          ...errors,
+          confirmPassword: "Confirm Password is required",
+        });
         return;
       }
 
@@ -96,51 +112,99 @@ const RegistrationForm = () => {
   );
 
   return (
-    <div className={styles.registrationFormContainer}>
-      <div className={styles.registrationForm}>
+    <div
+      className={`${styles.registrationFormContainer} d-flex flex-column align-items-center justify-content-center`}
+    >
+      <div
+        className={`${styles.registrationForm} d-flex flex-column justify-content-center gap-3`}
+      >
         <LogoContent heading="Create account" />
-        <div className={styles.formContainer}>
-          <div className={styles.buttonsContainer}>
-            <p>sign up with</p>
+        <div className="d-flex flex-column justify-content-center align-items-center gap-3">
+          <div className="d-flex flex-column gap-2 w-100">
+            <p className="text-11-5-14">Sign up with</p>
             <WebsiteButtons />
           </div>
-          <form className={styles.form} onSubmit={(e) => handleRegister(e)}>
-            <div className={styles.inputContainer}>
-              <p>User Name</p>
-              <input type="text" placeholder="adamwathan" />
-              <p className={styles.error}>{errors.userName}</p>
-            </div>
-            <div className={styles.inputContainer}>
-              <p>Email address</p>
-              <input type="email" placeholder="you@example.com" />
-              <p className={styles.error}>{errors.email}</p>
-            </div>
-            <div className={styles.inputContainer}>
-              <p>Password</p>
-              <input type="password" />
-              <p className={styles.error}>{errors.password}</p>
-            </div>
-            <div className={styles.inputContainer}>
-              <p>Confirm Password</p>
-              <input type="password" />
-              <p className={styles.error}>{errors.confirmPassword}</p>
-            </div>
-            <div className={styles.checkboxContainer}>
-              <div>
-                <input type="checkbox" />
-                <p>Remember me</p>
-              </div>
-              <p onClick={() => moveToPage("/forgot-password")}>
-                Forgot your password?
-              </p>
-            </div>
-            <button type="submit">Create Account</button>
-          </form>
-          <p>
+          <Form
+            className="d-flex flex-column gap-3 w-100"
+            onSubmit={(e: FormEvent<HTMLFormElement>) => handleRegister(e)}
+          >
+            <FormGroup>
+              <Label className="text-37-5-14" for="text">
+                User Name
+              </Label>
+              <Input
+                id="text"
+                type="text"
+                placeholder="adamwathan"
+                invalid={!!errors.userName}
+                className={styles.input}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>
+                {errors.userName}
+              </FormFeedback>
+            </FormGroup>
+            <FormGroup>
+              <Label className="text-37-5-14" for="email">
+                Email address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                invalid={!!errors.email}
+                className={styles.input}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>
+                {errors.email}
+              </FormFeedback>
+            </FormGroup>
+            <FormGroup>
+              <Label className="text-37-5-14" for="password">
+                Password
+              </Label>
+              <Input
+                id="password"
+                type="password"
+                invalid={!!errors.password}
+                className={styles.input}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>
+                {errors.password}
+              </FormFeedback>
+            </FormGroup>
+            <FormGroup>
+              <Label className="text-37-5-14" for="confirm-password">
+                Confirm Password
+              </Label>
+              <Input
+                id="confirm-password"
+                type="password"
+                invalid={!!errors.confirmPassword}
+                className={styles.input}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>
+                {errors.confirmPassword}
+              </FormFeedback>
+            </FormGroup>
+            <FormGroup check inline>
+              <Input type="checkbox" />
+              <Label className="text-11-4-14" check>
+                Remember me
+              </Label>
+            </FormGroup>
+            <Button color="primary">Create Account</Button>
+          </Form>
+          <p className="text-11-4-14">
             Already have an account?{" "}
-            <span onClick={() => moveToPage("/login")}>Login</span>
+            <span
+              className="text-74-4-14"
+              style={{ cursor: "pointer" }}
+              onClick={() => moveToPage("/login")}
+            >
+              Login
+            </span>
           </p>
-          <p className={styles.error}>{errors.other}</p>
+          <p className="text-dc-4-13">{errors.other}</p>
         </div>
       </div>
     </div>

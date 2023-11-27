@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import styles from "./index.module.scss";
 import { api } from "@/utils/axios";
 import { errorHelper } from "@/utils/helpers/error.helper";
 
@@ -20,7 +19,7 @@ const Timer = ({ email, setError }: IProps) => {
       } else if (minutes > 0) {
         setMinutes(minutes - 1);
         setSeconds(59);
-      } else if(!codeSent) {
+      } else if (!codeSent) {
         clearInterval(interval);
         (async () => {
           try {
@@ -38,11 +37,11 @@ const Timer = ({ email, setError }: IProps) => {
   }, [minutes, seconds, codeSent]);
 
   return codeSent ? (
-    <p className={styles.timer}>Code sent</p>
+    <p className="text-37-6-16">Code sent</p>
   ) : (
-    <p className={styles.timer}>
+    <p className="text-00-6-16">
       Send code again{" "}
-      <span>
+      <span style={{ fontWeight: 400 }}>
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
       </span>
     </p>

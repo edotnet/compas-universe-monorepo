@@ -50,7 +50,7 @@ const ProfileConnections = () => {
     <div className="d-flex flex-column gap-3">
       <ProfileConnectionTabs status={status} setStatus={setStatus} />
       <div className="d-flex gap-5">
-        {connections.length ? (
+        {connections.length >  0 ? (
           connections.map((connection) =>
             router.query.id ? (
               <ViewProfileConnectionsItem

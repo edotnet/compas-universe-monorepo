@@ -1,8 +1,10 @@
 import { FormEvent, useCallback, useContext, KeyboardEvent } from "react";
+import { Button, Form } from "reactstrap";
 import { authApi } from "@/utils/axios";
 import { ToastError } from "@/utils/toastify";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import { ChatContext } from "@/context/Chat.context";
+import ChatMessageIcons from "../ChatMessageIcons";
 import styles from "./index.module.scss";
 
 const ChatSendMessage = () => {
@@ -79,13 +81,13 @@ const ChatSendMessage = () => {
   return (
     <div className={styles.chatSendMessage}>
       <div className={styles.messageArea}>
-        <form onSubmit={handleSendMessage}>
+        <Form onSubmit={handleSendMessage}>
           <textarea
             onKeyDown={handleInputExpand}
             rows={1}
             placeholder="Message..."
           />
-          <button>
+          <Button color="transparent">
             <picture>
               <img
                 src={"/images/icons/send.svg"}
@@ -94,65 +96,10 @@ const ChatSendMessage = () => {
                 height={20}
               />
             </picture>
-          </button>
-        </form>
+          </Button>
+        </Form>
       </div>
-      <div className={styles.messageIcons}>
-        <div>
-          <picture>
-            <img
-              src={"/images/icons/video.svg"}
-              alt="video"
-              width={20}
-              height={20}
-            />
-          </picture>
-          <picture>
-            <img
-              src={"/images/icons/voice.svg"}
-              alt="video"
-              width={20}
-              height={20}
-            />
-          </picture>
-        </div>
-        <div>
-          <picture>
-            <img
-              src={"/images/icons/smile.svg"}
-              alt="video"
-              width={20}
-              height={20}
-            />
-          </picture>
-          <picture>
-            <img
-              src={"/images/icons/file.svg"}
-              alt="video"
-              width={20}
-              height={20}
-            />
-          </picture>
-          <picture>
-            <img
-              src={"/images/icons/notes.svg"}
-              alt="video"
-              width={20}
-              height={20}
-            />
-          </picture>
-        </div>
-        <div>
-          <picture>
-            <img
-              src={"/images/icons/dots-vertical.svg"}
-              alt="video"
-              width={20}
-              height={20}
-            />
-          </picture>
-        </div>
-      </div>
+      <ChatMessageIcons />
     </div>
   );
 };

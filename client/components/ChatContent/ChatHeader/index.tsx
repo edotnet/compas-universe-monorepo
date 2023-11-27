@@ -1,9 +1,9 @@
 import { useContext } from "react";
 import ChatHeaderIcons from "../ChatHeaderIcons";
-import styles from "./index.module.scss";
 import { ChatContext } from "@/context/Chat.context";
 import { GlobalContext } from "@/context/Global.context";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
+import styles from "./index.module.scss";
 
 const ChatHeader = () => {
   const { currentChat, activeChat } = useContext(ChatContext)!;

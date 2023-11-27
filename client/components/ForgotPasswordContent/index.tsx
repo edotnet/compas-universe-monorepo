@@ -1,11 +1,19 @@
-import { useCallback, useState } from "react";
-import LogoContent from "../LogoContent";
-import styles from "./index.module.scss";
+import { useState } from "react";
+import {
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
 import { api } from "@/utils/axios";
+import { errorHelper } from "@/utils/helpers/error.helper";
+import LogoContent from "../LogoContent";
 import CheckEmailContent from "../CheckEmailContent";
 import ChangePasswordContent from "../ChangePasswordContent";
 import PasswordChangedContent from "../PasswordChangedContent";
-import { errorHelper } from "@/utils/helpers/error.helper";
+import styles from "./index.module.scss";
 
 const ForgotPasswordContent = () => {
   const [error, setError] = useState<string>("");
@@ -52,24 +60,34 @@ const ForgotPasswordContent = () => {
   ) : resetPassword && !verifyEmail && !sendEmail ? (
     <PasswordChangedContent />
   ) : (
-    <div className={styles.forgotPasswordContainer}>
-      <div className={styles.forgotPassword}>
-        <div className={styles.formContainer}>
+    <div
+      className={`${styles.forgotPasswordContainer} d-flex flex-column align-items-center justify-content-center`}
+    >
+      <div className="d-flex flex-colum justify-content-between">
+        <div className="d-flex flex-column align-items-center gap-3">
           <LogoContent
             heading="Forgot Password"
             title="Don’t worry! It happens. Please enter the email associated with your account."
           />
-          <form
-            className={styles.form}
+          <Form
+            className="d-flex flex-column gap-3 w-100"
             onSubmit={(e) => handleForgotPassword(e)}
           >
-            <div className={styles.inputContainer}>
-              <p>Email address</p>
-              <input type="email" placeholder="you@example.com" />
-              <p className={styles.error}>{error}</p>
-            </div>
-            <button type="submit">Sign up</button>
-          </form>
+            <FormGroup>
+              <Label className="text-37-5-14" for="email">
+                Email address
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                invalid={!!error}
+                className={styles.input}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>{error}</FormFeedback>
+            </FormGroup>
+            <Button color="primary">Sign up</Button>
+          </Form>
         </div>
       </div>
     </div>
