@@ -1,0 +1,15 @@
+.ul {
+    list-style: none;
+    border-radius: 0;
+    
+    li {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .active {
+        border-bottom: 2px solid #272727;
+    }
+}

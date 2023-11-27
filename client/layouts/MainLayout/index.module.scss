@@ -1,3 +1,6 @@
 .mainLayout {
-    display: flex;
+    > div {
+        max-width: calc(100% - 211.5px);
+    }
 }
+

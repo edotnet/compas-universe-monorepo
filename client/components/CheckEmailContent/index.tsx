@@ -1,9 +1,16 @@
 import { useCallback, useState } from "react";
 import LogoContent from "../LogoContent";
-import styles from "./index.module.scss";
 import { api } from "@/utils/axios";
 import Timer from "../Timer";
 import { errorHelper } from "@/utils/helpers/error.helper";
+import {
+  Button,
+  Form,
+  FormFeedback,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
 
 interface IProps {
   setVerifyEmail: (value: boolean) => void;
@@ -39,22 +46,40 @@ const CheckEmailContent = ({ setVerifyEmail, setSendEmail, email }: IProps) => {
   }, []);
 
   return (
-    <div className={styles.checkEmailContainer}>
-      <div className={styles.checkEmail}>
+    <div
+      className="d-flex flex-column align-items-center justify-content-center"
+      style={{ flexBasis: "50%" }}
+    >
+      <div
+        className="d-flex flex-column justify-content-center gap-3 w-100"
+        style={{
+          maxWidth: 384,
+        }}
+      >
         <LogoContent
           heading="Check Email"
           title={`We’ve sent a code to ${email}`}
         />
-        <div className={styles.formContainer}>
-          <form className={styles.form} onSubmit={(e) => handleVerifyEmail(e)}>
-            <div className={styles.inputContainer}>
-              <p>Code</p>
-              <input type="text" />
-              <p className={styles.error}>{error}</p>
-            </div>
+        <div className="d-flex flex-column align-items-center gap-3">
+          <Form
+            className="d-flex flex-column gap-3 w-100"
+            onSubmit={(e) => handleVerifyEmail(e)}
+          >
+            <FormGroup>
+              <Label className="text-37-5-14" for="code">
+                Code
+              </Label>
+              <Input
+                id="code"
+                type="text"
+                invalid={!!error}
+                style={{ height: 42 }}
+              />
+              <FormFeedback style={{ fontSize: 12 }}>{error}</FormFeedback>
+            </FormGroup>
             <Timer email={email} setError={setError} />
-            <button type="submit">Verify</button>
-          </form>
+            <Button color="primary">Verify</Button>
+          </Form>
         </div>
       </div>
     </div>

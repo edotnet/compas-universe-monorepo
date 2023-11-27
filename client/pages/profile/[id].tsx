@@ -1,5 +1,5 @@
 import withAuth from "@/HOC/withAuth";
-import ViewProfileContent from "@/components/ViewProfileContent";
+import ProfileContent from "@/components/ProfileContent";
 import { useFetchSSR } from "@/hooks/useFetchSSR";
 import MainLayout from "@/layouts/MainLayout";
 import { copyObject } from "@/utils/helpers/copy-object.helper";
@@ -13,7 +13,7 @@ interface IProfile {
 const Profile = ({ data }: IProfile) => {
   return (
     <MainLayout>
-      <ViewProfileContent data={data} />
+      <ProfileContent data={data} />
     </MainLayout>
   );
 };

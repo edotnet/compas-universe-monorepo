@@ -7,9 +7,12 @@ interface IProps {
 }
 
 const LoginPagesWrapper = ({ component, register }: IProps) => (
-  <div className={styles.wrapper}>
+  <div className={`${styles.wrapper} d-flex`}>
     <div className={styles.imgContainer}>
-      <div className={register ? styles.register : styles.login}></div>
+      <div className={`${register ? styles.register : styles.login} h-100`}>
+        <h1 className="text-ff-9-40">Welcome to Compas Universe</h1>
+        <p className="text-ff-3-24">Listen, dance and connect with friends </p>
+      </div>
     </div>
     {component}
   </div>

@@ -1,13 +1,19 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { WebsocketContext } from "@/context/Websocket.Context";
-import ProfileInfo from "../ProfileInfo";
-import ProfilePlaylist from "../ProfilePlaylist";
-import ProfileConnections from "../ProfileConnections";
 import SOCKET_EVENT from "@/utils/types/enums/socket.enum";
 import { INotificationEvent } from "@/utils/types/socket-event.types";
-import styles from "./index.module.scss";
+import { IUserProfileResponse } from "@/utils/types/user.types";
+import ViewProfileInfo from "../ViewProfileInfo";
+import { Container } from "reactstrap";
+import ProfileInfo from "./ProfileInfo";
+import ProfilePlaylist from "./ProfilePlaylist";
+import ProfileConnections from "./ProfileConnections";
 
-const ProfileContent = () => {
+interface IProps {
+  data?: IUserProfileResponse;
+}
+
+const ProfileContent = ({ data }: IProps) => {
   const socket = useContext(WebsocketContext);
 
   useEffect(() => {
@@ -23,13 +29,20 @@ const ProfileContent = () => {
   }, []);
 
   return (
-    <div className={styles.profileContent}>
-      <div className={styles.profileContainer}>
+    <Container
+      className="d-flex flex-column p-5 gap-5"
+      style={{
+        background: "linear-gradient(#7D43A417, #2D34DA00, #D5CCFF8C)",
+      }}
+    >
+      {data ? (
+        <ViewProfileInfo user={data.user} isFriend={data.isFriend} />
+      ) : (
         <ProfileInfo />
-        <ProfilePlaylist />
-        <ProfileConnections />
-      </div>
-    </div>
+      )}
+      <ProfilePlaylist />
+      <ProfileConnections />
+    </Container>
   );
 };
 

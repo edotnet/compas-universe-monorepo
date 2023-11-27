@@ -1,0 +1,34 @@
+@import "../../../styles/variables";
+
+.chatMessages {
+    padding: 20px 0;
+    overflow-y: scroll;
+
+    &::-webkit-scrollbar {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+
+    .text {
+        max-width: 340px;
+        word-wrap: break-word;
+        padding: 20px;
+        text-wrap: wrap;
+    }
+
+    .me {
+        border-radius: 20px 20px 0 20px;
+        background-color: $primary;
+        color: #FFFFFF;
+    }
+
+    .friend {
+        border-radius: 20px 20px 20px 0;
+        background-color: #FFFFFF;
+        color: #000000;
+    }
+
+}

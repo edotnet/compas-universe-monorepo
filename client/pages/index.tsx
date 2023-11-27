@@ -2,7 +2,6 @@ import Login from "./login";
 import AuthService from "@/services/AuthService";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import "../styles/global.module.scss";
 
 export default function Home() {
   const router = useRouter();

@@ -1,11 +1,12 @@
-import { IExtendedUser } from "@/utils/types/user.types";
-import styles from "./index.module.scss";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { authApi } from "@/utils/axios";
 import { ToastError } from "@/utils/toastify";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import ERROR_MESSAGES from "@/utils/constants/error-messages.constant";
+import { IExtendedUser } from "@/utils/types/user.types";
 import ErrorEnum from "@/utils/types/enums/error.enum";
-import { authApi } from "@/utils/axios";
+import { Button } from "reactstrap";
+import ProfilePicture from "../ProfileContent/ProfilePicture";
 
 interface IProps {
   user: IExtendedUser;
@@ -14,50 +15,52 @@ interface IProps {
 
 const ViewProfileInfo = ({ user, isFriend }: IProps) => {
   const [friend, setFriend] = useState<boolean>(isFriend);
+
   useEffect(() => {
     setFriend(isFriend);
-  }, [isFriend]);
+  }, [user]);
 
-  const handleConnect = useCallback(
-    async (userId: number) => {
-      let requestUrl: string = "/users";
-      try {
-        if (friend) {
-          requestUrl += "/unfriend";
-        } else {
-          requestUrl += "/request-friend";
-        }
-
-        await authApi.post(requestUrl, { friendId: userId });
-        if (friend) {
-          setFriend(false);
-        } else {
-          setFriend(true);
-        }
-      } catch (error: any) {
-        ToastError(errorHelper(ERROR_MESSAGES.DEFAULT as ErrorEnum));
+  const handleConnect = async (userId: number) => {
+    let requestUrl: string = "/users";
+    try {
+      if (friend) {
+        requestUrl += "/unfriend";
+      } else {
+        requestUrl += "/request-friend";
       }
-    },
-    [friend]
-  );
+
+      await authApi.post(requestUrl, { friendId: userId });
+      if (friend) {
+        setFriend(false);
+      } else {
+        setFriend(true);
+      }
+    } catch (error: any) {
+      ToastError(errorHelper(ERROR_MESSAGES.DEFAULT as ErrorEnum));
+    }
+  };
 
   return (
-    <div className={styles.profileInfo}>
-      <div className={styles.profileImgContainer}>
-        <picture>
-          <img
-            src={user.profilePicture || "/images/no-profile-picture.jpeg"}
-            alt="profile"
-            width={247}
-            height={186}
-          />
-        </picture>
-        <div className={styles.profileDetails}>
-          <p>{user.userName}</p>
-          <span>{user.type}</span>
-          <button onClick={() => handleConnect(user.id)}>
+    <div className="d-flex justify-content-between align-items-center w-100">
+      <div className="d-flex align-items-center gap-5">
+        <ProfilePicture
+          src={user.profilePicture}
+          width={247}
+          height={186}
+          borderRadius="12px"
+        />
+        <div className="d-flex flex-column gap-3">
+          <p className="text-27-6-36">{user.userName}</p>
+          <span className="text-7a-4-20" style={{ marginBottom: 5 }}>
+            {user.type}
+          </span>
+          <Button
+            color="primary"
+            style={{ padding: "11px 15px" }}
+            onClick={() => handleConnect(user.id)}
+          >
             {friend ? "Disconnect" : "Connect"}
-          </button>
+          </Button>
         </div>
       </div>
     </div>
