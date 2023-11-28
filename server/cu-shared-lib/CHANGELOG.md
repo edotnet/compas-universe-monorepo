@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/edotnet/compas-universe-monorepo/compare/v1.3.1...v1.3.2) (2023-11-28)
+
+
+### Bug Fixes
+
+* custom css to bootstrap ([518a8f4](https://github.com/edotnet/compas-universe-monorepo/commit/518a8f48700b4525eb1c9f6917ae125169672d46))
+
 ### [1.3.1](https://github.com/edotnet/compas-universe-monorepo/compare/v1.3.0...v1.3.1) (2023-11-26)
 
 ## [1.3.0](https://github.com/edotnet/compas-universe-monorepo/compare/v1.1.11...v1.3.0) (2023-11-26)
