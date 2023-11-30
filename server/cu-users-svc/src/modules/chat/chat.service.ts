@@ -18,7 +18,7 @@ import {
   ChatResponse,
   mapChatToChatResponse,
   MessageEvent,
-  NEW_MESSAGE_EVENT,
+  MESSAGE_NEW_EVENT,
   User,
   ExtendedMessageResponse,
   MESSAGE_SEEN_EVENT,
@@ -173,7 +173,7 @@ export class ChatService {
     await message.save();
 
     chat.users.forEach((u) => {
-      this.eventManager.raise(NEW_MESSAGE_EVENT, {
+      this.eventManager.raise(MESSAGE_NEW_EVENT, {
         userId: u.user.id,
         message: {
           ...mapChatMessageToChatMessageResponse(message),
@@ -287,7 +287,7 @@ export class ChatService {
     return {};
   }
 
-  async removeConfersations(userId: number, friends: UserFriend[]) {
+  async removeConversations(userId: number, friends: UserFriend[]) {
     if (friends.length) {
       friends.map(async (f: UserFriend) => {
         const userIds: number[] = [f.friend.id, userId];
@@ -312,7 +312,7 @@ export class ChatService {
     userId: number,
     searchTerm?: string,
   ): Promise<UserFriend[]> {
-    const querybuilder: SelectQueryBuilder<UserFriend> =
+    const queryBuilder: SelectQueryBuilder<UserFriend> =
       this.userFriendsRepository
         .createQueryBuilder('friends')
         .leftJoinAndSelect('friends.friend', 'friend')
@@ -320,7 +320,7 @@ export class ChatService {
         .where('friends."userId" = :userId', { userId });
 
     if (searchTerm) {
-      querybuilder.andWhere(
+      queryBuilder.andWhere(
         new Brackets((qb) => {
           qb.where('profile.firstName ILIKE :searchTerm', {
             searchTerm: `%${searchTerm}%`,
@@ -335,7 +335,7 @@ export class ChatService {
       );
     }
 
-    return await querybuilder.getMany();
+    return await queryBuilder.getMany();
   }
 
   private async getChatForUsers(userIds: number[]): Promise<Chat> {
@@ -411,21 +411,22 @@ export class ChatService {
     chatId: number,
     userId: number,
   ): Promise<ExtendedMessageResponse> {
-    const message = await this.chatMessagesRepository.aggregate([
-      { $match: { chatId } },
-      {
-        $project: {
-          user: 1,
-          text: 1,
-          media: 1,
-          seen: 1,
-          me: { $eq: ['$user.id', userId] },
-          createdAt: 1,
+    const message: ExtendedMessageResponse[] =
+      await this.chatMessagesRepository.aggregate([
+        { $match: { chatId } },
+        {
+          $project: {
+            user: 1,
+            text: 1,
+            media: 1,
+            seen: 1,
+            me: { $eq: ['$user.id', userId] },
+            createdAt: 1,
+          },
         },
-      },
-      { $sort: { createdAt: -1, _id: -1 } },
-      { $limit: 1 },
-    ]);
+        { $sort: { createdAt: -1, _id: -1 } },
+        { $limit: 1 },
+      ]);
 
     return message[0];
   }

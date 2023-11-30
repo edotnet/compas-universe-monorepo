@@ -11,7 +11,7 @@ services:
       context: ../cu-api-gateway
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     depends_on:
@@ -31,7 +31,7 @@ services:
       context: ../cu-users-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -51,7 +51,7 @@ services:
       context: ../cu-scheduler
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -71,7 +71,7 @@ services:
       context: ../cu-migrations
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -91,7 +91,7 @@ services:
       context: ../cu-transactions-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -112,7 +112,7 @@ services:
       context: ../cu-ws-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -132,7 +132,7 @@ services:
       context: ../cu-notifications-svc
       dockerfile: ./docker/development/Dockerfile
       args:
-        REGISTRY_TOKEN: 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
+        REGISTRY_TOKEN: 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
     networks:
       - cu
     ports:
@@ -141,6 +141,26 @@ services:
       - rabbitmq
     env_file:
       - ../cu-notifications-svc/.env
+
+  feed-svc:
+    init: true
+    image: feed
+    container_name: feed-svc
+    volumes:
+      - ../cu-feed-svc:/usr/src/app
+    build:
+      context: ../cu-feed-svc
+      dockerfile: ./docker/development/Dockerfile
+      args:
+        REGISTRY_TOKEN: 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
+    networks:
+      - cu
+    ports:
+      - "5007:5007"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ../cu-feed-svc/.env
 
   rabbitmq:
     init: true
@@ -203,6 +223,21 @@ services:
       - REDIS_PASSWORD=password
       - REDIS_PRIFIX=guard
 
+  localstack:
+    init: true
+    image: localstack/localstack:latest
+    container_name: cu-localstack
+    networks:
+      - "cu"
+    environment:
+      - SERVICES=s3
+      - PERSITANCE=1
+      - EDGE_PORT=4572
+      - USE_SSL=false
+    volumes:
+      - $PWD/localstack:/var/lib/localstack
+    ports:
+      - "4572:4572"
 
 networks:
   cu:

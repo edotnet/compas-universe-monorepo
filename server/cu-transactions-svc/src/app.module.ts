@@ -7,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { BullModule } from '@nestjs/bull';
 import { CustomLoggerService, ErrorFilter, HttpErrorFilter, LoggerInterceptor, QueryErrorFilter, RpcErrorFilter, ServicesModule, ValidationPipeHybrid } from '@edotnet/shared-lib';
 import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { StorageModule } from './modules/storage/storage.module';
 
 const logger = [
   LoggerModule.forRoot({
@@ -37,6 +38,7 @@ const logger = [
   imports: [
     AsyncHooksModule,
     EmailModule,
+    StorageModule,
     BullModule.forRootAsync({
       useFactory: () => ({
         redis: {

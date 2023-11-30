@@ -4,6 +4,7 @@ import { UserController } from './user.controller';
 import { RedisModule } from '@liaoliaots/nestjs-redis/dist';
 import { EventsModule, TransactionsModule } from '@edotnet/shared-lib';
 import { ChatService } from '../chat/chat.service';
+
 @Module({
   imports: [
     TransactionsModule,

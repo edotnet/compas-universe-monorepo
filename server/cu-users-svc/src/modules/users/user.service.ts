@@ -34,10 +34,7 @@ import {
   GetNoneFriendsRequest,
   GetFriendsRequest,
 } from '@edotnet/shared-lib';
-import {
-  mapFriendsToGetFriendsResponse,
-  mapUsersToGetUsersResponse,
-} from './user.serializer';
+import { mapFriendsToGetFriendsResponse } from './user.serializer';
 import { ChatService } from '../chat/chat.service';
 import { FriendsQueryResponse } from './user.types';
 
@@ -136,7 +133,7 @@ export class UserService {
   async validateUser(dto: ValidateUserRequest): Promise<User | null> {
     const user: User = await this.getUserByEmail({ email: dto.email });
 
-    if (user && (await bcrypt.compare(dto.password, user.password))) {
+    if (user && bcrypt.compareSync(dto.password, user.password)) {
       return user;
     }
 
@@ -253,7 +250,7 @@ export class UserService {
         CASE WHEN uf1."friendId" = $1 THEN TRUE ELSE FALSE END AS "me"
       FROM
         "user-friends" uf1
-      JOIN 
+      LEFT JOIN 
         "users" "friend" ON "friend"."id" = "uf1"."friendId" AND "friend"."status" = 'ACTIVE'
       JOIN 
         "user-profiles" "profile" ON "profile"."userId" = "friend"."id"
@@ -343,7 +340,7 @@ export class UserService {
   ): Promise<EmptyResponse> {
     const user: User = await this.checkUserExistsById(dto.friendId);
 
-    const friendRequst: UserFriend = await this.userFriendsRepository.findOne({
+    const friendRequest: UserFriend = await this.userFriendsRepository.findOne({
       where: {
         friend: { id: userId },
         user: { id: user.id },
@@ -351,14 +348,14 @@ export class UserService {
       },
     });
 
-    if (!friendRequst) {
+    if (!friendRequest) {
       throw new RpcException({
         statusCode: HttpStatus.FORBIDDEN,
         message: 'USER_FRIEND_DOES_NOT_EXIST',
       });
     }
 
-    friendRequst.status = dto.status;
+    friendRequest.status = dto.status;
 
     const newFriend: UserFriend = new UserFriend();
 
@@ -367,7 +364,7 @@ export class UserService {
     newFriend.friend = user;
     newFriend.status = FriendStatus.ACCEPTED;
 
-    await this.userFriendsRepository.save([friendRequst, newFriend]);
+    await this.userFriendsRepository.save([friendRequest, newFriend]);
 
     return {};
   }
@@ -381,7 +378,7 @@ export class UserService {
     if (dto.friendId === userId) {
       throw new RpcException({
         statusCode: HttpStatus.FORBIDDEN,
-        message: 'CONNOT_BE_FRIENDS_WITH_YOURSELF',
+        message: 'CANNOT_BE_FRIENDS_WITH_YOURSELF',
       });
     }
 
@@ -401,14 +398,14 @@ export class UserService {
     userRequest.friend = user;
     userRequest.status = FriendStatus.ACCEPTED;
 
-    const frientRequest: UserFriend = new UserFriend();
+    const friendRequest: UserFriend = new UserFriend();
 
-    frientRequest.friend = new User();
-    frientRequest.friend.id = userId;
-    frientRequest.user = user;
-    frientRequest.status = FriendStatus.ACCEPTED;
+    friendRequest.friend = new User();
+    friendRequest.friend.id = userId;
+    friendRequest.user = user;
+    friendRequest.status = FriendStatus.ACCEPTED;
 
-    await this.userFriendsRepository.save([userRequest, frientRequest]);
+    await this.userFriendsRepository.save([userRequest, friendRequest]);
 
     return {};
   }
@@ -425,7 +422,7 @@ export class UserService {
       });
     }
 
-    await this.chatService.removeConfersations(userId, userFriends);
+    await this.chatService.removeConversations(userId, userFriends);
 
     await this.userFriendsRepository.remove(userFriends);
 

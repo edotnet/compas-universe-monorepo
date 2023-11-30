@@ -15,6 +15,7 @@ import { BasePostgresModel } from "../base-postgres.entity";
 import { UserFriend } from "./user-friends.entity";
 import { UserChat } from "./user-chats.entity";
 import { Notifications } from "../notifications";
+import { Post } from "../feed/post.entity";
 
 export enum UserStatus {
   ACTIVE = "ACTIVE",
@@ -76,6 +77,11 @@ export class User extends BasePostgresModel {
     cascade: true,
   })
   notifications: Notifications[];
+
+  @OneToMany(() => Post, (destination) => destination.user, {
+    cascade: true,
+  })
+  posts: Post[];
 
   @BeforeInsert()
   @BeforeUpdate()

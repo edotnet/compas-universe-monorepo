@@ -2,7 +2,7 @@ import { UserResponse } from "../../../dtos";
 import { BaseMongoModel } from "../base-mongo.entity";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-export enum MediaMessageTypes {
+export enum MediaTypes {
   VOICE = "VOICE",
   PHOTO = "PHOTO",
   VIDEO = "VIDEO",
@@ -11,7 +11,7 @@ export enum MediaMessageTypes {
 
 export class MediaData {
   @Prop()
-  type: MediaMessageTypes;
+  type: MediaTypes;
 
   @Prop({ type: Object })
   meta: Object;

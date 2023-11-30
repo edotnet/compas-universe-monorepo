@@ -1,3 +1,4 @@
+export * from "./feed";
 export * from "./chat";
 export * from "./users";
 export * from "./oauth";
@@ -8,5 +9,6 @@ export * from "./notifications";
 export * from "./empty.request";
 export * from "./chat.response";
 export * from "./user.response";
+export * from "./post.response";
 export * from "./empty.response";
 export * from "./notification.response";

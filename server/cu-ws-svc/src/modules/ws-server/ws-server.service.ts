@@ -8,8 +8,8 @@ import {
   MessageNewResponse,
   MessageSeenEvent,
   MessageSeenResponse,
-  NEW_MESSAGE,
-  NEW_MESSAGE_EVENT,
+  MESSAGE_NEW,
+  MESSAGE_NEW_EVENT,
   NOTIFICATION_NEW,
   NOTIFICATION_NEW_EVENT,
   NotificationEvent,
@@ -20,10 +20,10 @@ import {
 export class WsServerService {
   constructor(@Inject(WsServerGateway) private gateway: WsServerGateway) {}
 
-  @EventsMessage(NEW_MESSAGE_EVENT, 'ws')
+  @EventsMessage(MESSAGE_NEW_EVENT, 'ws')
   async newMessage(event: MessageEvent) {
     this.gateway.emit<MessageNewResponse>({
-      message: NEW_MESSAGE,
+      message: MESSAGE_NEW,
       data: {
         message: event.message,
         chatId: event.chatId,

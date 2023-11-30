@@ -4,14 +4,16 @@ import { DatabaseModule } from "../database";
 import { UsersServiceClientOptions } from "./options/users-svc.options";
 import { TransactionsServiceClientOptions } from "./options/transactions-svc.options";
 import { NotificationsServiceClientOptions } from "./options/notifications-svc.options";
+import { FeedServiceClientOptions } from "./options";
 
 export * from "./options/transactions-svc.options";
 export * from "./options/transactions-svc.options";
 
 const connections = ClientsModule.register([
+  FeedServiceClientOptions,
   UsersServiceClientOptions,
   TransactionsServiceClientOptions,
-  NotificationsServiceClientOptions
+  NotificationsServiceClientOptions,
 ]);
 
 @Global()

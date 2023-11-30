@@ -9,6 +9,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "incremental": true,
+    "esModuleInterop": true,
     "lib": [
       "ESNext.String"
     ],

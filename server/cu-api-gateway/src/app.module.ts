@@ -1,19 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpErrorFilter } from './common/filters/http-error.filter';
-import { UsersModule } from './api/users/users.module';
+import { ConfigModule } from '@nestjs/config';
+import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { LoggerModule } from 'nestjs-pino';
 import jwt_decode from 'jwt-decode';
 import { v4 as uuidv4 } from 'uuid';
-import { AsyncContext, AsyncHooksModule } from '@nestjs-steroids/async-context';
 import * as util from 'util';
 import { controllers } from './api/controllers';
-import { AuthModule } from './api/auth/auth.module';
-import { ServicesModule } from '@edotnet/shared-lib';
-import { ChatModule } from './api/chat/chat.module';
-import { NotificationsModule } from './api/notifications/notifications.module';
+import { CustomLoggerService, ServicesModule } from '@edotnet/shared-lib';
+import { ApiModule } from './api/api.module';
+import { HttpErrorFilter } from './common/filters/http-error.filter';
 
 export function sanitizeRequest(o) {
   const obj = { ...o };
@@ -126,10 +123,7 @@ export const getUserIdFromAuthHeader = (headers) => {
       forRoutes: controllers,
       exclude: [],
     }),
-    AuthModule,
-    UsersModule,
-    ChatModule,
-    NotificationsModule,
+    ApiModule,
     AsyncHooksModule,
     ServicesModule,
     RedisModule.forRoot({
@@ -146,6 +140,7 @@ export const getUserIdFromAuthHeader = (headers) => {
     }),
   ],
   providers: [
+    CustomLoggerService,
     {
       provide: APP_FILTER,
       useClass: HttpErrorFilter,
