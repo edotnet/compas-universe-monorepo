@@ -33,6 +33,7 @@ const ProfileContent = ({ data }: IProps) => {
       className="d-flex flex-column p-5 gap-5"
       style={{
         background: "linear-gradient(#7D43A417, #2D34DA00, #D5CCFF8C)",
+        height: "100vh"
       }}
     >
       {data ? (

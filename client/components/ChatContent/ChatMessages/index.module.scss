@@ -4,14 +4,6 @@
     padding: 20px 0;
     overflow-y: scroll;
 
-    &::-webkit-scrollbar {
-        background: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: transparent;
-    }
-
     .text {
         max-width: 340px;
         word-wrap: break-word;

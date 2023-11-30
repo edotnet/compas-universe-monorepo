@@ -1,0 +1,9 @@
+.container {
+    > :first-child {
+        flex-basis: 70%;
+    }
+
+    > :last-child {
+        flex-basis: 30%;
+    }
+}

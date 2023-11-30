@@ -1,5 +1,4 @@
 import ProfilePlaylistCard from "../ProfilePlaylistCard";
-import styles from "./index.module.scss";
 
 interface IProps {
   playlist: any[];
@@ -7,7 +6,7 @@ interface IProps {
 
 const ProfilePlaylistCardsContainer = ({ playlist }: IProps) => {
   return (
-    <div className={`${styles.cardsContainer} d-flex gap-4 overflow-x-auto`}>
+    <div className="d-flex gap-4 overflow-x-auto vanish-scroll">
       {playlist.map((item) => (
         <ProfilePlaylistCard key={item.id} item={item} />
       ))}

@@ -8,7 +8,7 @@ const ChatMessages = () => {
   const { messages } = useContext(ChatContext)!;
 
   return (
-    <div className={`${styles.chatMessages} d-flex flex-column-reverse gap-5`}>
+    <div className={`${styles.chatMessages} d-flex flex-column-reverse gap-5 vanish-scroll`}>
       {messages.map((m, index) =>
         m.me ? (
           <div

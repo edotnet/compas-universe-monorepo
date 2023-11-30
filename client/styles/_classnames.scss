@@ -22,6 +22,10 @@ $fontStylesMap: (
   text-4f-6-15: (color: $light-grey, font-weight: $fw-600, font-size: $fs-15),
   text-ff-3-24: (color: $white, font-weight: $fw-300, font-size: $fs-24),
   text-ff-9-40: (color: $white, font-weight: $fw-900, font-size: $fs-40),
+  charcoal-6-32: (color: $charcoal, font-weight: $fw-600, font-size: $fs-32),
+  charcoal-6-23: (color: $charcoal, font-weight: $fw-600, font-size: $fs-23),
+  black-7-16: (color: $black, font-weight: $fw-700, font-size: $fs-16),
+  teal-5-12: (color: $teal, font-weight: $fw-500, font-size: $fs-12),
 );
 
 @each $class, $styles in $fontStylesMap {
@@ -39,5 +43,15 @@ $ellipsisStylesMap: (
 @each $class, $maxWidth in $ellipsisStylesMap {
   .ellipsis-#{$class} {
     @include ellipsisWithMaxWidth($maxWidth);
+  }
+}
+
+.vanish-scroll {
+  &::-webkit-scrollbar {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
   }
 }

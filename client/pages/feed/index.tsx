@@ -1,14 +1,14 @@
-import LogoContent from "@/components/LogoContent";
-import styles from "./index.module.scss";
 import MainLayout from "@/layouts/MainLayout";
 import withAuth from "@/HOC/withAuth";
+import { FeedProvider } from "@/context/Feed.context";
+import FeedContent from "@/components/FeedContent";
 
 const Feed = () => {
   return (
     <MainLayout>
-      <div className={styles.feed}>
-        <LogoContent heading="Feed" />
-      </div>
+      <FeedProvider>
+        <FeedContent/>
+      </FeedProvider>
     </MainLayout>
   );
 };

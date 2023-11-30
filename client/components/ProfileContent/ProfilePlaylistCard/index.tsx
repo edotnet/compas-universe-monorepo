@@ -1,15 +1,14 @@
 import { memo } from "react";
 import { Card, CardBody, CardImg, CardSubtitle, CardText } from "reactstrap";
-import styles from "./index.module.scss";
 
 interface IProps {
   item: any;
 }
 
 const ProfilePlaylistCard = ({ item }: IProps) => (
-  <Card className={styles.profilePlaylistCard}>
+  <Card className="border-0 bg-transparent gap-2" style={{ minWidth: "auto" }}>
     <CardImg src={item.thumbnailUrl} />
-    <CardBody className={styles.cardBody}>
+    <CardBody className="p-0">
       <CardText className="text-4f-6-15" style={{ whiteSpace: "nowrap" }}>
         {item.title}
       </CardText>

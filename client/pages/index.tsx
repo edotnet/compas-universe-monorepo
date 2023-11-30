@@ -1,7 +1,7 @@
-import Login from "./login";
-import AuthService from "@/services/AuthService";
-import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
+import AuthService from "@/services/AuthService";
+import Login from "./login";
 
 export default function Home() {
   const router = useRouter();
