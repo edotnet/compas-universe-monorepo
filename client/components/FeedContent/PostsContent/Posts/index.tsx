@@ -11,14 +11,10 @@ const Posts = () => {
     (async () => {
       try {
         const { data }: { data: IPostExtended[] } = await authApi.get("/feed");
-        console.log("🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ data:", data);
         setPosts(data);
-      } catch (error) {
-        console.log("🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ error:", error);
-      }
+      } catch (error) {}
     })();
   }, []);
-  console.log("🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ posts:", posts);
 
   return (
     <div className="d-flex flex-column gap-4">

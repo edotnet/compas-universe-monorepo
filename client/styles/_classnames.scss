@@ -55,3 +55,16 @@ $ellipsisStylesMap: (
     background: transparent;
   }
 }
+
+.multiline-ellipsis {
+  overflow: hidden;
+  text-overflow: "ellipsis";
+  display: -webkit-box; 
+  -webkit-line-clamp: 5; 
+  -webkit-box-orient: vertical;
+
+  display: -moz-box;
+  display: -ms-flexbox; 
+
+  max-height: calc(1.2em * 5); /* Adjust based on line height and number of lines */
+}
