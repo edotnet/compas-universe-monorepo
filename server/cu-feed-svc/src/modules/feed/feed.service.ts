@@ -11,8 +11,10 @@ import {
   PostExtendedResponse,
   PostLike,
   PostLikeRequest,
+  PostResponse,
   PostTypes,
   User,
+  mapPostToPostResponse,
 } from '@edotnet/shared-lib';
 import { RpcException } from '@nestjs/microservices';
 import { FeedQueryResponse } from './feed.types';
@@ -29,6 +31,8 @@ export class FeedService {
     private postLikeRepository: Repository<PostLike>,
     @InjectRepository(PostCommentLike)
     private postCommentLikeRepository: Repository<PostCommentLike>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async getFeed(): Promise<PostExtendedResponse[]> {
@@ -54,6 +58,8 @@ export class FeedService {
       "user-profiles" up ON up."userId" = p."userId"
     GROUP BY
       p.id, up.id
+    ORDER BY 
+      p."createdAt" DESC
     `);
 
     return mapPostsToGetPostsResponse(posts);
@@ -62,7 +68,12 @@ export class FeedService {
   async createPost(
     userId: number,
     dto: CreatePostRequest,
-  ): Promise<EmptyResponse> {
+  ): Promise<PostResponse> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['profile'],
+    });
+
     const content = {
       description: dto.description && dto.description,
       ...(dto.media && dto.media.length ? { media: dto.media } : {}),
@@ -71,13 +82,12 @@ export class FeedService {
     const newPost: Post = new Post();
 
     newPost.content = content;
-    newPost.user = new User();
-    newPost.user.id = userId;
+    newPost.user = user;
     newPost.type = PostTypes.CUSTOM;
 
-    await this.postRepository.save(newPost);
+    const post = await this.postRepository.save(newPost);
 
-    return {};
+    return mapPostToPostResponse(post);
   }
 
   async comment(

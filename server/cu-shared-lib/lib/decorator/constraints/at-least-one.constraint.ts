@@ -5,7 +5,7 @@ import {
 } from "class-validator";
 
 export function AtLeastOne(property1: string, property2: string): Function {
-  @ValidatorConstraint({ name: "oneOf", async: false })
+  @ValidatorConstraint({ name: "AtLeastOne", async: false })
   class AtLeastOneValidatorImpl implements ValidatorConstraintInterface {
     validate(value: any, args: ValidationArguments): boolean {
       const { object } = args;
@@ -20,7 +20,7 @@ export function AtLeastOne(property1: string, property2: string): Function {
     }
 
     defaultMessage(args: ValidationArguments): string {
-      return `Either ${property1} or ${property2} must be provided, but not both.`;
+      return `Either ${property1} or ${property2} must be provided, or both.`;
     }
   }
 

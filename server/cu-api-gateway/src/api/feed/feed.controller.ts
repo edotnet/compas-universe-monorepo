@@ -15,6 +15,7 @@ import {
   FEED_LIKE,
   FEED_GET,
   PostExtendedResponse,
+  PostResponse,
 } from '@edotnet/shared-lib';
 
 @Controller('feed')
@@ -33,7 +34,7 @@ export class FeedController {
   async createPost(
     @UserGuard() user: User,
     @Body() dto: CreatePostRequest,
-  ): Promise<EmptyResponse> {
+  ): Promise<PostResponse> {
     return this.client
       .send(FEED_POST_CREATE, ComposeAuthorizedDto(user, dto))
       .toPromise();

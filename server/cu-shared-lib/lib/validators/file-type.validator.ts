@@ -9,9 +9,7 @@ export interface TypeValidatorOptions {
 export class FileTypeValidator extends FileValidator {
   private _allowedMimeTypes: string[];
 
-  constructor(
-    protected readonly validationOptions: TypeValidatorOptions
-  ) {
+  constructor(protected readonly validationOptions: TypeValidatorOptions) {
     super(validationOptions);
     this._allowedMimeTypes = this.validationOptions.fileType;
   }

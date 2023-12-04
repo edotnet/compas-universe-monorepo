@@ -5,4 +5,5 @@ export const VALID_VIDEO_UPLOADS_MIME_TYPES = [
   "video/mov",
   "video/avi",
   "video/gif",
+  "image/heic"
 ];

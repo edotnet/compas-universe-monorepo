@@ -12,6 +12,7 @@ import {
   PostCommentRequest,
   PostExtendedResponse,
   PostLikeRequest,
+  PostResponse,
 } from '@edotnet/shared-lib';
 
 @Controller()
@@ -24,7 +25,7 @@ export class FeedController {
   }
 
   @MessagePattern(FEED_POST_CREATE)
-  async createPost(dto: InjectAuth<CreatePostRequest>): Promise<EmptyResponse> {
+  async createPost(dto: InjectAuth<CreatePostRequest>): Promise<PostResponse> {
     return this.service.createPost(dto.userId, dto);
   }
 
