@@ -15,7 +15,12 @@ const GenerateIcons = ({ icons, styles }: IProps) => {
   return (
     <div className="d-flex align-items-center" style={styles}>
       {icons.map(({ size, src }: IIConProps, index) => (
-        <Button key={index} color="transparent" className="border-0">
+        <Button
+          key={index + src}
+          color="transparent"
+          className="border-0"
+          type="button"
+        >
           <picture>
             <img src={src} alt="icon" width={size} height={size} />
           </picture>

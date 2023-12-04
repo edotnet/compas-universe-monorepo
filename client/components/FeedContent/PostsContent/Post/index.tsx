@@ -19,7 +19,7 @@ interface IProps {
 
 const Post = ({ post }: IProps) => {
   return (
-    <Card className="d-flex flex-column align-items-center">
+    <Card className="d-flex flex-column align-items-center" >
       <CardBody className="d-flex align-items-center justify-content-between w-100">
         <div className="d-flex align-items-center gap-3">
           <ProfilePicture src="" width={40} height={40} borderRadius="50%" />
@@ -32,11 +32,15 @@ const Post = ({ post }: IProps) => {
         </div>
         <UncontrolledDropdown direction="start">
           <DropdownToggle className="border-0 p-0" color="transparent">
-            <GenerateIcons
-              icons={[
-                { size: 24, src: "/images/icons/dots-vertical-feed.svg" },
-              ]}
-            />
+
+            <picture>
+              <img
+                src="/images/icons/dots-vertical-feed.svg"
+                alt="icon"
+                width={24}
+                height={24}
+              />
+            </picture>
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem header>Header</DropdownItem>

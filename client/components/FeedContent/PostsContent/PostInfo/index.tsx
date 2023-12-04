@@ -1,15 +1,14 @@
-import { IHocProps, withLessMore } from "@/HOC/withLessMore";
-import { MediaData } from "@/utils/types/chat.types";
-import { IUploadedFile } from "@/utils/types/files.types";
 import { useState } from "react";
 import {
   CardBody,
   CardText,
   Carousel,
   CarouselControl,
-  CarouselIndicators,
   CarouselItem,
 } from "reactstrap";
+import { withLessMore } from "@/HOC/withLessMore";
+import { IUploadedFile } from "@/utils/types/files.types";
+import { FileTypes } from "@/utils/types/enums/file.enum";
 
 interface IProps {
   media?: IUploadedFile[];
@@ -35,14 +34,9 @@ const PostInfo = withLessMore<IProps>(
       setActiveIndex(nextIndex);
     };
 
-    const goToIndex = (newIndex: number) => {
-      if (animating) return;
-      setActiveIndex(newIndex);
-    };
-
     const slides =
       media &&
-      media.map((item: IUploadedFile) => {
+      media.map((item: IUploadedFile, index: number) => {
         return (
           <CarouselItem
             onExiting={() => setAnimating(true)}
@@ -61,26 +55,35 @@ const PostInfo = withLessMore<IProps>(
 
     return (
       <CardBody className="d-flex flex-column w-100 p-0 gap-3">
-        <CardText
-          className="px-3"
-          style={
-            !isShow
-              ? {
-                  display: "-webkit-box",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  "-webkit-line-clamp": "5",
-                  "-webkit-box-orient": "vertical",
-                }
-              : {}
-          }
-        >
-          {description}
-        </CardText>
-        <button onClick={() => isShowHandler && isShowHandler()}>
-          {isShow ? "show less" : "show more"}
-        </button>
-        {media && (
+        <div className="d-flex align-items-end">
+          <CardText
+            className="px-3"
+            style={
+              !isShow
+                ? {
+                    display: "-webkit-box",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    WebkitLineClamp: "5",
+                    WebkitBoxOrient: "vertical",
+                    maxWidth: 900,
+                  }
+                : { maxWidth: 900 }
+            }
+          >
+            {description}
+          </CardText>
+          {description?.length! > 150 && (
+            <CardText
+              className="text-74-5-14"
+              onClick={() => isShowHandler && isShowHandler()}
+              style={{ minWidth: "max-content", cursor: "pointer" }}
+            >
+              {isShow ? "See less" : "See more"}
+            </CardText>
+          )}
+        </div>
+        {media?.length && media[0].type !== FileTypes.VIDEO ? (
           <Carousel
             ride="carousel"
             interval={0}
@@ -89,23 +92,31 @@ const PostInfo = withLessMore<IProps>(
             next={next}
             previous={previous}
           >
-            <CarouselIndicators
-              items={media!}
-              activeIndex={activeIndex}
-              onClickHandler={goToIndex}
-            />
             {slides}
-            <CarouselControl
-              direction="prev"
-              directionText="Previous"
-              onClickHandler={previous}
-            />
-            <CarouselControl
-              direction="next"
-              directionText="Next"
-              onClickHandler={next}
-            />
+            {media?.length > 1 && (
+              <>
+                <CarouselControl
+                  direction="prev"
+                  directionText="Previous"
+                  onClickHandler={previous}
+                />
+                <CarouselControl
+                  direction="next"
+                  directionText="Next"
+                  onClickHandler={next}
+                />
+              </>
+            )}
           </Carousel>
+        ) : (
+          media?.map((file) => (
+            <video
+              controls
+              key={file.meta.src}
+              src={file.meta.src}
+              style={{ objectFit: "cover" }}
+            />
+          ))
         )}
       </CardBody>
     );

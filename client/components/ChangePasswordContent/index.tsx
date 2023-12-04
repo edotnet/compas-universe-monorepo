@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import LogoContent from "../LogoContent";
 import { api } from "@/utils/axios";
 import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
@@ -25,17 +25,20 @@ const ChangePasswordContent = ({
 }: IProps) => {
   const [error, setError] = useState<string>("");
 
-  const handleResetPassword = useCallback(async (e: any) => {
+  const handleResetPassword = useCallback(async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const target = e.target as HTMLFormElement;
+    const input = target[0] as HTMLInputElement;
+
     const payload = {
-      newPassword: e.target[0].value,
+      newPassword: input.value,
       email,
     };
-    const error = isPasswordInValid(e.target[0].value);
+    const error = isPasswordInValid(input.value);
 
-    if (!e.target[0].value || error) {
-      if (!e.target[0].value) {
+    if (!input.value || error) {
+      if (!input.value) {
         setError("password is required");
         return;
       } else {

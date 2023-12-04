@@ -1,3 +1,4 @@
+import { IUploadedFile } from "@/utils/types/files.types";
 import { IPostExtended } from "@/utils/types/posts.types";
 import {
   Dispatch,
@@ -14,8 +15,8 @@ interface IProps {
 }
 
 interface IFeedContextProps {
-  uploadedFiles: string[];
-  setUploadedFiles: Dispatch<SetStateAction<string[]>>;
+  uploadedFiles: IUploadedFile[];
+  setUploadedFiles: Dispatch<SetStateAction<IUploadedFile[]>>;
   posts: IPostExtended[];
   setPosts: Dispatch<SetStateAction<IPostExtended[]>>;
 }
@@ -23,7 +24,7 @@ interface IFeedContextProps {
 export const FeedContext = createContext<IFeedContextProps>(null!);
 
 export const FeedProvider = ({ children }: IProps) => {
-  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<IUploadedFile[]>([]);
   const [posts, setPosts] = useState<IPostExtended[]>([]);
 
   const value = useMemo(

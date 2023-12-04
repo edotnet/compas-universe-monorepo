@@ -8,17 +8,24 @@ const Sidebar = () => {
   const router = useRouter();
 
   return (
-    <aside className={styles.sidebar}>
+    <aside
+      className="d-flex flex-column p-4 gap-4 bg-white"
+      style={{ width: "100%", maxWidth: 300 }}
+    >
       <Image
         src="/images/logo-with-name.png"
         alt="logo"
         width={127}
         height={55.3}
+        style={{ cursor: "pointer" }}
       />
-      <ListGroup className={styles.firstMenu}>
-        <Link href="/profile">
+      <ListGroup className="d-flex flex-column gap-2">
+        <Link href="/profile" className={styles.a}>
           <ListGroupItem
-            className={router.pathname === "/profile" ? styles.active : ""}
+            className={`border-0 d-flex align-items-center gap-2 p-2
+              ${router.pathname === "/profile" ? `${styles.active}` : ""}
+            `}
+            style={{ whiteSpace: "nowrap" }}
           >
             <Image
               src={
@@ -30,12 +37,21 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <CardText>My profile</CardText>
+            <CardText
+              className={
+                router.pathname === "/profile" ? "white-7-16" : "text-93-5-16"
+              }
+            >
+              My profile
+            </CardText>
           </ListGroupItem>
         </Link>
-        <Link href="/admin">
+        <Link href="/admin" className={styles.a}>
           <ListGroupItem
-            className={router.pathname === "/admin" ? styles.active : ""}
+            className={`border-0 d-flex align-items-center gap-2 p-2
+              ${router.pathname === "/admin" ? `${styles.active}` : ""}
+            `}
+            style={{ whiteSpace: "nowrap" }}
           >
             <Image
               src={
@@ -47,12 +63,21 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <CardText>Admin</CardText>
+            <CardText
+              className={
+                router.pathname === "/admin" ? "white-7-16" : "text-93-5-16"
+              }
+            >
+              Admin
+            </CardText>
           </ListGroupItem>
         </Link>
-        <Link href="/feed">
+        <Link href="/feed" className={styles.a}>
           <ListGroupItem
-            className={router.pathname === "/feed" ? styles.active : ""}
+            className={`border-0 d-flex align-items-center gap-2 p-2
+              ${router.pathname === "/feed" ? `${styles.active}` : ""}
+            `}
+            style={{ whiteSpace: "nowrap" }}
           >
             <Image
               src={
@@ -64,12 +89,21 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <CardText>Feeds</CardText>
+            <CardText
+              className={
+                router.pathname === "/feed" ? "white-7-16" : "text-93-5-16"
+              }
+            >
+              Feeds
+            </CardText>
           </ListGroupItem>
         </Link>
-        <Link href="/artist">
+        <Link href="/artist" className={styles.a}>
           <ListGroupItem
-            className={router.pathname === "/artist" ? styles.active : ""}
+            className={`border-0 d-flex align-items-center gap-2 p-2
+              ${router.pathname === "/artist" ? `${styles.active}` : ""}
+            `}
+            style={{ whiteSpace: "nowrap" }}
           >
             <Image
               src={
@@ -81,12 +115,21 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <CardText>Artist</CardText>
+            <CardText
+              className={
+                router.pathname === "/artist" ? "white-7-16" : "text-93-5-16"
+              }
+            >
+              Artist
+            </CardText>
           </ListGroupItem>
         </Link>
-        <Link href="/chat">
+        <Link href="/chat" className={styles.a}>
           <ListGroupItem
-            className={router.pathname === "/chat" ? styles.active : ""}
+            className={`border-0 d-flex align-items-center gap-2 p-2
+              ${router.pathname === "/chat" ? `${styles.active}` : ""}
+            `}
+            style={{ whiteSpace: "nowrap" }}
           >
             <Image
               src={
@@ -98,12 +141,21 @@ const Sidebar = () => {
               width={22.8}
               height={22.8}
             />
-            <CardText>Chat</CardText>
+            <CardText
+              className={
+                router.pathname === "/chat" ? "white-7-16" : "text-93-5-16"
+              }
+            >
+              Chat
+            </CardText>
           </ListGroupItem>
         </Link>
       </ListGroup>
       <ListGroup className={styles.secondMenu}>
-        <ListGroupItem>
+        <ListGroupItem
+          className="border-0 d-flex"
+          style={{ whiteSpace: "nowrap" }}
+        >
           <CardText>Top 100</CardText>
           <Image
             src="/images/icons/chart.svg"
@@ -112,11 +164,21 @@ const Sidebar = () => {
             height={19}
           />
         </ListGroupItem>
-        <ListGroupItem>Rich Brian’s collections</ListGroupItem>
-        <ListGroupItem>deep focus</ListGroupItem>
-        <ListGroupItem>Lo-Fi Jazz upbeat</ListGroupItem>
-        <ListGroupItem>For workplace</ListGroupItem>
-        <ListGroupItem>Christmas playlist</ListGroupItem>
+        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+          Rich Brian’s collections
+        </ListGroupItem>
+        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+          deep focus
+        </ListGroupItem>
+        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+          Lo-Fi Jazz upbeat
+        </ListGroupItem>
+        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+          For workplace
+        </ListGroupItem>
+        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+          Christmas playlist
+        </ListGroupItem>
       </ListGroup>
     </aside>
   );

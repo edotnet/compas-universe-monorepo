@@ -7,7 +7,6 @@ class FileService {
   }
 
   getFormData(data: object) {
-    console.log("🚀 ~~~~~~~~~~~~~~~~~~~~~~~~~~ data:", data);
     const formData = new FormData();
     for (const key in data) {
       const value: File[] = data[key as keyof typeof data];
@@ -17,8 +16,8 @@ class FileService {
       } else if (key === "file") {
         formData.append(key, value);
       } else {
-        console.log('lkjlkj;lkjlkj;lj;j;j');
-        
+        console.log("lkjlkj;lkjlkj;lj;j;j");
+
         formData.append(
           key,
           typeof value === "object" ? JSON.stringify(value) : value

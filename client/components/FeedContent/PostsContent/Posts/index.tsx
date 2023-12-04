@@ -18,7 +18,7 @@ const Posts = () => {
 
   return (
     <div className="d-flex flex-column gap-4">
-      {posts.map((post) => (
+      {posts.map((post, index) => (
         <Post key={post.id} post={post} />
       ))}
     </div>

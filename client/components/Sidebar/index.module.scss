@@ -1,56 +1,20 @@
 @import "../../styles/variables";
 
-.sidebar {
-    background-color: #FFFFFF;
-    padding: 25px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 31px;
 
-    img {
-        cursor: pointer;
+.active {
+    background-color: $primary;
+}
+
+.secondMenu {
+    border-radius: 0;
+    border-top: 1px solid #C4C4C4;
+    padding-top: 56px;
+
+    li {
+        font-size: 14px;
     }
 
-    ul {
-        display: flex;
-        flex-direction: column;
-        gap: 9.54px;
-
-        a {
-            border-radius: 3.82px;
-        }
-
-        li {
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 9.54px;
-            color: #939393;
-            padding: 9.54px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-    }
-
-    .firstMenu {
-        .active {
-            background-color: $primary;
-            color: #FFFFFF;
-            font-weight: 700;
-        }
-    }
-
-    .secondMenu {
-        border-radius: 0;
-        border-top: 1px solid #C4C4C4;
-        padding-top: 56px;
-
-        li {
-            font-size: 14px;
-        }
-    
-        li:nth-of-type(1) {
-            gap: 19.08px;
-        }
+    li:nth-of-type(1) {
+        gap: 19.08px;
     }
 }
