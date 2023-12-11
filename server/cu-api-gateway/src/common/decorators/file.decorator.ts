@@ -10,6 +10,7 @@ import {
   HttpStatus,
   ParseFilePipeBuilder,
 } from '@nestjs/common';
+import { RpcException } from '@nestjs/microservices';
 
 export const Files = createParamDecorator((data, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest();
@@ -33,11 +34,17 @@ export const Files = createParamDecorator((data, ctx: ExecutionContext) => {
   }
 
   if (isImage && isVideo) {
-    throw new Error('Cannot upload images and videos simultaneously.');
+    throw new RpcException({
+      httpStatus: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+      message: 'UPLOAD_EITHER_VIDEOS_OR_IMAGES',
+    });
   }
 
   if (!fileTypeValidators) {
-    throw new Error('At least one file type should be specified.');
+    throw new RpcException({
+      httpStatus: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
+      message: 'AT_LEAST_ONE_FILE_TYPE_SHOULD_BE_SPECIFIED',
+    });
   }
 
   const parseFilePipe = new ParseFilePipeBuilder()

@@ -81,8 +81,8 @@ export class FeedService {
           ROW_NUMBER() OVER (PARTITION BY pc."postId" ORDER BY pc."createdAt" DESC) AS rn
         FROM
           "post-comments" pc
-        LEFT JOIN 
-          "user-profiles" upc ON upc."userId" = pc."userId"
+          LEFT JOIN 
+            "user-profiles" upc ON upc."userId" = pc."userId"
         WHERE
           pc.deleted = false AND pc."replyToId" IS NULL
       )
@@ -126,10 +126,11 @@ export class FeedService {
         rc."postId" AS "lastCommentPostId"
       FROM
         "posts" p
-      JOIN 
-        "user-profiles" up ON up."userId" = p."userId"
-      LEFT JOIN 
-        RankedComments rc ON rc."postId" = p.id AND rc.rn = 1
+        JOIN "user-profiles" up ON up."userId" = p."userId"
+        LEFT JOIN RankedComments rc ON rc."postId" = p.id AND rc.rn = 1
+        LEFT JOIN "user-friends" uf ON uf."userId" = $1
+      WHERE 
+        p."userId" = uf."friendId" OR p."userId" = $1 
       GROUP BY
         p.id, 
         up.id, 
