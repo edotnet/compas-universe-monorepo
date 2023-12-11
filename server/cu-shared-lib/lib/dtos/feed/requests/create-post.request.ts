@@ -17,7 +17,7 @@ export class CreatePostRequest {
   @IsString()
   @Type(() => String)
   @IsNotEmpty()
-  @MaxLength(1500)
+  @MaxLength(10000)
   description: string;
 
   @Validate(AtLeastOne("description", "media"))

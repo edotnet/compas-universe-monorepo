@@ -1,6 +1,7 @@
 import { IsNotEmpty } from "class-validator";
 import { Post } from "../entities";
 import { UserResponse, mapUserToUserResponse } from "./user.response";
+import { CommentExtendedResponse } from "./comment.response";
 
 export class PostResponse {
   @IsNotEmpty()
@@ -22,6 +23,12 @@ export class PostExtendedResponse extends PostResponse {
 
   @IsNotEmpty()
   likesCount: number;
+
+  @IsNotEmpty()
+  liked: boolean;
+
+  @IsNotEmpty()
+  lastComment: CommentExtendedResponse;
 }
 
 export const mapPostToPostResponse = (post: Post): PostResponse => ({

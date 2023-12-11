@@ -111,7 +111,7 @@ export class UserService {
     const user: User = new User();
 
     user.email = dto.email;
-    user.status = UserStatus.PENDING;
+    user.status = UserStatus.ACTIVE;
     user.password = dto.password;
     user.profile = new UserProfile();
     user.profile.userName = dto.userName;

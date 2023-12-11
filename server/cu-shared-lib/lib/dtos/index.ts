@@ -11,4 +11,5 @@ export * from "./chat.response";
 export * from "./user.response";
 export * from "./post.response";
 export * from "./empty.response";
+export * from "./comment.response";
 export * from "./notification.response";

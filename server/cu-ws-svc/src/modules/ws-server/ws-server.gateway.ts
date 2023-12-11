@@ -1,6 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
-import { OnModuleInit } from '@nestjs/common';
+import { HttpStatus, OnModuleInit } from '@nestjs/common';
 import {
   OnGatewayConnection,
   WebSocketGateway,
@@ -12,6 +12,7 @@ import {
   WsMessageRequest,
 } from '@edotnet/shared-lib';
 import { BaseEvent } from '@edotnet/shared-lib/dist/dtos/events/base.event';
+import { RpcException } from '@nestjs/microservices';
 
 @WebSocketGateway({
   path: '/ws',
@@ -83,16 +84,23 @@ export class WsServerGateway implements OnGatewayConnection, OnModuleInit {
   }
 
   public emit<T>(message: WsMessageRequest<T>) {
-    delete (message.data as BaseEvent).userId;
-
     if (message.receiver.userId) {
-      if (this.sockets.has(message.receiver.userId)) {
-        const sockets = this.sockets.get(message.receiver.userId);
+      const sockets = this.safeGetSocket(message.receiver.userId);
 
-        sockets.forEach((socket: Socket) => {
-          socket.emit(message.message, message.data);
-        });
-      }
+      sockets.forEach((socket: Socket) => {
+        socket.emit(message.message, message.data);
+      });
     }
+  }
+
+  private safeGetSocket(userId: number): Socket[] {
+    if (!this.sockets.has(userId)) {
+      throw new RpcException({
+        httpStatus: HttpStatus.BAD_REQUEST,
+        message: `WS_USER_${userId}_NOT_CONNECTED`,
+      });
+    }
+
+    return this.sockets.get(userId);
   }
 }

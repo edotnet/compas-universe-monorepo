@@ -21,6 +21,6 @@ export class PostCommentRequest {
   @IsString()
   @Type(() => String)
   @IsNotEmpty()
-  @MaxLength(256)
+  @MaxLength(1500)
   content: string;
 }

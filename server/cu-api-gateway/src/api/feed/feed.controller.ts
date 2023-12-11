@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UserGuard } from '../auth/guards/user.guard';
@@ -16,6 +25,12 @@ import {
   FEED_GET,
   PostExtendedResponse,
   PostResponse,
+  QueryRequest,
+  FEED_COMMENTS_GET,
+  CommentResponse,
+  CommentExtendedResponse,
+  GetPostRequest,
+  FEED_POST_GET,
 } from '@edotnet/shared-lib';
 
 @Controller('feed')
@@ -24,9 +39,12 @@ export class FeedController {
   constructor(@Inject(FeedServiceName) private readonly client: ClientProxy) {}
 
   @Get()
-  async getFeed(@UserGuard() user: User): Promise<PostExtendedResponse[]> {
+  async getFeed(
+    @UserGuard() user: User,
+    @Query() dto: QueryRequest,
+  ): Promise<PostExtendedResponse[]> {
     return this.client
-      .send(FEED_GET, ComposeAuthorizedDto(user, {}))
+      .send(FEED_GET, ComposeAuthorizedDto(user, dto))
       .toPromise();
   }
 
@@ -44,7 +62,7 @@ export class FeedController {
   async comment(
     @UserGuard() user: User,
     @Body() dto: PostCommentRequest,
-  ): Promise<EmptyResponse> {
+  ): Promise<CommentResponse> {
     return this.client
       .send(FEED_COMMENT, ComposeAuthorizedDto(user, dto))
       .toPromise();
@@ -57,6 +75,27 @@ export class FeedController {
   ): Promise<EmptyResponse> {
     return this.client
       .send(FEED_LIKE, ComposeAuthorizedDto(user, dto))
+      .toPromise();
+  }
+
+  @Get('/:postId')
+  async getPost(
+    @UserGuard() user: User,
+    @Param() dto: GetPostRequest,
+  ): Promise<PostExtendedResponse> {
+    return this.client
+      .send(FEED_POST_GET, ComposeAuthorizedDto(user, dto))
+      .toPromise();
+  }
+
+  @Get('/:postId/comments')
+  async getComments(
+    @UserGuard() user: User,
+    @Param('postId') postId: number,
+    @Query() dto: QueryRequest,
+  ): Promise<CommentExtendedResponse[]> {
+    return this.client
+      .send(FEED_COMMENTS_GET, ComposeAuthorizedDto(user, { ...dto, postId }))
       .toPromise();
   }
 }

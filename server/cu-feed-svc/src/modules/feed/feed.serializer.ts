@@ -1,5 +1,8 @@
-import { PostExtendedResponse } from '@edotnet/shared-lib';
-import { FeedQueryResponse } from './feed.types';
+import {
+  CommentExtendedResponse,
+  PostExtendedResponse,
+} from '@edotnet/shared-lib';
+import { CommentQueryResponse, FeedQueryResponse } from './feed.types';
 
 export const mapPostsToGetPostsResponse = (
   posts: FeedQueryResponse[],
@@ -15,4 +18,40 @@ export const mapPostsToGetPostsResponse = (
       userName: p.userName || `${p.firstName} ${p.lastName}`,
       profilePicture: p.profilePicture,
     },
+    liked: p.liked,
+    lastComment: p.lastCommentId
+      ? {
+          id: p.lastCommentId,
+          content: p.lastCommentContent,
+          createdAt: p.lastCommentCreatedAt,
+          replyCount: p.lastCommentRepliesCount,
+          postId: p.lastCommentPostId,
+          user: {
+            id: p.lastCommentUserId,
+            userName:
+              p.lastCommentUserName ||
+              `${p.lastCommentFirstName} ${p.lastCommentLastName}`,
+            profilePicture: p.lastCommentProfilePicture,
+          },
+          liked: p.lastCommentLiked,
+        }
+      : null,
+  }));
+
+export const mapCommentsToGetCommentsResponse = (
+  comments: CommentQueryResponse[],
+): CommentExtendedResponse[] =>
+  comments.map((c) => ({
+    id: c.id,
+    content: c.content,
+    createdAt: c.createdAt,
+    user: {
+      id: c.userId,
+      userName: c.userName || `${c.firstName} ${c.lastName}`,
+      profilePicture: c.profilePicture,
+    },
+    replyTo: c.replyToId,
+    liked: c.liked,
+    postId: c.postId,
+    replies: c.replies && mapCommentsToGetCommentsResponse(c.replies),
   }));
