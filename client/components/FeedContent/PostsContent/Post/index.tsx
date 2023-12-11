@@ -1,3 +1,4 @@
+import { useCallback, useContext, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -14,7 +15,6 @@ import GenerateIcons from "@/components/ChatContent/GenerateIcons";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
 import { IPostExtended } from "@/utils/types/posts.types";
 import PostInfo from "../PostInfo";
-import { useCallback, useContext, useState } from "react";
 import { authApi } from "@/utils/axios";
 import { FeedContext } from "@/context/Feed.context";
 import CreateComments from "../CreateComment";
@@ -29,32 +29,40 @@ interface IProps {
 const Post = ({ post }: IProps) => {
   const [singlePostModal, setSinglePostModal] = useState(false);
   const [openCommentInput, setOpenCommentInput] = useState<boolean>(false);
-  const [openReplyInput, setOpenReplyInput] = useState<boolean>(false);
+
   const { setPosts, comments } = useContext(FeedContext);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const toggle = () => setSinglePostModal(!singlePostModal);
 
-  const handlePostLike = useCallback(
-    async (id: number): Promise<void> => {
-      const payload: Record<string, number> = { postId: id };
+  const handlePostLike = useCallback(async (): Promise<void> => {
+    const payload: Record<string, number> = { postId: post.id };
 
-      try {
-        await authApi.post("/feed/like", payload);
-        setPosts((prev) => {
-          return [
-            ...prev.map((post: IPostExtended) =>
-              post.id === id && !post.liked
-                ? { ...post, likesCount: post.likesCount + 1, liked: true }
-                : post.id === id && post.liked
-                ? { ...post, likesCount: post.likesCount - 1, liked: false }
-                : post
-            ),
-          ];
-        });
-      } catch (error) {}
-    },
-    [post]
-  );
+    try {
+      await authApi.post("/feed/like", payload);
+      if (!post.liked) {
+        post.likesCount += 1;
+      }
+
+      if (post.liked) {
+        post.likesCount -= 1;
+      }
+
+      post.liked = !post.liked;
+
+      setPosts((prev) => [
+        ...prev.map((p: IPostExtended) => (p.id === post.id ? post : p)),
+      ]);
+    } catch (error) {}
+  }, [post]);
+
+  const readyToComment = () => {
+    setOpenCommentInput(true);
+
+    if (inputRef?.current) {
+      inputRef.current.focus();
+    }
+  };
 
   return (
     <Card className="d-flex flex-column align-items-center">
@@ -101,17 +109,17 @@ const Post = ({ post }: IProps) => {
       >
         <div className="d-flex align-items-center gap-4">
           <div className="d-flex align-items-center">
-            {post.liked ? (
-              <GenerateIcons
-                icons={[{ size: 24, src: "/images/icons/like-feed.svg" }]}
-                onClick={() => handlePostLike(post.id)}
-              />
-            ) : (
-              <GenerateIcons
-                icons={[{ size: 24, src: "/images/icons/heart-feed.svg" }]}
-                onClick={() => handlePostLike(post.id)}
-              />
-            )}
+            <GenerateIcons
+              icons={[
+                {
+                  size: 24,
+                  src: post.liked
+                    ? "/images/icons/like-feed.svg"
+                    : "/images/icons/heart-feed.svg",
+                },
+              ]}
+              onClick={() => handlePostLike()}
+            />
             <p className="teal-5-12" style={{ width: 10 }}>
               {post.likesCount > 0 && post.likesCount}
             </p>
@@ -119,7 +127,7 @@ const Post = ({ post }: IProps) => {
           <div className="d-flex align-items-center">
             <GenerateIcons
               icons={[{ size: 24, src: "/images/icons/comment-feed.svg" }]}
-              onClick={() => setOpenCommentInput(true)}
+              onClick={() => readyToComment()}
             />
             <p className="teal-5-12">
               {post.commentsCount > 0 && post.commentsCount}
@@ -140,11 +148,6 @@ const Post = ({ post }: IProps) => {
             >
               View more comments
             </CardText>
-            <Comment
-              comment={post.lastComment}
-              setOpenReplyInput={setOpenReplyInput}
-              post={post}
-            />
             {!!post.lastComment.replyCount && (
               <p
                 className="light-grey-6-15"
@@ -154,11 +157,16 @@ const Post = ({ post }: IProps) => {
                 View Replies {post.lastComment.replyCount}
               </p>
             )}
-            {openReplyInput && (
+            <Comment post={post} comment={post.lastComment} />
+            {/* {openReplyInput && (
               <div className="w-50" style={{ marginLeft: 60 }}>
-                <CreateComments post={post} commentId={post.lastComment.id} />
+                <CreateComments
+                  post={post}
+                  commentId={post.lastComment.id}
+                  inputRef={inputRef}
+                />
               </div>
-            )}
+            )} */}
           </div>
         </CardBody>
       )}
@@ -181,7 +189,7 @@ const Post = ({ post }: IProps) => {
 
       {(openCommentInput || post.lastComment) && (
         <CardBody className="w-100">
-          <CreateComments post={post} />
+          <CreateComments post={post} inputRef={inputRef} />
         </CardBody>
       )}
       <Modal isOpen={singlePostModal} toggle={toggle}>

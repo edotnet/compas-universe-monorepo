@@ -8,28 +8,28 @@ import {
   SetStateAction,
   useCallback,
   useContext,
-  useRef,
   useState,
 } from "react";
 import { Button, Form, FormFeedback, Input } from "reactstrap";
 
 interface IProps {
   post: IPostExtended;
-  ref?: RefObject<HTMLInputElement>;
+  inputRef: RefObject<HTMLInputElement>;
   commentId?: number;
+  containerRef?: RefObject<HTMLDivElement>;
+  inputEditMode?: boolean;
   setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
 }
 
 const CreateComments = ({
   post,
   commentId,
+  containerRef,
   setSinglePostComments,
-  ref,
+  inputRef,
 }: IProps) => {
   const [error, setError] = useState<string>("");
   const { setComments } = useContext(FeedContext);
-
-  const inputRef = useRef(ref)
 
   const handleCommentSend = useCallback(
     async (e: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -55,6 +55,13 @@ const CreateComments = ({
           payload
         );
 
+        if (containerRef?.current) {
+          const lastComment = containerRef.current.lastChild as HTMLElement;
+          if (lastComment) {
+            lastComment.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+
         input.value = "";
 
         if (data.replyTo) {
@@ -64,7 +71,10 @@ const CreateComments = ({
                 comment.id === commentId
                   ? {
                       ...comment,
-                      replies: [...comment.replies, data],
+                      replies: [
+                        ...(comment.replies ? comment.replies : []),
+                        data,
+                      ],
                     }
                   : comment
               ),
@@ -124,7 +134,7 @@ const CreateComments = ({
           className="bg-light"
           style={{ borderRadius: 30, height: 30 }}
           placeholder={commentId ? "Write a reply" : "Write a comment"}
-          innerRef={inputRef.current}
+          innerRef={inputRef}
         />
       </div>
       <Button color="transparent" className="border-0">

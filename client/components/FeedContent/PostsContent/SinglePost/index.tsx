@@ -12,7 +12,7 @@ import GenerateIcons from "@/components/ChatContent/GenerateIcons";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
 import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 import PostInfo from "../PostInfo";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { authApi } from "@/utils/axios";
 import CreateComments from "../CreateComment";
 import Comments from "../Comments";
@@ -26,6 +26,9 @@ const SinglePost = ({ postId }: IProps) => {
   const [singlePostComments, setSinglePostComments] = useState<
     IExtendedComment[]
   >([]);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handlePostLike = useCallback(async (): Promise<void> => {
     const payload: Record<string, number> = { postId: singlePost?.id };
@@ -58,6 +61,12 @@ const SinglePost = ({ postId }: IProps) => {
     setSinglePostComments([]);
     handlePostGet();
   }, []);
+
+  const readyToComment = () => {
+    if (inputRef?.current) {
+      inputRef.current.focus();
+    }
+  };
 
   return (
     <Card className="d-flex flex-column align-items-center">
@@ -124,6 +133,7 @@ const SinglePost = ({ postId }: IProps) => {
           <div className="d-flex align-items-center">
             <GenerateIcons
               icons={[{ size: 24, src: "/images/icons/comment-feed.svg" }]}
+              onClick={() => readyToComment()}
             />
             <p className="teal-5-12">
               {singlePost?.commentsCount > 0 && singlePost?.commentsCount}
@@ -138,6 +148,7 @@ const SinglePost = ({ postId }: IProps) => {
         <CardBody className="w-100 d-flex flex-column gap-3">
           <Comments
             post={singlePost}
+            containerRef={containerRef}
             comments={singlePostComments}
             setSinglePostComments={setSinglePostComments}
           />
@@ -147,8 +158,10 @@ const SinglePost = ({ postId }: IProps) => {
       {singlePost && (
         <CardBody className="w-100">
           <CreateComments
-            setSinglePostComments={setSinglePostComments}
             post={singlePost}
+            inputRef={inputRef}
+            containerRef={containerRef}
+            setSinglePostComments={setSinglePostComments}
           />
         </CardBody>
       )}

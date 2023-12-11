@@ -81,7 +81,7 @@ const CreatePost: FC = (): JSX.Element => {
       setUploadedFiles(data);
       setError("");
     } catch (error: any) {
-      setError(errorHelper(error?.response?.data.message));
+      setError(errorHelper(error?.message));
     }
   };
 

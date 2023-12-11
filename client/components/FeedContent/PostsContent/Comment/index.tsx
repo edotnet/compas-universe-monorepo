@@ -1,39 +1,35 @@
-import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
-import { FeedContext } from "@/context/Feed.context";
-import { authApi } from "@/utils/axios";
-import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 import {
   Dispatch,
-  SetStateAction,
-  useCallback,
-  useContext,
-  useRef,
   useState,
+  useContext,
+  useCallback,
+  SetStateAction,
+  useRef,
 } from "react";
 import { Button } from "reactstrap";
+import { authApi } from "@/utils/axios";
+import { FeedContext } from "@/context/Feed.context";
 import CreateComments from "../CreateComment";
-import { scrollToInput } from "@/utils/helpers/scroll-to-element.helper";
+import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
+import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 
 interface IProps {
   post: IPostExtended;
   comment: IExtendedComment;
-  setCommentId?: Dispatch<SetStateAction<number>>;
-  openReplyInput?: boolean;
-  setOpenReplyInput?: Dispatch<SetStateAction<boolean>>;
-  setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
   reply?: boolean;
+  setCommentId?: Dispatch<SetStateAction<number>>;
+  setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
 }
 
 const Comment = ({
+  post,
+  reply,
   comment,
   setCommentId,
-  post,
   setSinglePostComments,
-  reply,
 }: IProps) => {
   const [openReplyInput, setOpenReplyInput] = useState<boolean>(false);
   const { comments, setComments } = useContext(FeedContext);
-
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleCommentLike = useCallback(async (): Promise<void> => {
@@ -48,6 +44,15 @@ const Comment = ({
       setComments({ ...comments });
     } catch (error) {}
   }, [comment, comments]);
+
+  const readyToReply = () => {
+    setOpenReplyInput(true);
+    setCommentId && setCommentId(comment.id);
+
+    if (inputRef?.current) {
+      inputRef.current.focus();
+    }
+  };
 
   return (
     <div>
@@ -97,11 +102,7 @@ const Comment = ({
             color="transparent"
             className="border-0"
             type="button"
-            onClick={() => {
-              setOpenReplyInput && setOpenReplyInput(!openReplyInput);
-              setCommentId && setCommentId(comment.id);
-              scrollToInput(inputRef);
-            }}
+            onClick={readyToReply}
           >
             <img
               src="/images/icons/reply.svg"
@@ -114,13 +115,13 @@ const Comment = ({
       </div>
       {!!comment.replies?.length &&
         comment.replies.map((reply) => (
-          <Comment key={reply.id} comment={reply} post={post} reply />
+          <Comment reply post={post} key={reply.id} comment={reply} />
         ))}
       {openReplyInput && !reply && (
         <div className="w-50" style={{ marginLeft: 60 }}>
           <CreateComments
-            ref={inputRef}
             post={post}
+            inputRef={inputRef}
             commentId={comment.id}
             setSinglePostComments={setSinglePostComments}
           />

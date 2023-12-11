@@ -1,10 +1,10 @@
 import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 import {
   Dispatch,
+  RefObject,
   SetStateAction,
   useCallback,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import Comment from "../Comment";
@@ -14,15 +14,19 @@ import { authApi } from "@/utils/axios";
 interface IProps {
   post: IPostExtended;
   comments: IExtendedComment[];
+  containerRef?: RefObject<HTMLDivElement>;
   setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
 }
 
-const Comments = ({ post, comments, setSinglePostComments }: IProps) => {
+const Comments = ({
+  post,
+  comments,
+  containerRef,
+  setSinglePostComments,
+}: IProps) => {
   const [isFetched, setIsFetched] = useState<boolean>(false);
   const [skip, setSkip] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [openReplyInput, setOpenReplyInput] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleCommentsGet = useCallback(async () => {
     if (!setSinglePostComments) return;
@@ -45,13 +49,13 @@ const Comments = ({ post, comments, setSinglePostComments }: IProps) => {
     } finally {
       setLoading(false);
     }
-  }, [skip, isFetched]);
+  }, [skip, isFetched, setSinglePostComments]);
 
   useEffect(() => {
     if (!isFetched) {
       handleCommentsGet();
     }
-  }, [isFetched]);
+  }, [isFetched, setSinglePostComments]);
 
   return (
     <div
@@ -61,7 +65,7 @@ const Comments = ({ post, comments, setSinglePostComments }: IProps) => {
       ref={containerRef}
       onScroll={() =>
         scrollPaginate(
-          containerRef,
+          containerRef!,
           comments,
           loading,
           handleCommentsGet,
@@ -69,15 +73,13 @@ const Comments = ({ post, comments, setSinglePostComments }: IProps) => {
           skip
         )
       }
-      style={setSinglePostComments && { height: "100%", maxHeight: "57vh" }}
+      style={setSinglePostComments && { height: "100%", maxHeight: 600 }}
     >
       {comments.map((comment) => (
         <Comment
           post={post}
           key={comment.id}
           comment={comment}
-          openReplyInput={openReplyInput}
-          setOpenReplyInput={setOpenReplyInput}
           setSinglePostComments={setSinglePostComments}
         />
       ))}
