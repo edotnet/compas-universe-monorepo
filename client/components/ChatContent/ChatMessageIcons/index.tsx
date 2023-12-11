@@ -16,7 +16,7 @@ const ChatMessageIcons = () => {
           { size: 20, src: "/images/icons/file.svg" },
           { size: 20, src: "/images/icons/notes.svg" },
         ]}
-        styles={{ borderRight: "1px solid #E3E8E7;" }}
+        styles={{ borderRight: "1px solid #E3E8E7" }}
       />
       <GenerateIcons
         icons={[{ size: 20, src: "/images/icons/dots-vertical.svg" }]}

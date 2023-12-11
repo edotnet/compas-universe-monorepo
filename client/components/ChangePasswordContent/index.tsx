@@ -25,36 +25,39 @@ const ChangePasswordContent = ({
 }: IProps) => {
   const [error, setError] = useState<string>("");
 
-  const handleResetPassword = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleResetPassword = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const target = e.target as HTMLFormElement;
-    const input = target[0] as HTMLInputElement;
+      const target = e.target as HTMLFormElement;
+      const input = target[0] as HTMLInputElement;
 
-    const payload = {
-      newPassword: input.value,
-      email,
-    };
-    const error = isPasswordInValid(input.value);
+      const payload = {
+        newPassword: input.value,
+        email,
+      };
+      const error = isPasswordInValid(input.value);
 
-    if (!input.value || error) {
-      if (!input.value) {
-        setError("password is required");
-        return;
-      } else {
-        setError(error as string);
-        return;
+      if (!input.value || error) {
+        if (!input.value) {
+          setError("password is required");
+          return;
+        } else {
+          setError(error as string);
+          return;
+        }
       }
-    }
 
-    try {
-      await api.post("/auth/reset-password", payload);
-      setResetPassword(true);
-      setVerifyEmail(false);
-    } catch (error: any) {
-      setError(errorHelper(error?.response?.data.message));
-    }
-  }, []);
+      try {
+        await api.post("/auth/reset-password", payload);
+        setResetPassword(true);
+        setVerifyEmail(false);
+      } catch (error: any) {
+        setError(errorHelper(error?.response?.data.message));
+      }
+    },
+    []
+  );
 
   return (
     <div
@@ -72,7 +75,7 @@ const ChangePasswordContent = ({
             onSubmit={(e) => handleResetPassword(e)}
           >
             <FormGroup>
-              <Label className="text-37-5-14" for="password">
+              <Label className="steel-5-14" for="password">
                 Password
               </Label>
               <Input

@@ -1,4 +1,11 @@
-import { ChangeEvent, FormEvent, useContext, useState } from "react";
+import {
+  ChangeEvent,
+  FC,
+  FormEvent,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 import {
   Button,
   Card,
@@ -8,6 +15,8 @@ import {
   InputGroup,
   InputGroupText,
 } from "reactstrap";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 import { GlobalContext } from "@/context/Global.context";
 import GenerateIcons from "@/components/ChatContent/GenerateIcons";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
@@ -22,25 +31,40 @@ import { IUploadedFile } from "@/utils/types/files.types";
 import { FeedContext } from "@/context/Feed.context";
 import { IContent, IPost } from "@/utils/types/posts.types";
 import { errorHelper } from "@/utils/helpers/error.helper";
+import "./index.module.scss";
 
-const CreatePost = () => {
+const CreatePost: FC = (): JSX.Element => {
   const [invalidFile, setInvalidFile] = useState<boolean>(false);
+  const [openEmojis, setOpenEmojis] = useState<boolean>(false);
+  const [emojis, setEmojis] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
+  const imgRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLInputElement>(null);
 
   const { me } = useContext(GlobalContext);
   const { uploadedFiles, setUploadedFiles, setPosts } = useContext(FeedContext);
 
-  const handleFileUpload = async (files: FileList, type: FileTypes) => {
-    const cancel = !files || files.length === 0;
+  const resetInput: Record<FileTypes, string | null> = {
+    [FileTypes.VIDEO]: imgRef.current && (imgRef.current.value = ""),
+    [FileTypes.PHOTO]: videoRef.current && (videoRef.current.value = ""),
+  };
+
+  const handleFileUpload = async (
+    files: FileList,
+    type: FileTypes
+  ): Promise<void> => {
+    resetInput[type];
+
+    const cancel: boolean = !files || files.length === 0;
     if (cancel) return;
 
-    const filesArray = Object.values(files);
-    const fileSize = filesArray.reduce(
+    const filesArray: File[] = Object.values(files);
+    const fileSize: number = filesArray.reduce(
       (acc: number, file: File) => acc + file.size,
       0
     );
 
-    const isValidFileSize = FileService.isValidFileSize(fileSize);
+    const isValidFileSize: boolean = FileService.isValidFileSize(fileSize);
     setInvalidFile(isValidFileSize);
 
     const formData = new FormData();
@@ -61,7 +85,9 @@ const CreatePost = () => {
     }
   };
 
-  const handlePostCreate = async (e: FormEvent<HTMLFormElement>) => {
+  const handlePostCreate = async (
+    e: FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
 
     const target = e.target as HTMLFormElement;
@@ -84,10 +110,17 @@ const CreatePost = () => {
       const { data }: { data: IPost } = await authApi.post("/feed", payload);
       input.value = "";
       setPosts((prev) => [
-        { ...data, commentsCount: 0, likesCount: 0 },
+        {
+          ...data,
+          commentsCount: 0,
+          likesCount: 0,
+          liked: false,
+          lastComment: null!,
+        },
         ...prev,
       ]);
       setUploadedFiles([]);
+      setEmojis([]);
       setError("");
     } catch (error: any) {
       setError(errorHelper(error?.response?.data.message));
@@ -95,7 +128,7 @@ const CreatePost = () => {
   };
 
   return (
-    <Card>
+    <Card className="position-relative">
       <Form
         className="bg-white p-2"
         style={{ borderRadius: 10 }}
@@ -173,6 +206,7 @@ const CreatePost = () => {
                 invalid={invalidFile}
                 accept={FileService.getAcceptTypes(image_accept_mime_types)}
                 multiple
+                innerRef={imgRef}
               />
             </div>
             <div className="position-relative">
@@ -195,16 +229,31 @@ const CreatePost = () => {
                 }
                 invalid={invalidFile}
                 accept={FileService.getAcceptTypes(video_accept_mime_types)}
+                innerRef={videoRef}
               />
             </div>
             <GenerateIcons
               icons={[{ size: 24, src: "/images/icons/smile-feed.svg" }]}
+              onClick={() => setOpenEmojis(!openEmojis)}
             />
           </div>
-          <p className="text-dc-4-13">{error}</p>
+          <p className="crimson-4-13">{error}</p>
           <Button color="primary">Post</Button>
         </div>
       </Form>
+      {openEmojis && (
+        <div
+          className="position-absolute z-1"
+          style={{ top: "calc(100% + 5px)" }}
+        >
+          <Picker
+            data={data}
+            onEmojiSelect={(emoji: { native: string }) =>
+              setEmojis((prev) => [...prev, emoji.native])
+            }
+          />
+        </div>
+      )}
     </Card>
   );
 };

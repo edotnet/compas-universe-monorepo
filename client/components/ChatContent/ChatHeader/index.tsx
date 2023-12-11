@@ -8,7 +8,7 @@ import styles from "./index.module.scss";
 const ChatHeader = () => {
   const { currentChat, activeChat } = useContext(ChatContext)!;
 
-  const { me } = useContext(GlobalContext)!;
+  const { me } = useContext(GlobalContext)
 
   const friend = activeChat?.users?.find((u) => u.id !== me?.id);
 

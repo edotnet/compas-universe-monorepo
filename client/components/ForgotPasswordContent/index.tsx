@@ -74,7 +74,7 @@ const ForgotPasswordContent = () => {
             onSubmit={(e) => handleForgotPassword(e)}
           >
             <FormGroup>
-              <Label className="text-37-5-14" for="email">
+              <Label className="steel-5-14" for="email">
                 Email address
               </Label>
               <Input

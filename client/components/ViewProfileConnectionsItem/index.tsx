@@ -62,13 +62,13 @@ const ViewProfileConnectionsItem = ({ connection, setConnections }: IProps) => {
           cursor: "pointer",
         }}
       />
-      <CardText className="text-6b-4-13 ellipsis-standard">
+      <CardText className="grayish-blue-4-13 ellipsis-standard">
         {connection.userName}
       </CardText>
       {connection.me ? (
-        <CardText className="text-74-5-15">You</CardText>
+        <CardText className="primary-5-15">You</CardText>
       ) : connection.isFriend ? (
-        <CardText className="text-74-5-15">Connected</CardText>
+        <CardText className="primary-5-15">Connected</CardText>
       ) : (
         <Button
           color="primary"

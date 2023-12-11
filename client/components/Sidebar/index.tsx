@@ -39,7 +39,9 @@ const Sidebar = () => {
             />
             <CardText
               className={
-                router.pathname === "/profile" ? "white-7-16" : "text-93-5-16"
+                router.pathname === "/profile"
+                  ? "white-7-16"
+                  : "medium-grey-5-16"
               }
             >
               My profile
@@ -65,7 +67,7 @@ const Sidebar = () => {
             />
             <CardText
               className={
-                router.pathname === "/admin" ? "white-7-16" : "text-93-5-16"
+                router.pathname === "/admin" ? "white-7-16" : "medium-grey-5-16"
               }
             >
               Admin
@@ -91,7 +93,7 @@ const Sidebar = () => {
             />
             <CardText
               className={
-                router.pathname === "/feed" ? "white-7-16" : "text-93-5-16"
+                router.pathname === "/feed" ? "white-7-16" : "medium-grey-5-16"
               }
             >
               Feeds
@@ -117,7 +119,9 @@ const Sidebar = () => {
             />
             <CardText
               className={
-                router.pathname === "/artist" ? "white-7-16" : "text-93-5-16"
+                router.pathname === "/artist"
+                  ? "white-7-16"
+                  : "medium-grey-5-16"
               }
             >
               Artist
@@ -143,7 +147,7 @@ const Sidebar = () => {
             />
             <CardText
               className={
-                router.pathname === "/chat" ? "white-7-16" : "text-93-5-16"
+                router.pathname === "/chat" ? "white-7-16" : "medium-grey-5-16"
               }
             >
               Chat
@@ -153,8 +157,8 @@ const Sidebar = () => {
       </ListGroup>
       <ListGroup className={styles.secondMenu}>
         <ListGroupItem
-          className="border-0 d-flex"
-          style={{ whiteSpace: "nowrap" }}
+          className="border-0 d-flex edward-5-14"
+          style={{ whiteSpace: "nowrap", color: "#959D99" }}
         >
           <CardText>Top 100</CardText>
           <Image
@@ -164,19 +168,34 @@ const Sidebar = () => {
             height={19}
           />
         </ListGroupItem>
-        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+        <ListGroupItem
+          className="border-0 edward-5-14"
+          style={{ whiteSpace: "nowrap", color: "#959D99" }}
+        >
           Rich Brian’s collections
         </ListGroupItem>
-        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+        <ListGroupItem
+          className="border-0 edward-5-14"
+          style={{ whiteSpace: "nowrap", color: "#959D99" }}
+        >
           deep focus
         </ListGroupItem>
-        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+        <ListGroupItem
+          className="border-0 edward-5-14"
+          style={{ whiteSpace: "nowrap", color: "#959D99" }}
+        >
           Lo-Fi Jazz upbeat
         </ListGroupItem>
-        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+        <ListGroupItem
+          className="border-0 edward-5-14"
+          style={{ whiteSpace: "nowrap", color: "#959D99" }}
+        >
           For workplace
         </ListGroupItem>
-        <ListGroupItem className="border-0" style={{ whiteSpace: "nowrap" }}>
+        <ListGroupItem
+          className="border-0 edward-5-14"
+          style={{ whiteSpace: "nowrap", color: "#959D99" }}
+        >
           Christmas playlist
         </ListGroupItem>
       </ListGroup>

@@ -12,7 +12,7 @@ const ChatSearch = () => {
   return (
     <div className="d-flex flex-column align-items-center gap-2 w-100 px-4">
       <div className="d-flex justify-content-between align-items-center w-100">
-        <CardText className="text-27-7-23">Messages</CardText>
+        <CardText className="charcoal-7-23">Messages</CardText>
         <UncontrolledDropdown className="me-2" direction="down">
           <DropdownToggle color="transparent" className={styles.dots}>
             <picture>

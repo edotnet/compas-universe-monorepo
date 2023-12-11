@@ -1,5 +1,6 @@
 import withAuth from "@/HOC/withAuth";
 import ProfileContent from "@/components/ProfileContent";
+import { GlobalProvider } from "@/context/Global.context";
 import { useFetchSSR } from "@/hooks/useFetchSSR";
 import MainLayout from "@/layouts/MainLayout";
 import { copyObject } from "@/utils/helpers/copy-object.helper";
@@ -12,9 +13,11 @@ interface IProfile {
 
 const Profile = ({ data }: IProfile) => {
   return (
-    <MainLayout>
-      <ProfileContent data={data} />
-    </MainLayout>
+    <GlobalProvider>
+      <MainLayout>
+        <ProfileContent data={data} />
+      </MainLayout>
+    </GlobalProvider>
   );
 };
 

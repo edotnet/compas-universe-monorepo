@@ -15,8 +15,8 @@ const ProfileConnectionTabs = ({ status, setStatus }: IProps) => {
           style={status !== "Connect" ? { color: "#858585" } : {}}
           className={
             status === "Connect"
-              ? `${styles.active} text-27-6-23`
-              : "text-85-4-20"
+              ? `${styles.active} charcoal-6-23`
+              : "silver-4-20"
           }
           onClick={() => setStatus("Connect")}
         >
@@ -26,15 +26,15 @@ const ProfileConnectionTabs = ({ status, setStatus }: IProps) => {
           style={status !== "Disconnect" ? { color: "#858585" } : {}}
           className={
             status === "Disconnect"
-              ? `${styles.active} text-27-6-23`
-              : "text-85-4-20"
+              ? `${styles.active} charcoal-6-23`
+              : "silver-4-20"
           }
           onClick={() => setStatus("Disconnect")}
         >
           Followed
         </ListGroupItem>
       </ListGroup>
-      <a className="text-74-5-15" href="">
+      <a className="primary-5-15" href="">
         See more
       </a>
     </div>

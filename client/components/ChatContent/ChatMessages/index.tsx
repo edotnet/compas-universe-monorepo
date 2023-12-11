@@ -8,7 +8,9 @@ const ChatMessages = () => {
   const { messages } = useContext(ChatContext)!;
 
   return (
-    <div className={`${styles.chatMessages} d-flex flex-column-reverse gap-5 vanish-scroll`}>
+    <div
+      className={`${styles.chatMessages} d-flex flex-column-reverse gap-5 vanish-scroll`}
+    >
       {messages.map((m, index) =>
         m.me ? (
           <div
@@ -42,7 +44,7 @@ const ChatMessages = () => {
                   height={17}
                 />
               </picture>
-              <p className="text-93-5-11">
+              <p className="medium-grey-5-11">
                 {new Date(m.createdAt).toLocaleTimeString("en-US", {
                   hour: "numeric",
                   minute: "numeric",
@@ -69,7 +71,7 @@ const ChatMessages = () => {
               </div>
             </div>
             <div className="d-flex gap-1" style={{ marginLeft: 46 }}>
-              <p className="text-93-5-11">
+              <p className="medium-grey-5-11">
                 {new Date(m.createdAt).toLocaleTimeString("en-US", {
                   hour: "numeric",
                   minute: "numeric",

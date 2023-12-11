@@ -99,7 +99,7 @@ const Chat = ({ chat }: IProps) => {
         />
         <div className="d-flex flex-column gap-1">
           <p>{chat.friend.userName}</p>
-          <p className="ellipsis-standard text-93-4-14">
+          <p className="ellipsis-standard medium-grey-4-14">
             {chat.lastMessage?.text}
           </p>
         </div>
@@ -108,10 +108,12 @@ const Chat = ({ chat }: IProps) => {
         <div
           className={`${styles.messageInfo} d-flex flex-column justify-content-between`}
         >
-          <span className="text-93-5-14">{timeAgo}</span>
+          <span className="medium-grey-5-14">{timeAgo}</span>
           {chat?.newMessagesCount ? (
             <div className={styles.newMessage}>
-              <p className="text-ff-9-12">{chat?.newMessagesCount}</p>
+              <p className="white-9-12" style={{ textAlign: "center" }}>
+                {chat?.newMessagesCount}
+              </p>
             </div>
           ) : chat.lastMessage?.me ? (
             <picture>

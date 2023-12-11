@@ -25,8 +25,8 @@ const ChatContent = () => {
     } catch (error) {}
 
     socket
-      .off(`${SOCKET_EVENT.MESSAGE_NEW}`)
-      .on(`${SOCKET_EVENT.MESSAGE_NEW}`, async (data: IMessageEvent) => {
+      .off(SOCKET_EVENT.MESSAGE_NEW)
+      .on(SOCKET_EVENT.MESSAGE_NEW, async (data: IMessageEvent) => {
         if (data) {
           if (data.chatId === activeChat?.id) {
             setMessages((prev) => [data.message, ...prev]);
@@ -62,8 +62,8 @@ const ChatContent = () => {
       });
 
     socket
-      .off(`${SOCKET_EVENT.MESSAGE_SEEN}`)
-      .on(`${SOCKET_EVENT.MESSAGE_SEEN}`, async (data: IMessageEvent) => {
+      .off(SOCKET_EVENT.MESSAGE_SEEN)
+      .on(SOCKET_EVENT.MESSAGE_SEEN, async (data: IMessageEvent) => {
         if (data) {
           setChats((prev) => [
             ...prev.map((chat) =>
@@ -78,6 +78,11 @@ const ChatContent = () => {
           ]);
         }
       });
+
+    return () => {
+      socket.off(SOCKET_EVENT.MESSAGE_SEEN);
+      socket.off(SOCKET_EVENT.MESSAGE_NEW);
+    };
   }, [activeChat, currentChat]);
 
   return (

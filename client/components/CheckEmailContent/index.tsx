@@ -66,7 +66,7 @@ const CheckEmailContent = ({ setVerifyEmail, setSendEmail, email }: IProps) => {
             onSubmit={(e) => handleVerifyEmail(e)}
           >
             <FormGroup>
-              <Label className="text-37-5-14" for="code">
+              <Label className="steel-5-14" for="code">
                 Code
               </Label>
               <Input

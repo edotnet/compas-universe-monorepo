@@ -65,7 +65,7 @@ const ProfileConnectionsItem = ({
           cursor: "pointer",
         }}
       />
-      <CardText className="text-6b-4-13 ellipsis-standard">
+      <CardText className="grayish-blue-4-13 ellipsis-standard">
         {connection.userName}
       </CardText>
       <Button

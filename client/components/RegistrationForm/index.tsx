@@ -121,7 +121,7 @@ const RegistrationForm = () => {
         <LogoContent heading="Create account" />
         <div className="d-flex flex-column justify-content-center align-items-center gap-3">
           <div className="d-flex flex-column gap-2 w-100">
-            <p className="text-11-5-14">Sign up with</p>
+            <p className="navy-5-14">Sign up with</p>
             <WebsiteButtons />
           </div>
           <Form
@@ -129,7 +129,7 @@ const RegistrationForm = () => {
             onSubmit={(e: FormEvent<HTMLFormElement>) => handleRegister(e)}
           >
             <FormGroup>
-              <Label className="text-37-5-14" for="text">
+              <Label className="steel-5-14" for="text">
                 User Name
               </Label>
               <Input
@@ -144,7 +144,7 @@ const RegistrationForm = () => {
               </FormFeedback>
             </FormGroup>
             <FormGroup>
-              <Label className="text-37-5-14" for="email">
+              <Label className="steel-5-14" for="email">
                 Email address
               </Label>
               <Input
@@ -159,7 +159,7 @@ const RegistrationForm = () => {
               </FormFeedback>
             </FormGroup>
             <FormGroup>
-              <Label className="text-37-5-14" for="password">
+              <Label className="steel-5-14" for="password">
                 Password
               </Label>
               <Input
@@ -173,7 +173,7 @@ const RegistrationForm = () => {
               </FormFeedback>
             </FormGroup>
             <FormGroup>
-              <Label className="text-37-5-14" for="confirm-password">
+              <Label className="steel-5-14" for="confirm-password">
                 Confirm Password
               </Label>
               <Input
@@ -188,23 +188,23 @@ const RegistrationForm = () => {
             </FormGroup>
             <FormGroup check inline>
               <Input type="checkbox" />
-              <Label className="text-11-4-14" check>
+              <Label className="navy-4-14" check>
                 Remember me
               </Label>
             </FormGroup>
             <Button color="primary">Create Account</Button>
           </Form>
-          <p className="text-11-4-14">
+          <p className="navy-4-14">
             Already have an account?{" "}
             <span
-              className="text-74-4-14"
+              className="primary-4-14"
               style={{ cursor: "pointer" }}
               onClick={() => moveToPage("/login")}
             >
               Login
             </span>
           </p>
-          <p className="text-dc-4-13">{errors.other}</p>
+          <p className="crimson-4-13">{errors.other}</p>
         </div>
       </div>
     </div>

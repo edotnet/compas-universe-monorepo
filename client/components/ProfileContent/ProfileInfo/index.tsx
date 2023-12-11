@@ -19,7 +19,7 @@ const ProfileInfo = () => {
 
   const router = useRouter();
 
-  const { me } = useContext(GlobalContext)!;
+  const { me } = useContext(GlobalContext);
 
   const handleLogout = async () => {
     await AuthService.logout();
@@ -45,8 +45,8 @@ const ProfileInfo = () => {
             borderRadius="12px"
           />
           <div className="d-flex flex-column">
-            <CardText className="text-27-6-36">{me?.userName}</CardText>
-            <CardText className="text-7a-4-20" style={{ marginBottom: 5 }}>
+            <CardText className="charcoal-6-36">{me?.userName}</CardText>
+            <CardText className="grey-4-20" style={{ marginBottom: 5 }}>
               {me?.type}
             </CardText>
             <div className="d-flex align-items-center gap-2">

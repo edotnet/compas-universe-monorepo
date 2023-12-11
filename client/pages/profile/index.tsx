@@ -1,12 +1,15 @@
 import withAuth from "@/HOC/withAuth";
 import ProfileContent from "@/components/ProfileContent";
+import { GlobalProvider } from "@/context/Global.context";
 import MainLayout from "@/layouts/MainLayout";
 
 const Profile = () => {
   return (
-    <MainLayout>
-      <ProfileContent />
-    </MainLayout>
+    <GlobalProvider>
+      <MainLayout>
+        <ProfileContent />
+      </MainLayout>
+    </GlobalProvider>
   );
 };
 

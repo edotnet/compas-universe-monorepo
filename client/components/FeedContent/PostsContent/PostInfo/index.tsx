@@ -45,7 +45,7 @@ const PostInfo = withLessMore<IProps>(
           >
             <img
               src={item.meta.src}
-              height={500}
+              height={400}
               style={{ width: "100%", objectFit: "cover" }}
               alt="slide"
             />
@@ -55,7 +55,7 @@ const PostInfo = withLessMore<IProps>(
 
     return (
       <CardBody className="d-flex flex-column w-100 p-0 gap-3">
-        <div className="d-flex align-items-end">
+        <div className="d-flex align-items-end px-3">
           <CardText
             className="px-3"
             style={
@@ -73,9 +73,9 @@ const PostInfo = withLessMore<IProps>(
           >
             {description}
           </CardText>
-          {description?.length! > 150 && (
+          {description?.length! > 500 && ( // NOT A GOOD SOLUTION
             <CardText
-              className="text-74-5-14"
+              className="primary-5-14"
               onClick={() => isShowHandler && isShowHandler()}
               style={{ minWidth: "max-content", cursor: "pointer" }}
             >
@@ -115,6 +115,7 @@ const PostInfo = withLessMore<IProps>(
               key={file.meta.src}
               src={file.meta.src}
               style={{ objectFit: "cover" }}
+              height={400}
             />
           ))
         )}

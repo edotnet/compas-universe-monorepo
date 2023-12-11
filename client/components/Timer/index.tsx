@@ -37,9 +37,9 @@ const Timer = ({ email, setError }: IProps) => {
   }, [minutes, seconds, codeSent]);
 
   return codeSent ? (
-    <p className="text-37-6-16">Code sent</p>
+    <p className="steel-6-16">Code sent</p>
   ) : (
-    <p className="text-00-6-16">
+    <p className="black70-6-16">
       Send code again{" "}
       <span style={{ fontWeight: 400 }}>
         {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}

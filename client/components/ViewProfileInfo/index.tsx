@@ -50,8 +50,8 @@ const ViewProfileInfo = ({ user, isFriend }: IProps) => {
           borderRadius="12px"
         />
         <div className="d-flex flex-column gap-3">
-          <p className="text-27-6-36">{user.userName}</p>
-          <span className="text-7a-4-20" style={{ marginBottom: 5 }}>
+          <p className="charcoal-6-36">{user.userName}</p>
+          <span className="grey-4-20" style={{ marginBottom: 5 }}>
             {user.type}
           </span>
           <Button

@@ -82,11 +82,11 @@ const LoginForm = () => {
         <div className="d-flex flex-column align-items-center gap-4">
           <div className="d-flex align-items-center justify-content-between w-100">
             <div className={styles.line}></div>
-            <p className="text-6b-4-14">Or continue with</p>
+            <p className="grayish-blue-4-14">Or continue with</p>
             <div className={styles.line}></div>
           </div>
           <div className="d-flex flex-column gap-2 w-100">
-            <p className="text-11-5-14">Log in with</p>
+            <p className="navy-5-14">Log in with</p>
             <WebsiteButtons />
           </div>
           <Form
@@ -94,7 +94,7 @@ const LoginForm = () => {
             onSubmit={(e: FormEvent<HTMLFormElement>) => handleLogin(e)}
           >
             <FormGroup>
-              <Label className="text-37-5-14" for="email">
+              <Label className="steel-5-14" for="email">
                 Email address
               </Label>
               <Input
@@ -109,7 +109,7 @@ const LoginForm = () => {
               </FormFeedback>
             </FormGroup>
             <FormGroup>
-              <Label className="text-37-5-14" for="password">
+              <Label className="steel-5-14" for="password">
                 Password
               </Label>
               <Input
@@ -125,12 +125,12 @@ const LoginForm = () => {
             <div className="d-flex justify-content-between align-items-center w-100">
               <FormGroup check inline>
                 <Input type="checkbox" />
-                <Label className="text-11-4-14" check>
+                <Label className="navy-4-14" check>
                   Remember me
                 </Label>
               </FormGroup>
               <p
-                className="text-74-5-14"
+                className="primary-5-14"
                 style={{ cursor: "pointer" }}
                 onClick={() => moveToPage("/forgot-password")}
               >
@@ -139,17 +139,17 @@ const LoginForm = () => {
             </div>
             <Button color="primary">Log in</Button>
           </Form>
-          <p className="text-11-4-14">
+          <p className="navy-4-14">
             Don't have an account?{" "}
             <span
-              className="text-74-4-14"
+              className="primary-4-14"
               style={{ cursor: "pointer" }}
               onClick={() => moveToPage("/register")}
             >
               Create
             </span>
           </p>
-          <p className="text-dc-4-13">{errors.other}</p>
+          <p className="crimson-4-13">{errors.other}</p>
         </div>
       </div>
     </div>

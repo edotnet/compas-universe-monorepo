@@ -8,7 +8,7 @@
 }
 
 .loadingBar {
-    width: 100%;
+    width: 80%;
     background-color: #eee;
 }
 
@@ -26,9 +26,9 @@
         width: 0;
     }
     50% {
-        width: 50%;
+        width: 40%;
     }
     100% {
-        width: 100%;
+        width: 80%;
     }
 }
