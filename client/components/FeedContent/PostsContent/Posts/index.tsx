@@ -1,8 +1,8 @@
+import { FC, useContext } from "react";
 import { FeedContext } from "@/context/Feed.context";
-import { useContext } from "react";
 import Post from "../Post";
 
-const Posts = () => {
+const Posts: FC = (): JSX.Element => {
   const { posts } = useContext(FeedContext);
 
   return posts.length ? (

@@ -1,7 +1,9 @@
 import {
   ChangeEvent,
+  Dispatch,
   FC,
   FormEvent,
+  SetStateAction,
   useContext,
   useRef,
   useState,
@@ -29,11 +31,15 @@ import { FileTypes } from "@/utils/types/enums/file.enum";
 import { authApi } from "@/utils/axios";
 import { IUploadedFile } from "@/utils/types/files.types";
 import { FeedContext } from "@/context/Feed.context";
-import { IContent, IPost } from "@/utils/types/posts.types";
+import { IContent, IPost, IPostExtended } from "@/utils/types/posts.types";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import "./index.module.scss";
 
-const CreatePost: FC = (): JSX.Element => {
+interface IProps {
+  setSkip: Dispatch<SetStateAction<number>>;
+}
+
+const CreatePost: FC<IProps> = ({ setSkip }): JSX.Element => {
   const [invalidFile, setInvalidFile] = useState<boolean>(false);
   const [openEmojis, setOpenEmojis] = useState<boolean>(false);
   const [emojis, setEmojis] = useState<string[]>([]);
@@ -107,8 +113,10 @@ const CreatePost: FC = (): JSX.Element => {
     }
 
     try {
-      const { data }: { data: IPost } = await authApi.post("/feed", payload);
       input.value = "";
+      const { data }: { data: IPost } = await authApi.post("/feed", payload);
+
+      setSkip((prev) => prev + 1);
       setPosts((prev) => [
         {
           ...data,

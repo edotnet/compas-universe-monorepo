@@ -13,6 +13,8 @@ import { authApi } from "@/utils/axios";
 
 interface IProps {
   post: IPostExtended;
+  skip?: number;
+  setSkip?: Dispatch<SetStateAction<number>>;
   comments: IExtendedComment[];
   containerRef?: RefObject<HTMLDivElement>;
   setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
@@ -20,15 +22,17 @@ interface IProps {
 
 const Comments = ({
   post,
+  skip,
+  setSkip,
   comments,
   containerRef,
   setSinglePostComments,
 }: IProps) => {
   const [isFetched, setIsFetched] = useState<boolean>(false);
-  const [skip, setSkip] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleCommentsGet = useCallback(async () => {
+    if (!setSkip) return;
     if (!setSinglePostComments) return;
 
     try {
@@ -69,8 +73,8 @@ const Comments = ({
           comments,
           loading,
           handleCommentsGet,
-          setSkip,
-          skip
+          setSkip!,
+          skip!
         )
       }
       style={setSinglePostComments && { height: "100%", maxHeight: 600 }}

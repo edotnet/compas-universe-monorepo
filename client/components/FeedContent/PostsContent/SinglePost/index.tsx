@@ -22,6 +22,7 @@ interface IProps {
 }
 
 const SinglePost = ({ postId }: IProps) => {
+  const [skip, setSkip] = useState<number>(0);
   const [singlePost, setSinglePost] = useState<IPostExtended>(null!);
   const [singlePostComments, setSinglePostComments] = useState<
     IExtendedComment[]
@@ -147,7 +148,9 @@ const SinglePost = ({ postId }: IProps) => {
       {singlePost && (
         <CardBody className="w-100 d-flex flex-column gap-3">
           <Comments
+            skip={skip}
             post={singlePost}
+            setSkip={setSkip}
             containerRef={containerRef}
             comments={singlePostComments}
             setSinglePostComments={setSinglePostComments}
@@ -159,6 +162,7 @@ const SinglePost = ({ postId }: IProps) => {
         <CardBody className="w-100">
           <CreateComments
             post={singlePost}
+            setSkip={setSkip}
             inputRef={inputRef}
             containerRef={containerRef}
             setSinglePostComments={setSinglePostComments}

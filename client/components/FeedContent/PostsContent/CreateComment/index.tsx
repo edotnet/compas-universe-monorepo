@@ -1,6 +1,3 @@
-import { FeedContext } from "@/context/Feed.context";
-import { authApi } from "@/utils/axios";
-import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 import {
   Dispatch,
   FormEvent,
@@ -11,10 +8,15 @@ import {
   useState,
 } from "react";
 import { Button, Form, FormFeedback, Input } from "reactstrap";
+import { FeedContext } from "@/context/Feed.context";
+import { authApi } from "@/utils/axios";
+import { scrollToTop } from "@/utils/helpers/scroll-to-element.helper";
+import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 
 interface IProps {
   post: IPostExtended;
   inputRef: RefObject<HTMLInputElement>;
+  setSkip?: Dispatch<SetStateAction<number>>;
   commentId?: number;
   containerRef?: RefObject<HTMLDivElement>;
   inputEditMode?: boolean;
@@ -23,10 +25,11 @@ interface IProps {
 
 const CreateComments = ({
   post,
+  setSkip,
+  inputRef,
   commentId,
   containerRef,
   setSinglePostComments,
-  inputRef,
 }: IProps) => {
   const [error, setError] = useState<string>("");
   const { setComments } = useContext(FeedContext);
@@ -56,10 +59,7 @@ const CreateComments = ({
         );
 
         if (containerRef?.current) {
-          const lastComment = containerRef.current.lastChild as HTMLElement;
-          if (lastComment) {
-            lastComment.scrollIntoView({ behavior: "smooth" });
-          }
+          scrollToTop(containerRef.current);
         }
 
         input.value = "";
@@ -72,8 +72,8 @@ const CreateComments = ({
                   ? {
                       ...comment,
                       replies: [
-                        ...(comment.replies ? comment.replies : []),
                         data,
+                        ...(comment.replies ? comment.replies : []),
                       ],
                     }
                   : comment
@@ -106,8 +106,9 @@ const CreateComments = ({
               : [data];
           }
         } else {
-          if (setSinglePostComments) {
-            setSinglePostComments((prev) => [...prev, data]);
+          if (setSinglePostComments && setSkip) {
+            setSkip((prev) => prev + 1);
+            setSinglePostComments((prev) => [data, ...prev]);
           } else {
             setComments((prev) => ({
               ...prev,

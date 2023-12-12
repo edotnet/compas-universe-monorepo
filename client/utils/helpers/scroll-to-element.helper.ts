@@ -1,10 +1,5 @@
-import { RefObject } from "react";
-
-export const scrollToInput = (ref: RefObject<Element>) => {
-  if (ref.current) {
-    ref.current.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+export const scrollToTop = (current: HTMLElement) => {
+  if (current) {
+    current.scrollTo({ top: 0, behavior: "smooth" });
   }
 };

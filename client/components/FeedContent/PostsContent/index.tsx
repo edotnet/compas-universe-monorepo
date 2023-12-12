@@ -58,7 +58,7 @@ const PostsContent = () => {
       }
     >
       <p className="charcoal-6-32">Feed</p>
-      <CreatePost />
+      <CreatePost setSkip={setSkip} />
       <Posts />
     </div>
   );
