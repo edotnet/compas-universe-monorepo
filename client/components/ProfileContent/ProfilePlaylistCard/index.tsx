@@ -1,11 +1,11 @@
-import { memo } from "react";
+import { FC, memo } from "react";
 import { Card, CardBody, CardImg, CardSubtitle, CardText } from "reactstrap";
 
 interface IProps {
   item: any;
 }
 
-const ProfilePlaylistCard = ({ item }: IProps) => (
+const ProfilePlaylistCard: FC<IProps> = ({ item }) => (
   <Card className="border-0 bg-transparent gap-2" style={{ minWidth: "auto" }}>
     <CardImg src={item.thumbnailUrl} />
     <CardBody className="p-0">

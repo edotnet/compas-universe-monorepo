@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FC, FormEvent, useState } from "react";
 import {
   Button,
   Form,
@@ -15,24 +15,27 @@ import ChangePasswordContent from "../ChangePasswordContent";
 import PasswordChangedContent from "../PasswordChangedContent";
 import styles from "./index.module.scss";
 
-const ForgotPasswordContent = () => {
+const ForgotPasswordContent: FC = (): JSX.Element => {
   const [error, setError] = useState<string>("");
   const [sendEmail, setSendEmail] = useState<boolean>(false);
   const [verifyEmail, setVerifyEmail] = useState<boolean>(false);
   const [resetPassword, setResetPassword] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
 
-  const handleForgotPassword = async (e: any) => {
+  const handleForgotPassword = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const target = e.target as HTMLFormElement;
+    const input = target[0] as HTMLInputElement;
+
     const payload = {
-      email: e.target[0].value,
+      email: input.value,
     };
 
-    if (!e.target[0].value) {
+    if (!input.value) {
       setError("email is required");
     } else {
-      setEmail(e.target[0].value);
+      setEmail(input.value);
 
       try {
         await api.post("/auth/forgot-password", payload);
@@ -71,7 +74,9 @@ const ForgotPasswordContent = () => {
           />
           <Form
             className="d-flex flex-column gap-3 w-100"
-            onSubmit={(e) => handleForgotPassword(e)}
+            onSubmit={(e: FormEvent<HTMLFormElement>) =>
+              handleForgotPassword(e)
+            }
           >
             <FormGroup>
               <Label className="steel-5-14" for="email">

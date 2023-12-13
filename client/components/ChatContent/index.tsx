@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { authApi } from "@/utils/axios";
 import { ChatContext } from "@/context/Chat.context";
 import { WebsocketContext } from "@/context/Websocket.Context";
@@ -8,7 +8,7 @@ import ChatLeftSide from "./ChatLeftSide";
 import ChatRightSide from "./ChatRightSide";
 import ChatStart from "./ChatStart";
 
-const ChatContent = () => {
+const ChatContent: FC = (): JSX.Element => {
   const { setMessages, currentChat, setChats, chats, activeChat } =
     useContext(ChatContext)!;
 

@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useState } from "react";
+import { FC, FormEvent, useCallback, useState } from "react";
 import LogoContent from "../LogoContent";
 import { api } from "@/utils/axios";
 import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
@@ -18,11 +18,11 @@ interface IProps {
   email: string;
 }
 
-const ChangePasswordContent = ({
+const ChangePasswordContent: FC<IProps> = ({
   setResetPassword,
   setVerifyEmail,
   email,
-}: IProps) => {
+}): JSX.Element => {
   const [error, setError] = useState<string>("");
 
   const handleResetPassword = useCallback(

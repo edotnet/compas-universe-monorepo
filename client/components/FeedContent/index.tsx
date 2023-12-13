@@ -1,8 +1,9 @@
 import PostsContent from "./PostsContent";
 import PlaylistContent from "./PlaylistContent";
 import { FeedContainer } from "./Container";
+import { FC } from "react";
 
-const FeedContent = () => {
+const FeedContent: FC = (): JSX.Element => {
   return (
     <FeedContainer>
       <PostsContent />

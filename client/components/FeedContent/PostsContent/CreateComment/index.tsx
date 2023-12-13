@@ -1,5 +1,6 @@
 import {
   Dispatch,
+  FC,
   FormEvent,
   RefObject,
   SetStateAction,
@@ -23,14 +24,14 @@ interface IProps {
   setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
 }
 
-const CreateComments = ({
+const CreateComments: FC<IProps> = ({
   post,
   setSkip,
   inputRef,
   commentId,
   containerRef,
   setSinglePostComments,
-}: IProps) => {
+}): JSX.Element => {
   const [error, setError] = useState<string>("");
   const { setComments } = useContext(FeedContext);
 

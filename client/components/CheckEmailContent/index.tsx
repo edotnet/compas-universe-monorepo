@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { FC, useCallback, useState } from "react";
 import LogoContent from "../LogoContent";
 import { api } from "@/utils/axios";
 import Timer from "../Timer";
@@ -18,7 +18,11 @@ interface IProps {
   email: string;
 }
 
-const CheckEmailContent = ({ setVerifyEmail, setSendEmail, email }: IProps) => {
+const CheckEmailContent: FC<IProps> = ({
+  setVerifyEmail,
+  setSendEmail,
+  email,
+}): JSX.Element => {
   const [error, setError] = useState<string>("");
 
   const handleVerifyEmail = useCallback(async (e: any) => {

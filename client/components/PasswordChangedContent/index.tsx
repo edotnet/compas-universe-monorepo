@@ -1,11 +1,12 @@
-import { useRouter } from "next/router";
-import LogoContent from "../LogoContent";
+import { NextRouter, useRouter } from "next/router";
 import { Button } from "reactstrap";
+import LogoContent from "../LogoContent";
+import { FC } from "react";
 
-const PasswordChangedContent = () => {
-  const router = useRouter();
+const PasswordChangedContent: FC = (): JSX.Element => {
+  const router: NextRouter = useRouter();
 
-  const handleBackToLogin = () => {
+  const handleBackToLogin = (): void => {
     router.push("/login");
   };
 

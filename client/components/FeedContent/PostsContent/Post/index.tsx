@@ -1,4 +1,4 @@
-import { useCallback, useContext, useRef, useState } from "react";
+import { FC, useCallback, useContext, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -26,14 +26,14 @@ interface IProps {
   post: IPostExtended;
 }
 
-const Post = ({ post }: IProps) => {
+const Post: FC<IProps> = ({ post }) => {
   const [singlePostModal, setSinglePostModal] = useState(false);
   const [openCommentInput, setOpenCommentInput] = useState<boolean>(false);
 
   const { setPosts, comments } = useContext(FeedContext);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const toggle = () => setSinglePostModal(!singlePostModal);
+  const toggle = (): void => setSinglePostModal(!singlePostModal);
 
   const handlePostLike = useCallback(async (): Promise<void> => {
     const payload: Record<string, number> = { postId: post.id };
@@ -56,7 +56,7 @@ const Post = ({ post }: IProps) => {
     } catch (error) {}
   }, [post]);
 
-  const readyToComment = () => {
+  const readyToComment = (): void => {
     setOpenCommentInput(true);
 
     if (inputRef?.current) {
@@ -158,15 +158,6 @@ const Post = ({ post }: IProps) => {
               </p>
             )}
             <Comment post={post} comment={post.lastComment} />
-            {/* {openReplyInput && (
-              <div className="w-50" style={{ marginLeft: 60 }}>
-                <CreateComments
-                  post={post}
-                  commentId={post.lastComment.id}
-                  inputRef={inputRef}
-                />
-              </div>
-            )} */}
           </div>
         </CardBody>
       )}

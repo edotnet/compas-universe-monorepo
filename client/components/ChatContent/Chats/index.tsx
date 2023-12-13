@@ -1,8 +1,8 @@
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { ChatContext } from "@/context/Chat.context";
 import Chat from "../Chat";
 
-const Chats = () => {
+const Chats: FC = (): JSX.Element => {
   const { chats } = useContext(ChatContext)!;
 
   return (

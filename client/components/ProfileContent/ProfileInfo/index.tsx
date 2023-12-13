@@ -1,6 +1,6 @@
+import { FC, useContext, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import { useContext, useState } from "react";
+import { NextRouter, useRouter } from "next/router";
 import {
   Button,
   CardText,
@@ -14,14 +14,14 @@ import { GlobalContext } from "@/context/Global.context";
 import ProfilePicture from "../ProfilePicture";
 import styles from "./index.module.scss";
 
-const ProfileInfo = () => {
+const ProfileInfo: FC = (): JSX.Element => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const router = useRouter();
+  const router: NextRouter = useRouter();
 
   const { me } = useContext(GlobalContext);
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     await AuthService.logout();
     setLoading(true);
     setTimeout(() => {

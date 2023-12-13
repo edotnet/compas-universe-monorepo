@@ -22,36 +22,36 @@ const PostInfo = withLessMore<IProps>(
     const [activeIndex, setActiveIndex] = useState<number>(0);
     const [animating, setAnimating] = useState<boolean>(false);
 
-    const next = () => {
+    const next = (): void => {
       if (animating) return;
       const nextIndex = activeIndex === media!.length - 1 ? 0 : activeIndex + 1;
       setActiveIndex(nextIndex);
     };
 
-    const previous = () => {
+    const previous = (): void => {
       if (animating) return;
       const nextIndex = activeIndex === 0 ? media!.length - 1 : activeIndex - 1;
       setActiveIndex(nextIndex);
     };
 
-    const slides =
-      media &&
-      media.map((item: IUploadedFile, index: number) => {
-        return (
-          <CarouselItem
-            onExiting={() => setAnimating(true)}
-            onExited={() => setAnimating(false)}
-            key={item.meta.src}
-          >
-            <img
-              src={item.meta.src}
-              height={400}
-              style={{ width: "100%", objectFit: "cover" }}
-              alt="slide"
-            />
-          </CarouselItem>
-        );
-      });
+    const slides: JSX.Element[] = media
+      ? media.map((item: IUploadedFile, index: number) => {
+          return (
+            <CarouselItem
+              onExiting={() => setAnimating(true)}
+              onExited={() => setAnimating(false)}
+              key={item.meta.src}
+            >
+              <img
+                src={item.meta.src}
+                height={400}
+                style={{ width: "100%", objectFit: "cover" }}
+                alt="slide"
+              />
+            </CarouselItem>
+          );
+        })
+      : [];
 
     return (
       <CardBody className="d-flex flex-column w-100 p-0 gap-3">

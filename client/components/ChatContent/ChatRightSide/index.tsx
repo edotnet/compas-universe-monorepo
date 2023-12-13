@@ -1,9 +1,10 @@
+import { FC } from "react";
 import ChatHeader from "../ChatHeader";
 import ChatMessages from "../ChatMessages";
 import ChatSendMessage from "../ChatSendMessage";
 import styles from "./index.module.scss";
 
-const ChatRightSide = () => {
+const ChatRightSide: FC = (): JSX.Element => {
   return (
     <div className={styles.chatRightSide}>
       <ChatHeader />

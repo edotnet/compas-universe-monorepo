@@ -1,5 +1,5 @@
-import { FormEvent, useCallback, useState } from "react";
-import { useRouter } from "next/router";
+import { FC, FormEvent, useCallback, useState } from "react";
+import { NextRouter, useRouter } from "next/router";
 import { api } from "@/utils/axios";
 import validator from "validator";
 import LogoContent from "../LogoContent";
@@ -14,64 +14,68 @@ import {
 } from "reactstrap";
 import styles from "./index.module.scss";
 
-const LoginForm = () => {
+const LoginForm: FC = (): JSX.Element => {
   const [errors, setErrors] = useState({
     email: "",
     password: "",
     other: "",
   });
 
-  const router = useRouter();
-  const moveToPage = (route: string) => {
+  const router: NextRouter = useRouter();
+  const moveToPage = (route: string): void => {
     router.push(route);
   };
 
-  const handleLogin = useCallback(async (e: any) => {
-    e.preventDefault();
+  const handleLogin = useCallback(
+    async (e: FormEvent<HTMLFormElement>): Promise<void> => {
+      e.preventDefault();
 
-    const email = e.target[0].value;
-    const password = e.target[1].value;
-    const rememberMe = e.target[2].checked;
+      const target = e.target as HTMLFormElement;
+      const email = (target[0] as HTMLInputElement).value;
+      const password = (target[1] as HTMLInputElement).value;
+      const rememberMe = (target[2] as HTMLInputElement).checked;
 
-    if (!email || !validator.isEmail(email)) {
-      if (!email) {
-        setErrors({ ...errors, email: "Email is required" });
-      } else {
-        setErrors({ ...errors, email: "Invalid email address" });
+      if (!email || !validator.isEmail(email)) {
+        if (!email) {
+          setErrors({ ...errors, email: "Email is required" });
+        } else {
+          setErrors({ ...errors, email: "Invalid email address" });
+        }
+        return;
       }
-      return;
-    }
 
-    if (!password) {
+      if (!password) {
+        setErrors({
+          ...errors,
+          password: "Password is required",
+        });
+        return;
+      }
+
       setErrors({
-        ...errors,
-        password: "Password is required",
+        email: "",
+        password: "",
+        other: "",
       });
-      return;
-    }
 
-    setErrors({
-      email: "",
-      password: "",
-      other: "",
-    });
+      const payload = {
+        email,
+        password,
+        rememberMe,
+      };
 
-    const payload = {
-      email,
-      password,
-      rememberMe,
-    };
-
-    try {
-      const { data } = await api.post("/auth/login", payload);
-      router.push(data);
-    } catch (error: any) {
-      setErrors({ ...errors, other: "Something went wrong" });
-      if (error?.response?.data?.message) {
-        setErrors({ ...errors, other: "Either password or email is wrong" });
+      try {
+        const { data } = await api.post("/auth/login", payload);
+        router.push(data);
+      } catch (error: any) {
+        setErrors({ ...errors, other: "Something went wrong" });
+        if (error?.response?.data?.message) {
+          setErrors({ ...errors, other: "Either password or email is wrong" });
+        }
       }
-    }
-  }, []);
+    },
+    []
+  );
 
   return (
     <div

@@ -1,14 +1,14 @@
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import ChatHeaderIcons from "../ChatHeaderIcons";
 import { ChatContext } from "@/context/Chat.context";
 import { GlobalContext } from "@/context/Global.context";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
 import styles from "./index.module.scss";
 
-const ChatHeader = () => {
+const ChatHeader: FC = (): JSX.Element => {
   const { currentChat, activeChat } = useContext(ChatContext)!;
 
-  const { me } = useContext(GlobalContext)
+  const { me } = useContext(GlobalContext);
 
   const friend = activeChat?.users?.find((u) => u.id !== me?.id);
 

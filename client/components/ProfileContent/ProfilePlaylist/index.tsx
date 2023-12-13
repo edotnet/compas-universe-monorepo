@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { FC, useState } from "react";
 import { Input, InputGroup, InputGroupText } from "reactstrap";
 import ProfilePlaylistCardsContainer from "../ProfilePlaylistCardsContainer";
 
-const ProfilePlaylist = () => {
+const ProfilePlaylist: FC = (): JSX.Element => {
   const [playlist, setPlaylist] = useState([
     {
       id: 1,

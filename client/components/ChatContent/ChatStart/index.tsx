@@ -1,9 +1,12 @@
+import { FC } from "react";
 import styles from "./index.module.scss";
 
-const ChatStart = () => {
+const ChatStart: FC = (): JSX.Element => {
   return (
     <div className={styles.chatStart}>
-      <div className={`${styles.chatHeader} d-flex align-items-center justify-content-between`}></div>
+      <div
+        className={`${styles.chatHeader} d-flex align-items-center justify-content-between`}
+      ></div>
       <div className={styles.chatStartContent}></div>
     </div>
   );

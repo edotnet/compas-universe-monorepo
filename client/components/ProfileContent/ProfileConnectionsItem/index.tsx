@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, memo, useCallback } from "react";
-import { useRouter } from "next/router";
+import { Dispatch, FC, SetStateAction, memo, useCallback } from "react";
+import { NextRouter, useRouter } from "next/router";
 import { Button, Card, CardText } from "reactstrap";
 import { authApi } from "@/utils/axios";
 import { IFriend } from "@/utils/types/user.types";
@@ -16,15 +16,15 @@ interface IProps {
   setConnections: Dispatch<SetStateAction<IFriend[]>>;
 }
 
-const ProfileConnectionsItem = ({
+const ProfileConnectionsItem: FC<IProps> = ({
   status,
   connection,
   setConnections,
-}: IProps) => {
-  const router = useRouter();
+}): JSX.Element => {
+  const router: NextRouter = useRouter();
 
   const handleConnect = useCallback(
-    async (userId: number) => {
+    async (userId: number): Promise<void> => {
       let requestUrl: string = "/users";
       try {
         if (status === "Connect") {
@@ -47,7 +47,7 @@ const ProfileConnectionsItem = ({
     [status]
   );
 
-  const handleViewProfile = (userId: number) => {
+  const handleViewProfile = (userId: number): void => {
     router.push(`/profile/${userId}`);
   };
 

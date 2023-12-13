@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "./index.module.scss";
+import { FC } from "react";
 
 interface IProps {
   heading: string;
@@ -7,7 +8,7 @@ interface IProps {
   stars?: string;
 }
 
-const LogoContent = ({ heading, title, stars }: IProps) => {
+const LogoContent: FC<IProps> = ({ heading, title, stars }): JSX.Element => {
   return (
     <div className={styles.logoContent}>
       <Image src="/images/logo.png" alt="logo" width={51} height={65.71} />

@@ -1,3 +1,4 @@
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import {
   Card,
   CardBody,
@@ -8,20 +9,19 @@ import {
   DropdownToggle,
   UncontrolledDropdown,
 } from "reactstrap";
+import { authApi } from "@/utils/axios";
 import GenerateIcons from "@/components/ChatContent/GenerateIcons";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
-import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 import PostInfo from "../PostInfo";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { authApi } from "@/utils/axios";
-import CreateComments from "../CreateComment";
 import Comments from "../Comments";
+import CreateComments from "../CreateComment";
+import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 
 interface IProps {
   postId: number;
 }
 
-const SinglePost = ({ postId }: IProps) => {
+const SinglePost: FC<IProps> = ({ postId }): JSX.Element => {
   const [skip, setSkip] = useState<number>(0);
   const [singlePost, setSinglePost] = useState<IPostExtended>(null!);
   const [singlePostComments, setSinglePostComments] = useState<

@@ -1,4 +1,4 @@
-import { ReactElement } from "react";
+import { FC, ReactElement } from "react";
 import styles from "./index.module.scss";
 
 interface IProps {
@@ -6,7 +6,10 @@ interface IProps {
   register?: boolean;
 }
 
-const LoginPagesWrapper = ({ component, register }: IProps) => (
+const LoginPagesWrapper: FC<IProps> = ({
+  component,
+  register,
+}): JSX.Element => (
   <div className={`${styles.wrapper} d-flex`}>
     <div className={styles.imgContainer}>
       <div className={`${register ? styles.register : styles.login} h-100`}>

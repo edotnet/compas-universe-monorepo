@@ -1,4 +1,4 @@
-import { memo, useContext, useEffect, useState } from "react";
+import { FC, memo, useContext, useEffect, useState } from "react";
 import { authApi } from "@/utils/axios";
 import { ToastError } from "@/utils/toastify";
 import { ChatContext } from "@/context/Chat.context";
@@ -12,7 +12,7 @@ interface IProps {
   chat: IChatResponse;
 }
 
-const Chat = ({ chat }: IProps) => {
+const Chat: FC<IProps> = ({ chat }): JSX.Element => {
   const [timeAgo, setTimeAgo] = useState<string>("");
 
   const {

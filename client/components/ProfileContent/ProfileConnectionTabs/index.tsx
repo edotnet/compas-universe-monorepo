@@ -1,5 +1,5 @@
 import { ListGroup, ListGroupItem } from "reactstrap";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import styles from "./index.module.scss";
 
 interface IProps {
@@ -7,7 +7,10 @@ interface IProps {
   setStatus: Dispatch<SetStateAction<string>>;
 }
 
-const ProfileConnectionTabs = ({ status, setStatus }: IProps) => {
+const ProfileConnectionTabs: FC<IProps> = ({
+  status,
+  setStatus,
+}): JSX.Element => {
   return (
     <div className="d-flex justify-content-between align-items-center">
       <ListGroup className={`${styles.ul} flex-row align-items-center gap-3`}>

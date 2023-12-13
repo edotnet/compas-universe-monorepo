@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEventHandler } from "react";
+import { CSSProperties, FC, MouseEventHandler } from "react";
 import { Button } from "reactstrap";
 
 interface IIConProps {
@@ -12,7 +12,7 @@ interface IProps {
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }
 
-const GenerateIcons = ({ icons, styles, onClick }: IProps) => {
+const GenerateIcons: FC<IProps> = ({ icons, styles, onClick }) => {
   return (
     <div className="d-flex align-items-center" style={styles}>
       {icons.map(({ size, src }: IIConProps, index) => (

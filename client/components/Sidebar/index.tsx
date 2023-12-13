@@ -1,11 +1,12 @@
-import { useRouter } from "next/router";
+import { FC } from "react";
+import { NextRouter, useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
 import { CardText, ListGroup, ListGroupItem } from "reactstrap";
 import styles from "./index.module.scss";
 
-const Sidebar = () => {
-  const router = useRouter();
+const Sidebar: FC = (): JSX.Element => {
+  const router: NextRouter = useRouter();
 
   return (
     <aside

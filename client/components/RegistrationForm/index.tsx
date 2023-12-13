@@ -1,12 +1,5 @@
-import { FormEvent, useCallback, useState } from "react";
-import { useRouter } from "next/router";
-import { api } from "@/utils/axios";
-import validator from "validator";
-import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
-import { errorHelper } from "@/utils/helpers/error.helper";
-import LogoContent from "../LogoContent";
-import WebsiteButtons from "../WebsiteButtons";
-import styles from "./index.module.scss";
+import { FC, FormEvent, useCallback, useState } from "react";
+import { NextRouter, useRouter } from "next/router";
 import {
   Button,
   Form,
@@ -15,8 +8,15 @@ import {
   Input,
   Label,
 } from "reactstrap";
+import { api } from "@/utils/axios";
+import validator from "validator";
+import { isPasswordInValid } from "@/utils/helpers/password-valid.helper";
+import { errorHelper } from "@/utils/helpers/error.helper";
+import LogoContent from "../LogoContent";
+import WebsiteButtons from "../WebsiteButtons";
+import styles from "./index.module.scss";
 
-const RegistrationForm = () => {
+const RegistrationForm: FC = (): JSX.Element => {
   const [errors, setErrors] = useState({
     userName: "",
     email: "",
@@ -25,20 +25,22 @@ const RegistrationForm = () => {
     other: "",
   });
 
-  const router = useRouter();
-  const moveToPage = (route: string) => {
+  const router: NextRouter = useRouter();
+  const moveToPage = (route: string): void => {
     router.push(route);
   };
 
   const handleRegister = useCallback(
-    async (e: any) => {
+    async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const userName = e.target[0].value;
-      const email = e.target[1].value;
-      const password = e.target[2].value;
-      const confirmPassword = e.target[3].value;
-      const rememberMe = e.target[4].checked;
+      const target = e.target as HTMLFormElement;
+
+      const userName = (target[0] as HTMLInputElement).value;
+      const email = (target[1] as HTMLInputElement).value;
+      const password = (target[2] as HTMLInputElement).value;
+      const rememberMe = (target[3] as HTMLInputElement).checked;
+      const confirmPassword = (target[4] as HTMLInputElement).value;
 
       if (!userName) {
         setErrors({ ...errors, userName: "User Name is required" });

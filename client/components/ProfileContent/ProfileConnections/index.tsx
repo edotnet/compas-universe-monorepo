@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import { FC, useCallback, useEffect, useState } from "react";
+import { NextRouter, useRouter } from "next/router";
 import { CardSubtitle } from "reactstrap";
 import { authApi } from "@/utils/axios";
 import ProfileConnectionTabs from "../ProfileConnectionTabs";
@@ -7,13 +7,13 @@ import ProfileConnectionsItem from "../ProfileConnectionsItem";
 import { IFriend } from "@/utils/types/user.types";
 import ViewProfileConnectionsItem from "@/components/ViewProfileConnectionsItem";
 
-const ProfileConnections = () => {
+const ProfileConnections: FC = (): JSX.Element => {
   const [connections, setConnections] = useState<IFriend[]>([]);
   const [status, setStatus] = useState<string>("Connect");
 
-  const router = useRouter();
+  const router: NextRouter = useRouter();
 
-  const handleConnections = useCallback(async () => {
+  const handleConnections = useCallback(async (): Promise<void> => {
     setConnections([]);
 
     let requestUrl: string = "/users";
@@ -50,7 +50,7 @@ const ProfileConnections = () => {
     <div className="d-flex flex-column gap-3">
       <ProfileConnectionTabs status={status} setStatus={setStatus} />
       <div className="d-flex gap-5">
-        {connections.length >  0 ? (
+        {connections.length > 0 ? (
           connections.map((connection) =>
             router.query.id ? (
               <ViewProfileConnectionsItem

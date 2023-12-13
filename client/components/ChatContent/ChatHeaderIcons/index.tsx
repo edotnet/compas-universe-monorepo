@@ -1,4 +1,6 @@
-const ChatHeaderIcons = () => {
+import { FC } from "react";
+
+const ChatHeaderIcons: FC = (): JSX.Element => {
   return (
     <div className="d-flex align-items-center gap-3">
       <picture>

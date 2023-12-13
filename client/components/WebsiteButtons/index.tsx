@@ -1,13 +1,13 @@
 import Image from "next/image";
-
-import styles from "./index.module.scss";
+import { NextRouter, useRouter } from "next/router";
 import { apiUrl } from "@/utils/paths";
-import { useRouter } from "next/router";
+import styles from "./index.module.scss";
+import { FC } from "react";
 
-const WebsiteButtons = () => {
-  const router = useRouter();
+const WebsiteButtons: FC = (): JSX.Element => {
+  const router: NextRouter = useRouter();
 
-  const handleLogin = (path: string) => {
+  const handleLogin = (path: string): void => {
     router.push(apiUrl(path));
   };
 

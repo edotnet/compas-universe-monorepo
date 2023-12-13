@@ -1,7 +1,8 @@
+import { FC } from "react";
 import ChatSearch from "../ChatSearch";
 import Chats from "../Chats";
 
-const ChatLeftSide = () => {
+const ChatLeftSide: FC = (): JSX.Element => {
   return (
     <div
       className="py-4"

@@ -5,6 +5,7 @@ import {
   useCallback,
   SetStateAction,
   useRef,
+  FC,
 } from "react";
 import { Button } from "reactstrap";
 import { authApi } from "@/utils/axios";
@@ -21,13 +22,13 @@ interface IProps {
   setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
 }
 
-const Comment = ({
+const Comment: FC<IProps> = ({
   post,
   reply,
   comment,
   setCommentId,
   setSinglePostComments,
-}: IProps) => {
+}): JSX.Element => {
   const [openReplyInput, setOpenReplyInput] = useState<boolean>(false);
   const { comments, setComments } = useContext(FeedContext);
   const inputRef = useRef<HTMLInputElement>(null);

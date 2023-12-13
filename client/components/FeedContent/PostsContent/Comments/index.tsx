@@ -1,6 +1,7 @@
 import { IExtendedComment, IPostExtended } from "@/utils/types/posts.types";
 import {
   Dispatch,
+  FC,
   RefObject,
   SetStateAction,
   useCallback,
@@ -20,14 +21,14 @@ interface IProps {
   setSinglePostComments?: Dispatch<SetStateAction<IExtendedComment[]>>;
 }
 
-const Comments = ({
+const Comments: FC<IProps> = ({
   post,
   skip,
   setSkip,
   comments,
   containerRef,
   setSinglePostComments,
-}: IProps) => {
+}): JSX.Element => {
   const [isFetched, setIsFetched] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 

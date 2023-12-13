@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useContext, KeyboardEvent } from "react";
+import { FormEvent, useCallback, useContext, KeyboardEvent, FC } from "react";
 import { Button, Form } from "reactstrap";
 import { authApi } from "@/utils/axios";
 import { ToastError } from "@/utils/toastify";
@@ -7,7 +7,7 @@ import { ChatContext } from "@/context/Chat.context";
 import ChatMessageIcons from "../ChatMessageIcons";
 import styles from "./index.module.scss";
 
-const ChatSendMessage = () => {
+const ChatSendMessage: FC = (): JSX.Element => {
   const { currentChat, activeChat } = useContext(ChatContext)!;
 
   const handleInputExpand = async (e: KeyboardEvent<HTMLTextAreaElement>) => {

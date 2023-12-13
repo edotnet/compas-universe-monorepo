@@ -1,6 +1,14 @@
-import { Dispatch, SetStateAction, memo, useCallback, useContext } from "react";
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  memo,
+  useCallback,
+  useContext,
+} from "react";
 import { useRouter } from "next/router";
 import { authApi } from "@/utils/axios";
+import { Button, CardText, Card } from "reactstrap";
 import { IFriend } from "@/utils/types/user.types";
 import { errorHelper } from "@/utils/helpers/error.helper";
 import ERROR_MESSAGES from "@/utils/constants/error-messages.constant";
@@ -8,7 +16,6 @@ import ErrorEnum from "@/utils/types/enums/error.enum";
 import { ToastError } from "@/utils/toastify";
 import { GlobalContext } from "@/context/Global.context";
 import ProfilePicture from "../ProfileContent/ProfilePicture";
-import { Button, CardText, Card } from "reactstrap";
 import styles from "./index.module.scss";
 
 interface IProps {
@@ -16,13 +23,16 @@ interface IProps {
   setConnections: Dispatch<SetStateAction<IFriend[]>>;
 }
 
-const ViewProfileConnectionsItem = ({ connection, setConnections }: IProps) => {
+const ViewProfileConnectionsItem: FC<IProps> = ({
+  connection,
+  setConnections,
+}): JSX.Element => {
   const router = useRouter();
 
   const { me } = useContext(GlobalContext);
 
   const handleConnect = useCallback(
-    async (userId: number) => {
+    async (userId: number): Promise<void> => {
       try {
         await authApi.post("/users/request-friend", { friendId: userId });
 

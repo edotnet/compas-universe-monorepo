@@ -1,6 +1,6 @@
-import { Card } from "reactstrap";
+import { FC } from "react";
 
-const PlaylistContent = () => {
+const PlaylistContent: FC = (): JSX.Element => {
   return (
     <div>
       <p

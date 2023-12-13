@@ -1,3 +1,4 @@
+import { FC } from "react";
 import {
   Button,
   CardText,
@@ -8,7 +9,7 @@ import {
 } from "reactstrap";
 import styles from "./index.module.scss";
 
-const ChatSearch = () => {
+const ChatSearch: FC = (): JSX.Element => {
   return (
     <div className="d-flex flex-column align-items-center gap-2 w-100 px-4">
       <div className="d-flex justify-content-between align-items-center w-100">

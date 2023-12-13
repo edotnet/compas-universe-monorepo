@@ -1,6 +1,7 @@
+import { FC } from "react";
 import GenerateIcons from "../GenerateIcons";
 
-const ChatMessageIcons = () => {
+const ChatMessageIcons: FC = (): JSX.Element => {
   return (
     <div className="d-flex align-items-center">
       <GenerateIcons

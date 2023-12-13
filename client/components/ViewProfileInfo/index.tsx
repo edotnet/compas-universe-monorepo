@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { authApi } from "@/utils/axios";
 import { ToastError } from "@/utils/toastify";
 import { errorHelper } from "@/utils/helpers/error.helper";
@@ -13,15 +13,16 @@ interface IProps {
   isFriend: boolean;
 }
 
-const ViewProfileInfo = ({ user, isFriend }: IProps) => {
+const ViewProfileInfo: FC<IProps> = ({ user, isFriend }): JSX.Element => {
   const [friend, setFriend] = useState<boolean>(isFriend);
 
   useEffect(() => {
     setFriend(isFriend);
   }, [user]);
 
-  const handleConnect = async (userId: number) => {
+  const handleConnect = async (userId: number): Promise<void> => {
     let requestUrl: string = "/users";
+
     try {
       if (friend) {
         requestUrl += "/unfriend";
@@ -30,6 +31,7 @@ const ViewProfileInfo = ({ user, isFriend }: IProps) => {
       }
 
       await authApi.post(requestUrl, { friendId: userId });
+      
       if (friend) {
         setFriend(false);
       } else {

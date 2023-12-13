@@ -1,4 +1,4 @@
-import { CSSProperties, MouseEventHandler } from "react";
+import { CSSProperties, FC, MouseEventHandler } from "react";
 
 interface IProps {
   src: string;
@@ -9,14 +9,14 @@ interface IProps {
   styles?: CSSProperties;
 }
 
-const ProfilePicture = ({
+const ProfilePicture: FC<IProps> = ({
   src,
   width,
   height,
   borderRadius,
   onClick,
   styles,
-}: IProps) => {
+}): JSX.Element => {
   return (
     <picture>
       <img
@@ -24,7 +24,7 @@ const ProfilePicture = ({
         alt="profile"
         width={width}
         height={height}
-        style={{ borderRadius, ...styles, objectFit: 'cover' }}
+        style={{ borderRadius, ...styles, objectFit: "cover" }}
         onClick={onClick}
       />
     </picture>

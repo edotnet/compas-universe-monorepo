@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { api } from "@/utils/axios";
 import { errorHelper } from "@/utils/helpers/error.helper";
 
@@ -7,13 +7,13 @@ interface IProps {
   setError: (value: string) => void;
 }
 
-const Timer = ({ email, setError }: IProps) => {
+const Timer: FC<IProps> = ({ email, setError }): JSX.Element => {
   const [minutes, setMinutes] = useState(1);
   const [seconds, setSeconds] = useState(0);
   const [codeSent, setCodeSent] = useState(false);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval: NodeJS.Timeout = setInterval(() => {
       if (seconds > 0) {
         setSeconds(seconds - 1);
       } else if (minutes > 0) {

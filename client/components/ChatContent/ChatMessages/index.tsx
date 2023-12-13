@@ -1,10 +1,10 @@
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { ChatContext } from "@/context/Chat.context";
 import ProfilePicture from "@/components/ProfileContent/ProfilePicture";
 import { CardText } from "reactstrap";
 import styles from "./index.module.scss";
 
-const ChatMessages = () => {
+const ChatMessages: FC = (): JSX.Element => {
   const { messages } = useContext(ChatContext)!;
 
   return (

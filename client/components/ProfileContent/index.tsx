@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { WebsocketContext } from "@/context/Websocket.Context";
 import SOCKET_EVENT from "@/utils/types/enums/socket.enum";
 import { INotificationEvent } from "@/utils/types/socket-event.types";
@@ -13,7 +13,7 @@ interface IProps {
   data?: IUserProfileResponse;
 }
 
-const ProfileContent = ({ data }: IProps) => {
+const ProfileContent: FC<IProps> = ({ data }): JSX.Element => {
   const socket = useContext(WebsocketContext);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ const ProfileContent = ({ data }: IProps) => {
       className="d-flex flex-column p-5 gap-5"
       style={{
         background: "linear-gradient(#7D43A417, #2D34DA00, #D5CCFF8C)",
-        height: "100vh"
+        height: "100vh",
       }}
     >
       {data ? (

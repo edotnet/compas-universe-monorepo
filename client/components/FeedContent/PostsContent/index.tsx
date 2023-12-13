@@ -1,12 +1,19 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import CreatePost from "./Create";
-import Posts from "./Posts";
-import { IPostExtended } from "@/utils/types/posts.types";
-import { FeedContext } from "@/context/Feed.context";
+import {
+  FC,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { authApi } from "@/utils/axios";
+import Posts from "./Posts";
+import CreatePost from "./Create";
+import { FeedContext } from "@/context/Feed.context";
 import { scrollPaginate } from "@/utils/helpers/scroll-paginate.helper";
+import { IPostExtended } from "@/utils/types/posts.types";
 
-const PostsContent = () => {
+const PostsContent: FC = (): JSX.Element => {
   const [skip, setSkip] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [isFetched, setIsFetched] = useState<boolean>(false);
